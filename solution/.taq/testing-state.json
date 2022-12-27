@@ -1,0 +1,19 @@
+{
+    "operations": {},
+    "tasks": {
+        "@taqueria/plugin-taquito.deploy.1672133054772": {
+            "task": "deploy",
+            "plugin": "@taqueria/plugin-taquito",
+            "time": 1672133054772,
+            "output": [
+                {
+                    "contract": "main.tz",
+                    "address": "KT1Xs2GRV46bveaaz5QGwJ7nJMTd8X94jKmn",
+                    "alias": "main",
+                    "balanceInMutez": "0",
+                    "destination": "https://ghostnet.ecadinfra.com"
+                }
+            ]
+        }
+    }
+}
