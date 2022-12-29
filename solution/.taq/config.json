@@ -1,5 +1,23 @@
 {
     "language": "en",
+    "plugins": [
+        {
+            "name": "@taqueria/plugin-core",
+            "type": "npm"
+        },
+        {
+            "name": "@taqueria/plugin-ligo",
+            "type": "npm"
+        },
+        {
+            "name": "@taqueria/plugin-taquito",
+            "type": "npm"
+        },
+        {
+            "name": "@taqueria/plugin-contract-types",
+            "type": "npm"
+        }
+    ],
     "contractsDir": "contracts",
     "artifactsDir": "artifacts",
     "contracts": {
@@ -55,22 +73,5 @@
         "john": "3_000_000_000",
         "jane": "3_000_000_000",
         "joe": "3_000_000_000"
-    },
-    "plugins": [
-        {
-            "name": "@taqueria/plugin-core",
-            "type": "npm"
-        },
-        {
-            "name": "@taqueria/plugin-ligo",
-            "type": "npm"
-        },
-        {
-            "name": "@taqueria/plugin-taquito",
-            "type": "npm"
-        }
-    ],
-    "projectDir": "/home/zamrokk/training-dapp-shifumi/solution",
-    "configFile": "/home/zamrokk/training-dapp-shifumi/solution/.taq/config.json",
-    "hash": "c8ff219d074e0853b5ea13f4a66c6e6c67844000229d8ec165cc129be71ae6a1"
+    }
 }

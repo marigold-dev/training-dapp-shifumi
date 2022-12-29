@@ -157,61 +157,12 @@ Browser opens on `http://localhost:19006/`
 Add taquito, tzkt indexer lib
 
 ```bash
-yarn add @taquito/taquito @taquito/beacon-wallet @airgap/beacon-sdk  @dipdup/tzkt-api
-yarn add -D @airgap/beacon-types
+npm install -S add @taquito/taquito @taquito/beacon-wallet @airgap/beacon-sdk  @dipdup/tzkt-api
+npm install -S -D @airgap/beacon-types
+npm install -S react-native-dotenv
 ```
 
-> :warning: :warning: :warning: Last React version uses `react-script 5.x` , follow these steps to rewire webpack for all encountered missing libraries : https://github.com/ChainSafe/web3.js#troubleshooting-and-known-issues
-
-> For example, in my case, I installed this :
->
-> ```bash
-> yarn add --dev react-app-rewired process crypto-browserify stream-browserify assert stream-http https-browserify os-browserify url path-browserify
-> ```
->
-> and my `config-overrides.js` file was :
->
-> ```js
-> const webpack = require("webpack");
->
-> module.exports = function override(config) {
->   const fallback = config.resolve.fallback || {};
->   Object.assign(fallback, {
->     crypto: require.resolve("crypto-browserify"),
->     stream: require.resolve("stream-browserify"),
->     assert: require.resolve("assert"),
->     http: require.resolve("stream-http"),
->     https: require.resolve("https-browserify"),
->     os: require.resolve("os-browserify"),
->     url: require.resolve("url"),
->     path: require.resolve("path-browserify"),
->   });
->   config.ignoreWarnings = [/Failed to parse source map/];
->   config.resolve.fallback = fallback;
->   config.plugins = (config.plugins || []).concat([
->     new webpack.ProvidePlugin({
->       process: "process/browser",
->       Buffer: ["buffer", "Buffer"],
->     }),
->   ]);
->   return config;
-> };
-> ```
->
-> then I change the script in package.json by
->
-> ```
-> ...
-> "scripts": {
->    "start": "react-app-rewired start",
->    "build": "react-app-rewired build",
->    "test": "react-app-rewired test",
->    "eject": "react-app-rewired eject"
-> },
-> ...
-> ```
->
-> :warning:
+//TODO
 
 This was painful :/, but it was the worst so far
 
@@ -226,7 +177,7 @@ cd ..
 
 taq install @taqueria/plugin-contract-types
 
-taq generate types ./app/src
+taq generate types ./app
 
 cd ./app
 ```
@@ -234,13 +185,143 @@ cd ./app
 Start the dev server
 
 ```bash
-yarn run start
+npm run web
 ```
 
 Open your browser at : http://localhost:3000/
 Your app should be running
 
 //TODO
+
+## Step 2 : Connect / disconnect the wallet
+
+We will declare 2 React Button components and a display of address and balance while connected
+
+Edit src/App.tsx file
+
+//TODO
+
+Let's create the 2 missing src component files and put code in it. On src folder, create these files.
+
+```bash
+touch app/ConnectWallet.tsx
+touch app/DisconnectWallet.tsx
+```
+
+ConnectWallet button will create an instance wallet, get user permissions via a popup and then retrieve account information
+
+Edit ConnectWallet.tsx
+
+```typescript
+import { NetworkType } from "@airgap/beacon-sdk";
+import { BeaconWallet } from "@taquito/beacon-wallet";
+import { TezosToolkit } from "@taquito/taquito";
+import { Dispatch, SetStateAction } from "react";
+
+type ButtonProps = {
+  Tezos: TezosToolkit;
+  setUserAddress: Dispatch<SetStateAction<string>>;
+  setUserBalance: Dispatch<SetStateAction<number>>;
+  wallet: BeaconWallet;
+};
+
+const ConnectButton = ({
+  Tezos,
+  setUserAddress,
+  setUserBalance,
+  wallet,
+}: ButtonProps): JSX.Element => {
+  const connectWallet = async (): Promise<void> => {
+    try {
+      await wallet.requestPermissions({
+        network: {
+          type: NetworkType.GHOSTNET,
+          rpcUrl: "https://ghostnet.tezos.marigold.dev",
+        },
+      });
+      // gets user's address
+      const userAddress = await wallet.getPKH();
+      const balance = await Tezos.tz.getBalance(userAddress);
+      setUserBalance(balance.toNumber());
+      setUserAddress(userAddress);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <div className="buttons">
+      <button className="button" onClick={connectWallet}>
+        <span>
+          <i className="fas fa-wallet"></i>&nbsp; Connect with wallet
+        </span>
+      </button>
+    </div>
+  );
+};
+
+export default ConnectButton;
+```
+
+DisconnectWallet button will clean wallet instance and all linked objects
+
+```typescript
+import { BeaconWallet } from "@taquito/beacon-wallet";
+import { Dispatch, SetStateAction } from "react";
+
+interface ButtonProps {
+  wallet: BeaconWallet;
+  setUserAddress: Dispatch<SetStateAction<string>>;
+  setUserBalance: Dispatch<SetStateAction<number>>;
+}
+
+const DisconnectButton = ({
+  wallet,
+  setUserAddress,
+  setUserBalance,
+}: ButtonProps): JSX.Element => {
+  const disconnectWallet = async (): Promise<void> => {
+    setUserAddress("");
+    setUserBalance(0);
+    console.log("disconnecting wallet");
+    await wallet.clearActiveAccount();
+  };
+
+  return (
+    <div className="buttons">
+      <button className="button" onClick={disconnectWallet}>
+        <i className="fas fa-times"></i>&nbsp; Disconnect wallet
+      </button>
+    </div>
+  );
+};
+
+export default DisconnectButton;
+```
+
+Save both file, the dev server should refresh the page
+
+As Temple is configured well, Click on Connect button
+
+On the popup, select your Temple wallet, then your account and connect. :warning: Do not forget to stay on the "ghostnet" testnet
+
+:confetti_ball: your are "logged"
+
+Click on the Disconnect button to logout to test it
+
+## Step 3 : Access to contract storage and display the state
+
+### Display About metadata
+
+### List sessions
+
+## Step 4 : Create a session
+
+## Step 5 : Play on a session
+
+## Step 6 : Reveal your choice
+
+## Step 7 : Close session
 
 ## Now let's try Android version (or iOS if you have this OS instead)
 
