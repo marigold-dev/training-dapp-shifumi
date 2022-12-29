@@ -160,6 +160,9 @@ Add taquito, tzkt indexer lib
 npm install -S add @taquito/taquito @taquito/beacon-wallet @airgap/beacon-sdk  @dipdup/tzkt-api
 npm install -S -D @airgap/beacon-types
 npm install -S react-native-dotenv
+npm install -S @react-navigation/native
+npx expo install react-native-screens react-native-safe-area-context
+npm install -S @react-navigation/native-stack
 ```
 
 //TODO
