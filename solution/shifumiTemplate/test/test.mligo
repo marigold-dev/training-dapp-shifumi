@@ -1,4 +1,4 @@
-#import "../contracts/main.jsligo" "SHIFUMI"
+#import "../src/main.jsligo" "SHIFUMI"
 
 let assert_string_failure (res : test_exec_result) (expected : string) : unit =
   let expected = Test.eval expected in
@@ -1305,6 +1305,60 @@ let test =
         let stop_args : SHIFUMI.Parameter.stopsession_param = {sessionId=current_session_id} in
         let fail_stop_session = Test.transfer_to_contract x (StopSession(stop_args)) 0mutez in
         assert_string_failure fail_stop_session SHIFUMI.Errors.no_winner
-    in
 
+    in  let _testthis =  
+        let x : SHIFUMI.parameter contract = Test.to_contract addr in
+
+        // alice create session
+        let () = Test.log("Session 24 - alice create session 24") in
+        let () = Test.set_source alice in
+        let session_args : SHIFUMI.Parameter.createsession_param = { total_rounds=1n; players=Set.add alice (Set.add bob (Set.empty : SHIFUMI.Storage.Session.player set)) } in
+        let current_session_id : nat = 24n in
+        let _ = Test.transfer_to_contract_exn x (CreateSession(session_args)) 0mutez in
+        // verify session creation
+        let session_24 : SHIFUMI.Storage.Session.t = get_session_from_storage(addr, current_session_id) in
+        let () = assert (session_24.current_round = 1n) in
+        let () = assert (session_24.total_rounds = 1n) in
+        let () = assert (session_24.result = Inplay) in
+        let session_0_round_1 : SHIFUMI.Storage.Session.player_actions = get_round_from_session(session_24, 1n) in
+        let count (acc, _: nat * SHIFUMI.Storage.Session.player_action) : nat = acc + 1n in
+        let nb_of_elements : nat = List.fold_left count 0n session_0_round_1 in
+        let () = assert (nb_of_elements = 0n) in
+        let session_24_decoded_round_1 : SHIFUMI.Storage.Session.decoded_player_actions = get_decoded_round_from_session(session_24, 1n) in
+        let count_ (acc, _: nat * SHIFUMI.Storage.Session.decoded_player_action) : nat = acc + 1n in
+        let nb_of_decoded_elements : nat = List.fold count_ session_24_decoded_round_1 0n in
+        let () = assert (nb_of_decoded_elements = 0n) in
+
+        // bob plays in (session=0n, round=1)
+        let () = Test.log("Session 24 - bob plays in session 0 round 1") in
+        let () = Test.set_source bob in
+        let bob_payload_v : SHIFUMI.Storage.Session.action = Paper in
+        let bob_payload : bytes = Bytes.pack bob_payload_v in
+        let bob_secret_1 : nat = 1n in
+        let () = Test.log(bob_payload_v) in
+        let () = Test.log(bob_payload) in
+        let () = Test.log(bob_secret_1) in
+        let () = Test.log(Bytes.pack (bob_payload, bob_secret_1)) in
+        let (bob_bytes,_) = create_bytes bob_payload bob_secret_1 in
+        let () = Test.log(bob_bytes) in
+        let play_args : SHIFUMI.Parameter.play_param = {sessionId=current_session_id; roundId=1n; action=bob_bytes} in
+        let _ = Test.transfer_to_contract_exn x (Play(play_args)) 0mutez in
+        // verify round register bob bytes
+        let session_24 : SHIFUMI.Storage.Session.t = get_session_from_storage(addr, current_session_id) in
+        let () = assert (session_24.current_round = 1n) in
+        let () = assert (session_24.total_rounds = 1n) in
+        let () = assert (session_24.result = Inplay) in
+        let session_24_round_1 : SHIFUMI.Storage.Session.player_actions = get_round_from_session(session_24, 1n) in
+        let count (acc, _: nat * SHIFUMI.Storage.Session.player_action) : nat = acc + 1n in
+        let nb_of_elements : nat = List.fold_left count 0n session_24_round_1 in
+        let () = assert (nb_of_elements = 1n) in
+        let bob_action : SHIFUMI.Storage.Session.player_action = Option.unopt (List.head_opt session_24_round_1) in
+        let () = assert (bob_action.player = bob) in
+        // cannot compare bytes
+        //let () = assert (bob_action.action = bob_bytes) in
+        let session_24_decoded_round_1 : SHIFUMI.Storage.Session.decoded_player_actions = get_decoded_round_from_session(session_24, 1n) in
+        let count_ (acc, _: nat * SHIFUMI.Storage.Session.decoded_player_action) : nat = acc + 1n in
+        let nb_of_decoded_elements : nat = List.fold_left count_ 0n session_24_decoded_round_1 in
+        assert (nb_of_decoded_elements = 0n) 
+        in
     ()

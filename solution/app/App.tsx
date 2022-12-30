@@ -12,7 +12,21 @@ import { SessionScreen } from "./SessionScreen";
 import { TopPlayersScreen } from "./TopPlayersScreen";
 import { address, bytes, MMap, nat, timestamp, unit } from "./type-aliases";
 
-export type session = {
+export class Action implements ActionCisor, ActionPaper, ActionStone {
+  cisor?: unit;
+  paper?: unit;
+  stone?: unit;
+  constructor(cisor?: unit, paper?: unit, stone?: unit) {
+    this.cisor = cisor;
+    this.paper = paper;
+    this.stone = stone;
+  }
+}
+export type ActionCisor = { cisor?: unit };
+export type ActionPaper = { paper?: unit };
+export type ActionStone = { stone?: unit };
+
+export type Session = {
   asleep: timestamp;
   board: MMap<nat, address>;
   current_round: nat;
@@ -45,6 +59,8 @@ export type UserContextType = {
   Tezos: TezosToolkit;
   wallet: BeaconWallet;
   mainWalletType: MainWalletType | null;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
 };
 export let UserContext = React.createContext<UserContextType | null>(null);
 
@@ -64,6 +80,7 @@ export default function App() {
   const [mainWalletType, setMainWalletType] = useState<MainWalletType | null>(
     null
   );
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     Tezos.setWalletProvider(wallet);
@@ -99,6 +116,8 @@ export default function App() {
         setUserAddress,
         setUserBalance,
         setStorage,
+        loading,
+        setLoading,
       }}
     >
       <NavigationContainer>
