@@ -163,6 +163,23 @@ npm install -S react-native-dotenv
 npm install -S @react-navigation/native
 npx expo install react-native-screens react-native-safe-area-context
 npm install -S @react-navigation/native-stack
+npx expo install  expo-crypto
+npx expo install  @react-native-async-storage/async-storage
+```
+
+// steam deps issues
+
+npx expo customize metro.config.js
+npm install --save node-libs-react-native
+
+> NOTE TO FIX node_modules\readable-stream\lib\\\_stream_writable.js add line:
+> https://github.com/facebook/react-native/issues/30654#issuecomment-753844822
+
+```
+/*<replacement>*/
+var process = require("process");   // THIS LINE
+var pna = require('process-nextick-args');
+/*</replacement>*/
 ```
 
 //TODO

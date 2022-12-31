@@ -1,7 +1,8 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { PackDataParams } from "@taquito/rpc";
 import { MichelCodecPacker } from "@taquito/taquito";
 import { BigNumber } from "bignumber.js";
-import * as crypto from "crypto";
+import * as Crypto from "expo-crypto";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, Button, Text, View } from "react-native";
 import { Action, styles, UserContext, UserContextType } from "./App";
@@ -133,7 +134,7 @@ export function SessionScreen({
     try {
       setLoading(true);
       const secret = Math.round(Math.random() * 654843);
-      sessionStorage.setItem(
+      await AsyncStorage.setItem(
         buildSessionStorageKey(
           userAddress,
           id,
@@ -176,7 +177,7 @@ export function SessionScreen({
     const current_session = storage?.sessions.get(session_id);
 
     //fecth from session storage
-    const secretActionStr = sessionStorage.getItem(
+    const secretActionStr = await AsyncStorage.getItem(
       buildSessionStorageKey(
         userAddress,
         session_id.toNumber(),
@@ -303,10 +304,10 @@ export function SessionScreen({
   ): Promise<bytes> => {
     const actionBytes = (await packAction(action)) as bytes;
     const bytes = (await packActionBytesSecret(actionBytes, secret)) as bytes;
-    const encryptedActionSecret = crypto
-      .createHash("sha512")
-      .update(bytes, "hex")
-      .digest("hex") as bytes;
+    const encryptedActionSecret = (await Crypto.digestStringAsync(
+      Crypto.CryptoDigestAlgorithm.SHA512,
+      Buffer.from(bytes, "hex").toString("ascii")
+    )) as bytes;
     return encryptedActionSecret;
   };
 
