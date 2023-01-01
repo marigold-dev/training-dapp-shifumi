@@ -9,12 +9,11 @@
     "web": "jq -r '\"REACT_APP_CONTRACT_ADDRESS=\" + last(.tasks[]).output[0].address' ../.taq/testing-state.json > .env && expo start --web"
   },
   "dependencies": {
-    "@airgap/beacon-sdk": "^3.3.0",
     "@dipdup/tzkt-api": "^0.0.1",
     "@expo/webpack-config": "^0.17.2",
+    "@react-native-async-storage/async-storage": "~1.17.3",
     "@react-navigation/native": "^6.1.1",
     "@react-navigation/native-stack": "^6.9.7",
-    "@taquito/beacon-wallet": "^15.0.1",
     "@taquito/taquito": "^15.0.1",
     "expo": "~47.0.9",
     "expo-crypto": "~12.0.0",
@@ -27,7 +26,7 @@
     "react-native-safe-area-context": "4.4.1",
     "react-native-screens": "~3.18.0",
     "react-native-web": "~0.18.9",
-    "@react-native-async-storage/async-storage": "~1.17.3"
+    "rn-beacon-sdk": "^0.1.1"
   },
   "devDependencies": {
     "@airgap/beacon-types": "^3.3.0",

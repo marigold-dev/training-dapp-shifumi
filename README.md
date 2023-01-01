@@ -182,7 +182,16 @@ var pna = require('process-nextick-args');
 /*</replacement>*/
 ```
 
-//TODO
+Generate React Native code for android and ios via codegen, on top root folder of this repo
+https://docs.expo.dev/modules/native-module-tutorial/
+
+For android
+
+Install missing C++ lib ICU for cmake to compile (https://github.com/facebook/react-native/issues/34084#issuecomment-1325160463)
+
+```bash
+sudo apt-get install libicu-dev
+```
 
 This was painful :/, but it was the worst so far
 

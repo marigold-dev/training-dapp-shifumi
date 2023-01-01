@@ -19,7 +19,6 @@ import ConnectButton from "./ConnectWallet";
 import DisconnectButton from "./DisconnectWallet";
 import { TransactionInvalidBeaconError } from "./TransactionInvalidBeaconError";
 import { address, nat } from "./type-aliases";
-
 export function HomeScreen({ navigation }: { navigation: any }) {
   const {
     Tezos,
