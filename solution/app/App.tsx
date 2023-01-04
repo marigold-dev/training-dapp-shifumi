@@ -121,7 +121,7 @@ export default function App() {
         setLoading,
       }}
     >
-      <NavigationContainer>
+      <NavigationContainer >
         <Stack.Navigator initialRouteName="Home">
           <Stack.Screen name={PAGES.HOME} component={HomeScreen} />
           <Stack.Screen name={PAGES.SESSION} component={SessionScreen} />
@@ -141,9 +141,12 @@ export enum PAGES {
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: "#1C1D22",
     alignItems: "center",
+    textAlign: "center",
     justifyContent: "center",
+    color:"white",
+    fontFamily: "Roboto Mono",
   },
   image: {
     flex: 1,
@@ -151,6 +154,15 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     width: "100%",
   },
+  logo: {
+    height: "70px",
+    width:"50px",
+    objectFit: "contain",
+    margin:"10px",
+
+    
+  },
+  
   centeredView: {
     flex: 1,
     justifyContent: "center",
@@ -159,7 +171,7 @@ export const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    backgroundColor: "white",
+    backgroundColor: "#2B2A2E",
     borderRadius: 20,
     padding: 35,
     alignItems: "center",
@@ -173,7 +185,7 @@ export const styles = StyleSheet.create({
     elevation: 5,
   },
   item: {
-    backgroundColor: "#f9c2ff",
+    backgroundColor: "#1C1D22",
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
@@ -188,5 +200,21 @@ export const styles = StyleSheet.create({
     backgroundColor: "black",
     justifyContent: "center",
     alignItems: "center",
+  },
+  text: {
+    color:"white",
+    padding:"1em"
+  },
+  title: {
+    color:"white",
+    fontSize:35,
+    fontWeight:"bold",
+  },
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+    backgroundColor:"white"
   },
 });

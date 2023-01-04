@@ -4,7 +4,7 @@ import { MichelCodecPacker } from "@taquito/taquito";
 import { BigNumber } from "bignumber.js";
 import * as Crypto from "expo-crypto";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, Button, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Button, ImageBackground, Text, View } from "react-native";
 import { Action, styles, UserContext, UserContextType } from "./App";
 import { TransactionInvalidBeaconError } from "./TransactionInvalidBeaconError";
 import { bytes, nat, unit } from "./type-aliases";
@@ -312,52 +312,117 @@ export function SessionScreen({
   };
 
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+    <View
+      style={{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#1C1D22",
+      }}
+    >
       {loading ? (
         <View style={styles.loading}>
           <ActivityIndicator size="large" />
         </View>
       ) : (
-        <View>
-          <Text>Session : {id}</Text>
-          <Text>
-            Round :{" "}
-            {"" +
-              storage?.sessions.get(id).current_round +
-              "/" +
-              storage?.sessions.get(id).total_rounds}
-          </Text>
-          <Text>Status : {status}</Text>
-          <Text>{"Remaining time :" + remainingTime + " s"}</Text>
-          <Button
-            disabled={status !== STATUS.PLAY}
-            title="Scissor"
-            onPress={() => play(new Action(true as unit, undefined, undefined))}
-          />
-          <Button
-            disabled={status !== STATUS.PLAY}
-            title="Paper"
-            onPress={() => play(new Action(undefined, true as unit, undefined))}
-          />
-          <Button
-            disabled={status !== STATUS.PLAY}
-            title="Stone"
-            onPress={() => play(new Action(undefined, undefined, true as unit))}
-          />
+        <>
+          <View
+            style={{
+              flexDirection: "row",
+              paddingLeft: "6em",
+              paddingRight: "6em",
+              paddingBottom: "4em",
+              justifyContent: "space-around",
+            }}
+          >
+            <ImageBackground
+              source={require("./assets/stone-logo.png")}
+              resizeMode="contain"
+              style={styles.logo}
+            />
+            <ImageBackground
+              source={require("./assets/paper-logo.png")}
+              resizeMode="cover"
+              style={styles.logo}
+            />
+            <ImageBackground
+              source={require("./assets/scissor-logo.png")}
+              resizeMode="cover"
+              style={styles.logo}
+            />
+          </View>
+          <View>
+            <Text style={styles.text}>Session : {id}</Text>
+            <Text style={styles.text}>
+              Round :{" "}
+              {"" +
+                storage?.sessions.get(id).current_round +
+                "/" +
+                storage?.sessions.get(id).total_rounds}
+            </Text>
+            <Text style={styles.text}>Status : {status}</Text>
+            <Text style={styles.text}>
+              {"Remaining time :" + remainingTime + " s"}
+            </Text>
+            <View style={{ padding: "7px" }}>
+              <Button
+                color="#2B2A2E"
+                disabled={status !== STATUS.PLAY}
+                title="Scissor"
+                onPress={() =>
+                  play(new Action(true as unit, undefined, undefined))
+                }
+              />
+            </View>
 
-          <Button
-            disabled={status !== STATUS.REVEAL}
-            title="Reveal"
-            onPress={() => revealPlay()}
-          />
+            <View style={{ padding: "7px" }}>
+              <Button
+                color="#2B2A2E"
+                disabled={status !== STATUS.PLAY}
+                title="Paper"
+                onPress={() =>
+                  play(new Action(undefined, true as unit, undefined))
+                }
+              />
+            </View>
 
-          <Button
-            disabled={remainingTime != 0}
-            title="Stop session"
-            onPress={() => stopSession()}
-          />
-          <Button title="Go back" onPress={() => navigation.goBack()} />
-        </View>
+            <View style={{ padding: "7px" }}>
+              <Button
+                color="#2B2A2E"
+                disabled={status !== STATUS.PLAY}
+                title="Stone"
+                onPress={() =>
+                  play(new Action(undefined, undefined, true as unit))
+                }
+              />
+            </View>
+
+            <View style={{ padding: "7px", paddingTop: "30px" }}>
+              <Button
+                color="#d8464e"
+                disabled={status !== STATUS.REVEAL}
+                title="Reveal"
+                onPress={() => revealPlay()}
+              />
+            </View>
+
+            <View style={{ padding: "7px" }}>
+              <Button
+                color="#d8464e"
+                disabled={remainingTime != 0}
+                title="Stop session"
+                onPress={() => stopSession()}
+              />
+            </View>
+            <View style={{ padding: "7px" }}>
+              <Button
+                color="#d8464e"
+                title="Go back"
+                onPress={() => navigation.goBack()}
+              />
+            </View>
+          </View>
+        </>
       )}
     </View>
   );
