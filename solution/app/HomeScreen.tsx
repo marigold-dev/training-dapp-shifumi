@@ -12,7 +12,7 @@ import {
   SafeAreaView,
   Text,
   TextInput,
-  View
+  View,
 } from "react-native";
 import { PAGES, Session, styles, UserContext, UserContextType } from "./App";
 import ConnectButton from "./ConnectWallet";
@@ -75,7 +75,7 @@ export function HomeScreen({ navigation }: { navigation: any }) {
       const op = await mainWalletType!.methods
         .createSession([userAddress as address, newPlayer], total_rounds)
         .send();
-      await op?.confirmation(2);
+      await op?.confirmation();
       const newStorage = await mainWalletType!.storage();
       setStorage(newStorage);
       setCreateGameModalVisible(false);
@@ -97,7 +97,8 @@ export function HomeScreen({ navigation }: { navigation: any }) {
 
   const renderGameItem = ({ item }: { item: string }) => (
     <View style={styles.item}>
-      <Button color="#d8464e"
+      <Button
+        color="#d8464e"
         title={"Game n°" + item}
         onPress={() => {
           setSelectGameModalVisible(false);
@@ -126,9 +127,9 @@ export function HomeScreen({ navigation }: { navigation: any }) {
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
                 <SafeAreaView>
-                  <Text style={styles.text} >total rounds</Text>
+                  <Text style={styles.text}>total rounds</Text>
                   <TextInput
-                  style={styles.input}
+                    style={styles.input}
                     onChangeText={(str) => {
                       setTotal_rounds(new BigNumber(str) as nat);
                     }}
@@ -146,10 +147,15 @@ export function HomeScreen({ navigation }: { navigation: any }) {
                     keyboardType="ascii-capable"
                   />
                 </SafeAreaView>
-                <View style={{paddingTop:"20px", margin:"20px"}}>
-                  <Button color="#d8464e" onPress={createSession} title="Create" />
+                <View style={{ paddingTop: "20px", margin: "20px" }}>
+                  <Button
+                    color="#d8464e"
+                    onPress={createSession}
+                    title="Create"
+                  />
                 </View>
-                <Button  color="#d8464e"
+                <Button
+                  color="#d8464e"
                   onPress={() =>
                     setCreateGameModalVisible(!createGameModalVisible)
                   }
@@ -169,7 +175,7 @@ export function HomeScreen({ navigation }: { navigation: any }) {
           >
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
-                <SafeAreaView >
+                <SafeAreaView>
                   <FlatList
                     data={
                       myGames
@@ -182,7 +188,8 @@ export function HomeScreen({ navigation }: { navigation: any }) {
                     keyExtractor={(item) => item}
                   />
                 </SafeAreaView>
-                <Button color="#d8464e"
+                <Button
+                  color="#d8464e"
                   onPress={() =>
                     setSelectGameModalVisible(!selectGameModalVisible)
                   }
@@ -191,90 +198,100 @@ export function HomeScreen({ navigation }: { navigation: any }) {
               </View>
             </View>
           </Modal>
-         
-            {!userAddress ? (
-              
-              <>
-                 <Text style={styles.title}> Shifumi</Text>
-                 <Text style={styles.text}> Tezos</Text>
-                 <View style={{flexDirection: "row", padding:"4em", justifyContent: "space-around"}}>
-                 <ImageBackground
-                 source={require("./assets/stone-logo.png")}
-                 resizeMode="contain"
-                 style={styles.logo}
+
+          {!userAddress ? (
+            <>
+              <Text style={styles.title}> Shifumi</Text>
+              <Text style={styles.text}> Tezos</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  padding: "4em",
+                  justifyContent: "space-around",
+                }}
+              >
+                <ImageBackground
+                  source={require("./assets/stone-logo.png")}
+                  resizeMode="contain"
+                  style={styles.logo}
                 />
                 <ImageBackground
-                 source={require("./assets/paper-logo.png")}
-                 resizeMode="cover"
-                 style={styles.logo}
+                  source={require("./assets/paper-logo.png")}
+                  resizeMode="cover"
+                  style={styles.logo}
                 />
                 <ImageBackground
-                 source={require("./assets/scissor-logo.png")}
-                 resizeMode="cover"
-                 style={styles.logo}
+                  source={require("./assets/scissor-logo.png")}
+                  resizeMode="cover"
+                  style={styles.logo}
                 />
-                 </View>
-               <View>
-              
+              </View>
+              <View>
                 <ConnectButton
                   Tezos={Tezos}
                   setUserAddress={setUserAddress}
                   setUserBalance={setUserBalance}
                   wallet={wallet}
                 />
-                <View style={{paddingTop:"20px"}}>
-                <Button color="#d8464e" title="Rules"/>
+                <View style={{ paddingTop: "20px" }}>
+                  <Button color="#d8464e" title="Rules" />
                 </View>
               </View>
             </>
-            ) : (
-              <>
-              <View style={{flexDirection: "row", padding:"5.5em", justifyContent: "space-around"}}>
-              <ImageBackground
-              source={require("./assets/stone-logo.png")}
-              resizeMode="contain"
-              style={styles.logo}
-              />
-              <ImageBackground
-              source={require("./assets/paper-logo.png")}
-              resizeMode="cover"
-              style={styles.logo}
-              />
-              <ImageBackground
-              source={require("./assets/scissor-logo.png")}
-              resizeMode="cover"
-              style={styles.logo}
-              />
+          ) : (
+            <>
+              <View
+                style={{
+                  flexDirection: "row",
+                  padding: "5.5em",
+                  justifyContent: "space-around",
+                }}
+              >
+                <ImageBackground
+                  source={require("./assets/stone-logo.png")}
+                  resizeMode="contain"
+                  style={styles.logo}
+                />
+                <ImageBackground
+                  source={require("./assets/paper-logo.png")}
+                  resizeMode="cover"
+                  style={styles.logo}
+                />
+                <ImageBackground
+                  source={require("./assets/scissor-logo.png")}
+                  resizeMode="cover"
+                  style={styles.logo}
+                />
               </View>
-              <View style={{padding:20}}>
+              <View style={{ padding: 20 }}>
                 <DisconnectButton
                   wallet={wallet}
                   setUserAddress={setUserAddress}
                   setUserBalance={setUserBalance}
                 />
-                <Text style={{padding:20, color:"white"}}>
+                <Text style={{ padding: 20, color: "white" }}>
                   I am {userAddress} with {userBalance} mutez
                 </Text>
-                <View style={{padding:"20px"}}>
-                <Button
-                  color="#d8464e"
-                  title="New game"
-                  onPress={() => {
-                    setCreateGameModalVisible(true);
-                  }}
-                />
+                <View style={{ padding: "20px" }}>
+                  <Button
+                    color="#d8464e"
+                    title="New game"
+                    onPress={() => {
+                      setCreateGameModalVisible(true);
+                    }}
+                  />
                 </View>
 
-                <View style={{padding:"20px"}}>
-                <Button
-                  color="#d8464e"
-                  title="Join game"
-                  onPress={() => {
-                    setSelectGameModalVisible(true);
-                  }}
-                />
+                <View style={{ padding: "20px" }}>
+                  <Button
+                    color="#d8464e"
+                    title="Join game"
+                    onPress={() => {
+                      setSelectGameModalVisible(true);
+                    }}
+                  />
                 </View>
-                 <View style={{padding:"20px"}}>
+                <View style={{ padding: "20px" }}>
                   <Button
                     color="#d8464e"
                     title="Top Players"
@@ -282,12 +299,12 @@ export function HomeScreen({ navigation }: { navigation: any }) {
                       navigation.navigate(PAGES.TOPPLAYERS);
                     }}
                   />
-                 </View>
+                </View>
               </View>
-              </>
-            )}
+            </>
+          )}
 
-            <Text style={styles.text}>{description}</Text>
+          <Text style={styles.text}>{description}</Text>
         </View>
       )}
       <StatusBar style="dark" />
