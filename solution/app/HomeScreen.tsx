@@ -201,7 +201,7 @@ export function HomeScreen({ navigation }: { navigation: any }) {
 
           {!userAddress ? (
             <>
-              <Text style={styles.title}> Shifumi</Text>
+              <Text style={styles.title}>Shifumi</Text>
               <Text style={styles.text}> Tezos</Text>
               <View
                 style={{

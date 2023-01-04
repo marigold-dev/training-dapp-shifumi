@@ -140,7 +140,8 @@ export function SessionScreen({
     setAction(action);
     try {
       setLoading(true);
-      const secret = 100; //Math.round(Math.random() * 654843);
+      const secret = Math.round(Math.random() * 63); //FIXME it should be 654843, but we limit the size of the output hexa because expo-crypto is buggy
+      // see https://forums.expo.dev/t/how-to-hash-buffer-with-expo-for-an-array-reopen/64587 or https://github.com/expo/expo/issues/20706 );
       await AsyncStorage.setItem(
         buildSessionStorageKey(
           userAddress,
@@ -313,10 +314,18 @@ export function SessionScreen({
     console.log("actionBytes", actionBytes);
     const bytes = (await packActionBytesSecret(actionBytes, secret)) as bytes;
     console.log("bytes", bytes);
+
+    /*FIXME correct implemetation with a REAL library
+    const encryptedActionSecret = crypto
+      .createHash("sha512")
+      .update(bytes, "hex")
+      .digest("hex") as bytes;*/
+
     const encryptedActionSecret = (await Crypto.digestStringAsync(
       Crypto.CryptoDigestAlgorithm.SHA512,
-      Buffer.from(bytes).toString("ascii")
+      Buffer.from(bytes, "hex").toString()
     )) as bytes;
+
     console.log("encryptedActionSecret", encryptedActionSecret);
     return encryptedActionSecret;
   };
