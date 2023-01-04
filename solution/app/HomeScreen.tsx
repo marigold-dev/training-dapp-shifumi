@@ -12,7 +12,7 @@ import {
   SafeAreaView,
   Text,
   TextInput,
-  View,
+  View
 } from "react-native";
 import { PAGES, Session, styles, UserContext, UserContextType } from "./App";
 import ConnectButton from "./ConnectWallet";
@@ -98,7 +98,7 @@ export function HomeScreen({ navigation }: { navigation: any }) {
 
   const renderGameItem = ({ item }: { item: string }) => (
     <View style={styles.item}>
-      <Button
+      <Button color="#d8464e"
         title={"Game n°" + item}
         onPress={() => {
           setSelectGameModalVisible(false);
@@ -127,8 +127,9 @@ export function HomeScreen({ navigation }: { navigation: any }) {
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
                 <SafeAreaView>
-                  <Text>total_rounds</Text>
+                  <Text style={styles.text} >total rounds</Text>
                   <TextInput
+                  style={styles.input}
                     onChangeText={(str) => {
                       setTotal_rounds(new BigNumber(str) as nat);
                     }}
@@ -137,16 +138,19 @@ export function HomeScreen({ navigation }: { navigation: any }) {
                     keyboardType="numeric"
                   />
 
-                  <Text>Opponent player</Text>
+                  <Text style={styles.text}>Opponent player</Text>
                   <TextInput
+                    style={styles.input}
                     onChangeText={(str) => setNewPlayer(str as address)}
                     value={newPlayer}
                     placeholder="tz1..."
                     keyboardType="ascii-capable"
                   />
                 </SafeAreaView>
-                <Button onPress={createSession} title="Create" />
-                <Button
+                <View style={{paddingTop:"20px", margin:"20px"}}>
+                  <Button color="#d8464e" onPress={createSession} title="Create" />
+                </View>
+                <Button  color="#d8464e"
                   onPress={() =>
                     setCreateGameModalVisible(!createGameModalVisible)
                   }
@@ -166,7 +170,7 @@ export function HomeScreen({ navigation }: { navigation: any }) {
           >
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
-                <SafeAreaView>
+                <SafeAreaView >
                   <FlatList
                     data={
                       myGames
@@ -179,7 +183,7 @@ export function HomeScreen({ navigation }: { navigation: any }) {
                     keyExtractor={(item) => item}
                   />
                 </SafeAreaView>
-                <Button
+                <Button color="#d8464e"
                   onPress={() =>
                     setSelectGameModalVisible(!selectGameModalVisible)
                   }
@@ -188,57 +192,103 @@ export function HomeScreen({ navigation }: { navigation: any }) {
               </View>
             </View>
           </Modal>
-
-          <ImageBackground
-            source={require("./assets/home.jpg")}
-            resizeMode="cover"
-            style={styles.image}
-          >
+         
             {!userAddress ? (
-              <View>
+              
+              <>
+                 <Text style={styles.title}> Shifumi</Text>
+                 <Text style={styles.text}> Tezos</Text>
+                 <View style={{flexDirection: "row", padding:"4em", justifyContent: "space-around"}}>
+                 <ImageBackground
+                 source={require("./assets/stone-logo.png")}
+                 resizeMode="contain"
+                 style={styles.logo}
+                />
+                <ImageBackground
+                 source={require("./assets/paper-logo.png")}
+                 resizeMode="cover"
+                 style={styles.logo}
+                />
+                <ImageBackground
+                 source={require("./assets/scissor-logo.png")}
+                 resizeMode="cover"
+                 style={styles.logo}
+                />
+                 </View>
+               <View>
+              
                 <ConnectButton
                   Tezos={Tezos}
                   setUserAddress={setUserAddress}
                   setUserBalance={setUserBalance}
                   wallet={wallet}
                 />
+                <View style={{paddingTop:"20px"}}>
+                <Button color="#d8464e" title="Rules"/>
+                </View>
               </View>
+            </>
             ) : (
-              <View>
+              <>
+              <View style={{flexDirection: "row", padding:"5.5em", justifyContent: "space-around"}}>
+              <ImageBackground
+              source={require("./assets/stone-logo.png")}
+              resizeMode="contain"
+              style={styles.logo}
+              />
+              <ImageBackground
+              source={require("./assets/paper-logo.png")}
+              resizeMode="cover"
+              style={styles.logo}
+              />
+              <ImageBackground
+              source={require("./assets/scissor-logo.png")}
+              resizeMode="cover"
+              style={styles.logo}
+              />
+              </View>
+              <View style={{padding:20}}>
                 <DisconnectButton
                   wallet={wallet}
                   setUserAddress={setUserAddress}
                   setUserBalance={setUserBalance}
                 />
-                <Text>
+                <Text style={{padding:20, color:"white"}}>
                   I am {userAddress} with {userBalance} mutez
                 </Text>
-
+                <View style={{padding:"20px"}}>
                 <Button
+                  color="#d8464e"
                   title="New game"
                   onPress={() => {
                     setCreateGameModalVisible(true);
                   }}
                 />
+                </View>
 
+                <View style={{padding:"20px"}}>
                 <Button
+                  color="#d8464e"
                   title="Join game"
                   onPress={() => {
                     setSelectGameModalVisible(true);
                   }}
                 />
-
-                <Button
-                  title="Top Players"
-                  onPress={() => {
-                    navigation.navigate(PAGES.TOPPLAYERS);
-                  }}
-                />
+                </View>
+                 <View style={{padding:"20px"}}>
+                  <Button
+                    color="#d8464e"
+                    title="Top Players"
+                    onPress={() => {
+                      navigation.navigate(PAGES.TOPPLAYERS);
+                    }}
+                  />
+                 </View>
               </View>
+              </>
             )}
 
-            <Text>{description}</Text>
-          </ImageBackground>
+            <Text style={styles.text}>{description}</Text>
         </View>
       )}
       <StatusBar style="dark" />
