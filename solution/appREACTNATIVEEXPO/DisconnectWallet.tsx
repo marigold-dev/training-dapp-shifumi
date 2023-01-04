@@ -1,5 +1,9 @@
 import { BeaconWallet } from "@taquito/beacon-wallet";
+<<<<<<< HEAD:solution/appREACTNATIVEEXPO/DisconnectWallet.tsx
 import React, { Dispatch, SetStateAction } from "react";
+=======
+import { Dispatch, SetStateAction } from "react";
+>>>>>>> main changes:solution/app/DisconnectWallet.tsx
 import { Button, View } from "react-native";
 
 interface ButtonProps {
