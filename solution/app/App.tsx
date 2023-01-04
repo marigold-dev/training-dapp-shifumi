@@ -6,6 +6,7 @@ import { BeaconWallet } from "@taquito/beacon-wallet";
 import { TezosToolkit } from "@taquito/taquito";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
+import * as RnBeaconSdk from "rn-beacon-sdk";
 import { HomeScreen } from "./HomeScreen";
 import { MainWalletType, Storage } from "./main.types";
 import { SessionScreen } from "./SessionScreen";
@@ -69,7 +70,7 @@ export default function App() {
     new TezosToolkit("https://ghostnet.tezos.marigold.dev")
   );
   const [wallet, setWallet] = useState<BeaconWallet>(
-    new BeaconWallet({
+    RnBeaconSdk.newBeaconWallet({
       name: "Training",
       preferredNetwork: NetworkType.GHOSTNET,
     })
