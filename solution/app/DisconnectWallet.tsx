@@ -1,5 +1,5 @@
 import { BeaconWallet } from "@taquito/beacon-wallet";
-import { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { Button, View } from "react-native";
 
 interface ButtonProps {
@@ -21,10 +21,13 @@ const DisconnectButton = ({
   };
 
   return (
-    <View style={{padding:"20px"}}>
-        <Button onPress={disconnectWallet} color="#2B2A2E" title="Disconnect wallet"/>
+    <View style={{ padding: "20px" }}>
+      <Button
+        onPress={disconnectWallet}
+        color="#2B2A2E"
+        title="Disconnect wallet"
+      />
     </View>
-      
   );
 };
 

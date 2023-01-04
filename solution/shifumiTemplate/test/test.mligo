@@ -1332,9 +1332,9 @@ let test =
         // bob plays in (session=0n, round=1)
         let () = Test.log("Session 24 - bob plays in session 0 round 1") in
         let () = Test.set_source bob in
-        let bob_payload_v : SHIFUMI.Storage.Session.action = Paper in
+        let bob_payload_v : SHIFUMI.Storage.Session.action = Cisor in
         let bob_payload : bytes = Bytes.pack bob_payload_v in
-        let bob_secret_1 : nat = 1n in
+        let bob_secret_1 : nat = 64n in
         let () = Test.log(bob_payload_v) in
         let () = Test.log(bob_payload) in
         let () = Test.log(bob_secret_1) in

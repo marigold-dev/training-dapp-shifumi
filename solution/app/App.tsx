@@ -83,9 +83,8 @@ export default function App() {
   );
   const [loading, setLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    Tezos.setWalletProvider(wallet);
-    (async () => {
+  const refreshStorage = async () => {
+    if (wallet) {
       const activeAccount = await wallet.client.getActiveAccount();
       var userAddress: string;
       if (activeAccount) {
@@ -100,7 +99,15 @@ export default function App() {
       const storage: Storage = await mainWalletType.storage();
       setMainWalletType(mainWalletType);
       setStorage(storage);
-    })();
+      console.log("Storage refreshed");
+    } else {
+      console.log("Not yet a wallet");
+    }
+  };
+
+  useEffect(() => {
+    Tezos.setWalletProvider(wallet);
+    (async () => await refreshStorage())();
   }, [wallet]);
 
   const Stack = createNativeStackNavigator();
@@ -121,7 +128,7 @@ export default function App() {
         setLoading,
       }}
     >
-      <NavigationContainer >
+      <NavigationContainer>
         <Stack.Navigator initialRouteName="Home">
           <Stack.Screen name={PAGES.HOME} component={HomeScreen} />
           <Stack.Screen name={PAGES.SESSION} component={SessionScreen} />
@@ -145,7 +152,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     textAlign: "center",
     justifyContent: "center",
-    color:"white",
+    color: "white",
     fontFamily: "Roboto Mono",
   },
   image: {
@@ -156,13 +163,11 @@ export const styles = StyleSheet.create({
   },
   logo: {
     height: "70px",
-    width:"50px",
+    width: "50px",
     objectFit: "contain",
-    margin:"10px",
-
-    
+    margin: "10px",
   },
-  
+
   centeredView: {
     flex: 1,
     justifyContent: "center",
@@ -202,19 +207,19 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
   text: {
-    color:"white",
-    padding:"1em"
+    color: "white",
+    padding: "1em",
   },
   title: {
-    color:"white",
-    fontSize:35,
-    fontWeight:"bold",
+    color: "white",
+    fontSize: 35,
+    fontWeight: "bold",
   },
   input: {
     height: 40,
     margin: 12,
     borderWidth: 1,
     padding: 10,
-    backgroundColor:"white"
+    backgroundColor: "white",
   },
 });

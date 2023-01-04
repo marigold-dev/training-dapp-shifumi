@@ -4,7 +4,14 @@ import { MichelCodecPacker } from "@taquito/taquito";
 import { BigNumber } from "bignumber.js";
 import * as Crypto from "expo-crypto";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, Button, ImageBackground, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Button,
+  ImageBackground,
+  Text,
+  View,
+} from "react-native";
 import { Action, styles, UserContext, UserContextType } from "./App";
 import { TransactionInvalidBeaconError } from "./TransactionInvalidBeaconError";
 import { bytes, nat, unit } from "./type-aliases";
@@ -133,7 +140,8 @@ export function SessionScreen({
     setAction(action);
     try {
       setLoading(true);
-      const secret = Math.round(Math.random() * 654843);
+      const secret = Math.round(Math.random() * 63); //FIXME it should be 654843, but we limit the size of the output hexa because expo-crypto is buggy
+      // see https://forums.expo.dev/t/how-to-hash-buffer-with-expo-for-an-array-reopen/64587 or https://github.com/expo/expo/issues/20706 );
       await AsyncStorage.setItem(
         buildSessionStorageKey(
           userAddress,
@@ -157,7 +165,7 @@ export function SessionScreen({
       const op = await mainWalletType!.methods
         .play(encryptedAction, current_session!.current_round, session_id)
         .send();
-      await op?.confirmation(2);
+      await op?.confirmation();
       const newStorage = await mainWalletType!.storage();
       setStorage(newStorage);
       setLoading(false);
@@ -210,7 +218,7 @@ export function SessionScreen({
           session_id
         )
         .send();
-      await op?.confirmation(2);
+      await op?.confirmation();
       const newStorage = await mainWalletType!.storage();
       setStorage(newStorage);
       setLoading(false);
@@ -303,11 +311,22 @@ export function SessionScreen({
     secret: number
   ): Promise<bytes> => {
     const actionBytes = (await packAction(action)) as bytes;
+    console.log("actionBytes", actionBytes);
     const bytes = (await packActionBytesSecret(actionBytes, secret)) as bytes;
+    console.log("bytes", bytes);
+
+    /*FIXME correct implemetation with a REAL library
+    const encryptedActionSecret = crypto
+      .createHash("sha512")
+      .update(bytes, "hex")
+      .digest("hex") as bytes;*/
+
     const encryptedActionSecret = (await Crypto.digestStringAsync(
       Crypto.CryptoDigestAlgorithm.SHA512,
-      Buffer.from(bytes, "hex").toString("ascii")
+      Buffer.from(bytes, "hex").toString()
     )) as bytes;
+
+    console.log("encryptedActionSecret", encryptedActionSecret);
     return encryptedActionSecret;
   };
 

@@ -1,7 +1,7 @@
 import { NetworkType } from "@airgap/beacon-types";
 import { BeaconWallet } from "@taquito/beacon-wallet";
 import { TezosToolkit } from "@taquito/taquito";
-import { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { Button } from "react-native";
 
 type ButtonProps = {
@@ -37,8 +37,7 @@ const ConnectButton = ({
 
   return (
     <div className="buttons">
-      <Button color="#d8464e" onPress={connectWallet} title="Connect Wallet"
-      />
+      <Button color="#d8464e" onPress={connectWallet} title="Connect Wallet" />
     </div>
   );
 };
