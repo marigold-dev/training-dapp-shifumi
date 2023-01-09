@@ -6,7 +6,6 @@ import { BeaconWallet } from "@taquito/beacon-wallet";
 import { TezosToolkit } from "@taquito/taquito";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
-import * as RnBeaconSdk from "rn-beacon-sdk";
 import { HomeScreen } from "./HomeScreen";
 import { MainWalletType, Storage } from "./main.types";
 import { SessionScreen } from "./SessionScreen";
@@ -70,7 +69,7 @@ export default function App() {
     new TezosToolkit("https://ghostnet.tezos.marigold.dev")
   );
   const [wallet, setWallet] = useState<BeaconWallet>(
-    RnBeaconSdk.newBeaconWallet({
+    new BeaconWallet({
       name: "Training",
       preferredNetwork: NetworkType.GHOSTNET,
     })
@@ -153,7 +152,7 @@ export const styles = StyleSheet.create({
     textAlign: "center",
     justifyContent: "center",
     color: "white",
-    fontFamily: "Roboto Mono",
+    fontFamily: "Roboto",
   },
   image: {
     flex: 1,
@@ -162,10 +161,10 @@ export const styles = StyleSheet.create({
     width: "100%",
   },
   logo: {
-    height: "70px",
-    width: "50px",
+    height: 70,
+    width: 50,
     objectFit: "contain",
-    margin: "10px",
+    margin: 10,
   },
 
   centeredView: {
@@ -208,7 +207,7 @@ export const styles = StyleSheet.create({
   },
   text: {
     color: "white",
-    padding: "1em",
+    padding: 1,
   },
   title: {
     color: "white",
@@ -222,4 +221,5 @@ export const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "white",
   },
+  buttons: {},
 });

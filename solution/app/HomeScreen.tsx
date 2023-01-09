@@ -147,7 +147,7 @@ export function HomeScreen({ navigation }: { navigation: any }) {
                     keyboardType="ascii-capable"
                   />
                 </SafeAreaView>
-                <View style={{ paddingTop: "20px", margin: "20px" }}>
+                <View style={{ paddingTop: 20, margin: 20 }}>
                   <Button
                     color="#d8464e"
                     onPress={createSession}
@@ -206,7 +206,7 @@ export function HomeScreen({ navigation }: { navigation: any }) {
               <View
                 style={{
                   flexDirection: "row",
-                  padding: "4em",
+                  padding: 4,
                   justifyContent: "space-around",
                 }}
               >
@@ -233,7 +233,7 @@ export function HomeScreen({ navigation }: { navigation: any }) {
                   setUserBalance={setUserBalance}
                   wallet={wallet}
                 />
-                <View style={{ paddingTop: "20px" }}>
+                <View style={{ paddingTop: 20 }}>
                   <Button color="#d8464e" title="Rules" />
                 </View>
               </View>
@@ -243,7 +243,7 @@ export function HomeScreen({ navigation }: { navigation: any }) {
               <View
                 style={{
                   flexDirection: "row",
-                  padding: "5.5em",
+                  padding: 5.5,
                   justifyContent: "space-around",
                 }}
               >
@@ -272,7 +272,7 @@ export function HomeScreen({ navigation }: { navigation: any }) {
                 <Text style={{ padding: 20, color: "white" }}>
                   I am {userAddress} with {userBalance} mutez
                 </Text>
-                <View style={{ padding: "20px" }}>
+                <View style={{ padding: 20 }}>
                   <Button
                     color="#d8464e"
                     title="New game"
@@ -282,7 +282,7 @@ export function HomeScreen({ navigation }: { navigation: any }) {
                   />
                 </View>
 
-                <View style={{ padding: "20px" }}>
+                <View style={{ padding: 20 }}>
                   <Button
                     color="#d8464e"
                     title="Join game"
@@ -291,7 +291,7 @@ export function HomeScreen({ navigation }: { navigation: any }) {
                     }}
                   />
                 </View>
-                <View style={{ padding: "20px" }}>
+                <View style={{ padding: 20 }}>
                   <Button
                     color="#d8464e"
                     title="Top Players"

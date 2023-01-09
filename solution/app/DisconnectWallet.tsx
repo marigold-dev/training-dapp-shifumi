@@ -21,7 +21,7 @@ const DisconnectButton = ({
   };
 
   return (
-    <View style={{ padding: "20px" }}>
+    <View style={{ padding: 20 }}>
       <Button
         onPress={disconnectWallet}
         color="#2B2A2E"

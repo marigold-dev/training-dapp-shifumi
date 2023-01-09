@@ -165,6 +165,8 @@ npx expo install react-native-screens react-native-safe-area-context
 npm install -S @react-navigation/native-stack
 npx expo install  expo-crypto
 npx expo install  @react-native-async-storage/async-storage
+npx expo install expo-splash-screen
+npx expo install expo-font
 ```
 
 // steam deps issues
@@ -193,6 +195,9 @@ Install missing C++ lib ICU for cmake to compile (https://github.com/facebook/re
 sudo apt-get install libicu-dev
 ```
 
+Native lib ?
+"rn-beacon-sdk": "^0.1.1"
+
 This was painful :/, but it was the worst so far
 
 ### Generate Typescript classes from Michelson code
@@ -219,6 +224,13 @@ npm run web
 
 Open your browser at : http://localhost:3000/
 Your app should be running
+
+Issue with process.version
+
+```
+npm i -g rn-nodeify
+rn-nodeify --install stream,process --hack
+```
 
 //TODO
 
