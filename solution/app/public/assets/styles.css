@@ -69,6 +69,12 @@
   padding: 20px;
 }
 
+.ranking {
+  height: 150px;
+  width: 75px;
+  object-fit: contain;
+}
+
 #beacon-toast-wrapper {
   color: black;
 }
