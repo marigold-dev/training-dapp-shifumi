@@ -128,6 +128,43 @@ HOORAY :confetti_ball: your smart contract is ready on the Ghostnet !
 └─────────────┴──────────────────────────────────────┴──────────┴──────────────────┴─────────────────────────────────────┘
 ```
 
+## IONIC
+
+install
+
+```
+npm install -g @ionic/cli
+ionic start app blank --type react
+```
+
+Install SC types
+
+```bash
+cd ..
+taq install @taqueria/plugin-contract-types
+taq generate types ./app/src
+cd ./app
+```
+
+install deps
+
+```
+cd app
+npm install -S add @taquito/taquito @taquito/beacon-wallet @airgap/beacon-sdk  @dipdup/tzkt-api
+npm install -S -D @airgap/beacon-types
+npm i --save-dev @types/react
+
+
+```
+
+run web
+
+```
+ionic serve
+```
+
+## END IONIC
+
 ## Step 1 : Create react app with Expo
 
 ```bash
