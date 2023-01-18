@@ -1,9 +1,8 @@
 import { NetworkType } from "@airgap/beacon-types";
+import { IonButton } from "@ionic/react";
 import { BeaconWallet } from "@taquito/beacon-wallet";
 import { TezosToolkit } from "@taquito/taquito";
-import React, { Dispatch, SetStateAction } from "react";
-import { Button, View } from "react-native";
-import { styles } from "./App";
+import { Dispatch, SetStateAction } from "react";
 
 type ButtonProps = {
   Tezos: TezosToolkit;
@@ -41,9 +40,9 @@ const ConnectButton = ({
   };
 
   return (
-    <View style={styles.buttons}>
-      <Button color="#d8464e" onPress={connectWallet} title="Connect Wallet" />
-    </View>
+    <div className="buttons">
+      <IonButton onClick={connectWallet}>Connect Wallet</IonButton>
+    </div>
   );
 };
 

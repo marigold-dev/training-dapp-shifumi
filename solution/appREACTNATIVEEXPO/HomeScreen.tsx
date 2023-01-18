@@ -205,6 +205,7 @@ export function HomeScreen({ navigation }: { navigation: any }) {
               <Text style={styles.text}> Tezos</Text>
               <View
                 style={{
+                  display: "flex",
                   flexDirection: "row",
                   padding: 4,
                   justifyContent: "space-around",
@@ -242,6 +243,7 @@ export function HomeScreen({ navigation }: { navigation: any }) {
             <>
               <View
                 style={{
+                  display: "flex",
                   flexDirection: "row",
                   padding: 5.5,
                   justifyContent: "space-around",

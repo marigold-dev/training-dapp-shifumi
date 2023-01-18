@@ -1,6 +1,6 @@
+import { IonButton } from "@ionic/react";
 import { BeaconWallet } from "@taquito/beacon-wallet";
-import React, { Dispatch, SetStateAction } from "react";
-import { Button, View } from "react-native";
+import { Dispatch, SetStateAction } from "react";
 
 interface ButtonProps {
   wallet: BeaconWallet;
@@ -21,13 +21,9 @@ const DisconnectButton = ({
   };
 
   return (
-    <View style={{ padding: 20 }}>
-      <Button
-        onPress={disconnectWallet}
-        color="#2B2A2E"
-        title="Disconnect wallet"
-      />
-    </View>
+    <div style={{ padding: 20 }}>
+      <IonButton onClick={disconnectWallet}>Disconnect wallet</IonButton>
+    </div>
   );
 };
 

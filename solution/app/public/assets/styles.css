@@ -1,0 +1,73 @@
+.container {
+  display: flex;
+  background-color: #1c1d22;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  color: white;
+  font-family: Roboto;
+}
+
+.image {
+  display: flex;
+  resize: cover;
+  justify-content: center;
+  width: 100%;
+}
+
+.logo {
+  height: 70px;
+  width: 50px;
+  object-fit: contain;
+  margin: 10px;
+}
+
+.centeredView {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 22px;
+}
+
+.modalView {
+  margin: 20px;
+  background-color: #2b2a2e;
+  border-radius: 20px;
+  padding: 35px;
+  align-items: center;
+}
+.item {
+  background-color: #1c1d22;
+  padding: 20px;
+  margin: 8px 16px;
+}
+.loading {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  opacity: 0.5;
+  background-color: black;
+  justify-content: center;
+  align-items: center;
+}
+.text {
+  color: white;
+  padding: 1px;
+}
+.title {
+  color: white;
+  font-size: 35px;
+  font-weight: bold;
+}
+.input {
+  height: 40px;
+  margin: 12px;
+  border-width: 1px;
+  padding: 10px;
+  background-color: white;
+}
+
+.buttons {
+}

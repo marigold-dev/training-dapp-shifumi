@@ -18,7 +18,8 @@ import {
 import { bytes2Char } from "@taquito/utils";
 import { BigNumber } from "bignumber.js";
 import React, { useEffect, useRef, useState } from "react";
-import { PAGES, Session, styles, UserContext, UserContextType } from "../App";
+import { useHistory } from "react-router-dom";
+import { PAGES, Session, UserContext, UserContextType } from "../App";
 import ConnectButton from "../ConnectWallet";
 import DisconnectButton from "../DisconnectWallet";
 import { TransactionInvalidBeaconError } from "../TransactionInvalidBeaconError";
@@ -27,6 +28,7 @@ import { TopPlayersScreen } from "./TopPlayersScreen";
 
 export function HomeScreen() {
   const [presentAlert] = useIonAlert();
+  const history = useHistory();
 
   const createGameModal = useRef<HTMLIonModalElement>(null);
   const selectGameModal = useRef<HTMLIonModalElement>(null);
@@ -92,13 +94,9 @@ export function HomeScreen() {
       const newStorage = await mainWalletType!.storage();
       setStorage(newStorage);
       setLoading(false);
-      history.pushState(
-        {
-          id: storage?.next_session.toString(),
-        },
-        "",
-        PAGES.SESSION
-      ); //it was the id created
+      history.push(PAGES.SESSION, {
+        id: storage?.next_session.toString(),
+      }); //it was the id created
       console.log("newStorage", newStorage);
     } catch (error) {
       console.table(`Error: ${JSON.stringify(error, null, 2)}`);
@@ -115,7 +113,7 @@ export function HomeScreen() {
   };
 
   return (
-    <IonPage style={styles.container}>
+    <IonPage className="container">
       <IonHeader>
         <IonToolbar>
           <IonTitle>Shifumi</IonTitle>
@@ -129,7 +127,7 @@ export function HomeScreen() {
         </IonHeader>
 
         {loading ? (
-          <div style={styles.loading}>
+          <div className="loading">
             <IonItem>
               <IonLabel>Refreshing ...</IonLabel>
               <IonSpinner></IonSpinner>
@@ -138,12 +136,12 @@ export function HomeScreen() {
         ) : (
           <div>
             <IonModal ref={createGameModal} trigger="createGameModalVisible">
-              <div style={styles.centeredView}>
-                <div style={styles.modalView}>
+              <div className="centeredView">
+                <div className="modalView">
                   <div>
-                    <IonLabel style={styles.text}>total rounds</IonLabel>
+                    <IonLabel className="text">total rounds</IonLabel>
                     <IonInput
-                      style={styles.input}
+                      className="input"
                       onIonChange={(str) => {
                         if (str.detail.value === undefined) return;
                         setTotal_rounds(
@@ -155,9 +153,9 @@ export function HomeScreen() {
                       type="number"
                     />
 
-                    <IonLabel style={styles.text}>Opponent player</IonLabel>
+                    <IonLabel className="text">Opponent player</IonLabel>
                     <IonInput
-                      style={styles.input}
+                      className="input"
                       onIonChange={(str) => {
                         if (str.detail.value === undefined) return;
                         setNewPlayer(str.detail.value as address);
@@ -168,84 +166,69 @@ export function HomeScreen() {
                     />
                   </div>
                   <div style={{ paddingTop: 20, margin: 20 }}>
-                    <IonButton
-                      color="#d8464e"
-                      onClick={createSession}
-                      title="Create"
-                      id="createGameModal"
-                    />
+                    <IonButton onClick={createSession} id="createGameModal">
+                      Create
+                    </IonButton>
                   </div>
-                  <IonButton
-                    color="#d8464e"
-                    onClick={() => dismissCreateGameModal()}
-                    title="Cancel"
-                  />
+                  <IonButton onClick={() => dismissCreateGameModal()}>
+                    Cancel
+                  </IonButton>
                 </div>
               </div>
             </IonModal>
 
             <IonModal ref={selectGameModal} trigger="selectGameModalVisible">
-              <div style={styles.centeredView}>
-                <div style={styles.modalView}>
+              <div className="centeredView">
+                <div className="modalView">
                   <div>
                     <IonList inset={true}>
                       {myGames
                         ? Array.from(myGames.entries()).map(([key, Value]) => (
                             <IonItem>
-                              <div style={styles.item}>
+                              <div className="item">
                                 <IonButton
-                                  color="#d8464e"
-                                  title={"Game n°" + key.toString()}
                                   onClick={() => {
-                                    history.pushState(
-                                      {
-                                        id: key.toString(),
-                                      },
-                                      "",
-                                      PAGES.SESSION
-                                    );
+                                    history.push(PAGES.SESSION, {
+                                      id: key.toString(),
+                                    });
                                   }}
-                                ></IonButton>
+                                >
+                                  {"Game n°" + key.toString()}
+                                </IonButton>
                               </div>
                             </IonItem>
                           ))
                         : []}
                     </IonList>
                   </div>
-                  <IonButton
-                    color="#d8464e"
-                    onClick={() => dismissSelectGameModal()}
-                    title="Cancel"
-                  />
+                  <IonButton onClick={() => dismissSelectGameModal()}>
+                    Cancel
+                  </IonButton>
                 </div>
               </div>
             </IonModal>
 
             {!userAddress ? (
               <>
-                <IonLabel style={styles.title}>Shifumi</IonLabel>
-                <IonLabel style={styles.text}> Tezos</IonLabel>
                 <div
                   style={{
+                    display: "flex",
                     flexDirection: "row",
-                    padding: 4,
+                    padding: "4em",
                     justifyContent: "space-around",
                   }}
                 >
                   <IonImg
-                    src={require("./assets/stone-logo.png")}
-                    resizeMode="contain"
-                    style={styles.logo}
+                    src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
+                    className="logo"
                   />
                   <IonImg
-                    src={require("./assets/paper-logo.png")}
-                    resizeMode="cover"
-                    style={styles.logo}
+                    src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
+                    className="logo"
                   />
                   <IonImg
-                    src={require("./assets/scissor-logo.png")}
-                    resizeMode="cover"
-                    style={styles.logo}
+                    src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
+                    className="logo"
                   />
                 </div>
                 <div>
@@ -256,7 +239,7 @@ export function HomeScreen() {
                     wallet={wallet}
                   />
                   <div style={{ paddingTop: 20 }}>
-                    <IonButton color="#d8464e" title="Rules" />
+                    <IonButton>Rules</IonButton>
                   </div>
                 </div>
               </>
@@ -264,22 +247,23 @@ export function HomeScreen() {
               <>
                 <div
                   style={{
+                    display: "flex",
                     flexDirection: "row",
                     padding: 5.5,
                     justifyContent: "space-around",
                   }}
                 >
                   <IonImg
-                    src={require("./assets/stone-logo.png")}
-                    style={styles.logo}
+                    src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
+                    className="logo"
                   />
                   <IonImg
-                    src={require("./assets/paper-logo.png")}
-                    style={styles.logo}
+                    src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
+                    className="logo"
                   />
                   <IonImg
-                    src={require("./assets/scissor-logo.png")}
-                    style={styles.logo}
+                    src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
+                    className="logo"
                   />
                 </div>
                 <div style={{ padding: 20 }}>
@@ -292,32 +276,24 @@ export function HomeScreen() {
                     I am {userAddress} with {userBalance} mutez
                   </IonLabel>
                   <div style={{ padding: 20 }}>
-                    <IonButton
-                      color="#d8464e"
-                      title="New game"
-                      id="createGameModalVisible"
-                    />
+                    <IonButton id="createGameModalVisible">New game</IonButton>
                   </div>
 
                   <div style={{ padding: 20 }}>
-                    <IonButton
-                      color="#d8464e"
-                      title="Join game"
-                      id="selectGameModalVisible"
-                    />
+                    <IonButton id="selectGameModalVisible">Join game</IonButton>
                   </div>
                   <IonNavLink
                     style={{ padding: 20 }}
                     routerDirection="forward"
                     component={() => <TopPlayersScreen />}
                   >
-                    <IonButton color="#d8464e" title="Top Players" />
+                    <IonButton>Top Players</IonButton>
                   </IonNavLink>
                 </div>
               </>
             )}
 
-            <IonLabel style={styles.text}>{description}</IonLabel>
+            <IonLabel className="text">{description}</IonLabel>
           </div>
         )}
       </IonContent>

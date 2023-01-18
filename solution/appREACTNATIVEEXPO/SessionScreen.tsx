@@ -347,6 +347,7 @@ export function SessionScreen({
         <>
           <View
             style={{
+              display: "flex",
               flexDirection: "row",
               paddingLeft: "6em",
               paddingRight: "6em",

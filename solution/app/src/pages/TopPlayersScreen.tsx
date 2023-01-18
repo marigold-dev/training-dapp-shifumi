@@ -6,12 +6,14 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import { styles } from "../App";
+import { useHistory } from "react-router-dom";
 
 export function TopPlayersScreen() {
+  const history = useHistory();
+
   /* 2. Get the param */
   return (
-    <IonPage style={styles.container}>
+    <IonPage className="container">
       <IonHeader>
         <IonToolbar>
           <IonTitle>Shifumi</IonTitle>
@@ -23,11 +25,7 @@ export function TopPlayersScreen() {
             <IonTitle size="large">Blank</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonButton
-          color="#d8464e"
-          title="Go back"
-          onClick={() => history.back()}
-        />
+        <IonButton onClick={() => history.goBack()}>Go back</IonButton>
       </IonContent>
     </IonPage>
   );

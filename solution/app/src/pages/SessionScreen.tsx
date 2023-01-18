@@ -1,10 +1,18 @@
-import { useIonAlert } from "@ionic/react";
+import {
+  IonButton,
+  IonImg,
+  IonItem,
+  IonLabel,
+  IonSpinner,
+  useIonAlert,
+} from "@ionic/react";
 import { PackDataParams } from "@taquito/rpc";
 import { MichelCodecPacker } from "@taquito/taquito";
 import { BigNumber } from "bignumber.js";
 import * as crypto from "crypto";
 import React, { useEffect, useState } from "react";
-import { Action, styles, UserContext, UserContextType } from "../App";
+import { useHistory, useParams } from "react-router-dom";
+import { Action, UserContext, UserContextType } from "../App";
 import { TransactionInvalidBeaconError } from "../TransactionInvalidBeaconError";
 import { bytes, nat, unit } from "../type-aliases";
 
@@ -18,9 +26,10 @@ export enum STATUS {
 
 export function SessionScreen() {
   const [presentAlert] = useIonAlert();
-
-  console.log("Calling SessionScreen with state history", history.state);
-  const { id } = history.state;
+  const history = useHistory();
+  const params = useParams();
+  console.log("Calling SessionScreen with state history", params);
+  const id: string = params as string;
 
   const {
     Tezos,
@@ -113,7 +122,10 @@ export function SessionScreen() {
   useEffect(() => {
     const interval = setInterval(() => {
       const diff = Math.round(
-        (new Date(storage?.sessions.get(id).asleep!).getTime() - Date.now()) /
+        (new Date(
+          storage?.sessions.get(new BigNumber(id) as nat).asleep!
+        ).getTime() -
+          Date.now()) /
           1000
       );
       if (diff <= 0) setRemainingTime(0);
@@ -134,7 +146,7 @@ export function SessionScreen() {
       localStorage.setItem(
         buildSessionStorageKey(
           userAddress,
-          id,
+          Number(id),
           storage!.sessions
             .get(new BigNumber(id) as nat)
             .current_round.toNumber()
@@ -292,7 +304,7 @@ export function SessionScreen() {
       const newStorage = await mainWalletType!.storage();
       setStorage(newStorage);
       setLoading(false);
-      history.back();
+      history.goBack();
       console.log("newStorage", newStorage);
     } catch (error) {
       console.table(`Error: ${JSON.stringify(error, null, 2)}`);
@@ -328,7 +340,7 @@ export function SessionScreen() {
   };
 
   return (
-    <View
+    <div
       style={{
         flex: 1,
         alignItems: "center",
@@ -337,13 +349,17 @@ export function SessionScreen() {
       }}
     >
       {loading ? (
-        <View style={styles.loading}>
-          <ActivityIndicator size="large" />
-        </View>
+        <div className="loading">
+          <IonItem>
+            <IonLabel>Refreshing ...</IonLabel>
+            <IonSpinner></IonSpinner>
+          </IonItem>
+        </div>
       ) : (
         <>
-          <View
+          <div
             style={{
+              display: "flex",
               flexDirection: "row",
               paddingLeft: "6em",
               paddingRight: "6em",
@@ -351,95 +367,91 @@ export function SessionScreen() {
               justifyContent: "space-around",
             }}
           >
-            <ImageBackground
-              source={require("./assets/stone-logo.png")}
-              resizeMode="contain"
-              style={styles.logo}
+            <IonImg
+              src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
+              className="logo"
             />
-            <ImageBackground
-              source={require("./assets/paper-logo.png")}
-              resizeMode="cover"
-              style={styles.logo}
+            <IonImg
+              src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
+              className="logo"
             />
-            <ImageBackground
-              source={require("./assets/scissor-logo.png")}
-              resizeMode="cover"
-              style={styles.logo}
+            <IonImg
+              src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
+              className="logo"
             />
-          </View>
-          <View>
-            <Text style={styles.text}>Session : {id}</Text>
-            <Text style={styles.text}>
+          </div>
+          <div>
+            <IonLabel className="text">Session : {id}</IonLabel>
+            <IonLabel className="text">
               Round :{" "}
               {"" +
-                storage?.sessions.get(id).current_round +
+                storage?.sessions.get(new BigNumber(id) as nat).current_round +
                 "/" +
-                storage?.sessions.get(id).total_rounds}
-            </Text>
-            <Text style={styles.text}>Status : {status}</Text>
-            <Text style={styles.text}>
+                storage?.sessions.get(new BigNumber(id) as nat).total_rounds}
+            </IonLabel>
+            <IonLabel className="text">Status : {status}</IonLabel>
+            <IonLabel className="text">
               {"Remaining time :" + remainingTime + " s"}
-            </Text>
-            <View style={{ padding: "7px" }}>
-              <Button
-                color="#2B2A2E"
+            </IonLabel>
+            <div style={{ padding: "7px" }}>
+              <IonButton
+                color="secondary"
                 disabled={status !== STATUS.PLAY}
-                title="Scissor"
-                onPress={() =>
+                onClick={() =>
                   play(new Action(true as unit, undefined, undefined))
                 }
-              />
-            </View>
+              >
+                Scissor
+              </IonButton>
+            </div>
 
-            <View style={{ padding: "7px" }}>
-              <Button
-                color="#2B2A2E"
+            <div style={{ padding: "7px" }}>
+              <IonButton
+                color="secondary"
                 disabled={status !== STATUS.PLAY}
-                title="Paper"
-                onPress={() =>
+                onClick={() =>
                   play(new Action(undefined, true as unit, undefined))
                 }
-              />
-            </View>
+              >
+                Paper
+              </IonButton>
+            </div>
 
-            <View style={{ padding: "7px" }}>
-              <Button
-                color="#2B2A2E"
+            <div style={{ padding: "7px" }}>
+              <IonButton
+                color="secondary"
                 disabled={status !== STATUS.PLAY}
-                title="Stone"
-                onPress={() =>
+                onClick={() =>
                   play(new Action(undefined, undefined, true as unit))
                 }
-              />
-            </View>
+              >
+                Stone
+              </IonButton>
+            </div>
 
-            <View style={{ padding: "7px", paddingTop: "30px" }}>
-              <Button
-                color="#d8464e"
+            <div style={{ padding: "7px", paddingTop: "30px" }}>
+              <IonButton
                 disabled={status !== STATUS.REVEAL}
-                title="Reveal"
-                onPress={() => revealPlay()}
-              />
-            </View>
+                onClick={() => revealPlay()}
+              >
+                Reveal
+              </IonButton>
+            </div>
 
-            <View style={{ padding: "7px" }}>
-              <Button
-                color="#d8464e"
+            <div style={{ padding: "7px" }}>
+              <IonButton
                 disabled={remainingTime != 0}
-                title="Stop session"
-                onPress={() => stopSession()}
-              />
-            </View>
-            <View style={{ padding: "7px" }}>
-              <Button
-                color="#d8464e"
-                title="Go back"
-                onPress={() => history.back()}
-              />
-            </View>
-          </View>
+                onClick={() => stopSession()}
+              >
+                Stop session
+              </IonButton>
+            </div>
+            <div style={{ padding: "7px" }}>
+              <IonButton onClick={() => history.goBack()}>Go back</IonButton>
+            </div>
+          </div>
         </>
       )}
-    </View>
+    </div>
   );
 }
