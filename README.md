@@ -175,7 +175,7 @@ For Capacitor, open the capacitor.config.json file and modify the appId property
 ionic capacitor copy android
 ```
 
-Note : in case of broken gradle : ionic capacitor sync android and click on sync on Android studio > build
+Note : in case of broken gradle : ionic capacitor sync android, ionic capacitor update and click on sync on Android studio > build
 
 ## END IONIC
 
