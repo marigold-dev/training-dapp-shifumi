@@ -163,6 +163,20 @@ run web
 ionic serve
 ```
 
+prepare android
+
+```
+ionic capacitor add android
+```
+
+For Capacitor, open the capacitor.config.json file and modify the appId property.
+
+```
+ionic capacitor copy android
+```
+
+Note : in case of broken gradle : ionic capacitor sync android and click on sync on Android studio > build
+
 ## END IONIC
 
 ## Step 1 : Create react app with Expo
