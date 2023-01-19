@@ -1,0 +1,6 @@
+{
+	"appId": "dev.marigold.shifumi",
+	"appName": "app",
+	"webDir": "build",
+	"bundledWebRuntime": false
+}
