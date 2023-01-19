@@ -176,6 +176,7 @@ ionic capacitor copy android
 ```
 
 Note : in case of broken gradle : ionic capacitor sync android, ionic capacitor update and click on sync on Android studio > build
+Note in case of non git committed fiels : git add android/app/src/main/assets/\* -f , git add capacitor-cordova-android-plugins -f
 
 ## END IONIC
 
