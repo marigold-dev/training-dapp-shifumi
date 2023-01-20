@@ -1,6 +1,6 @@
 import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import { Route } from "react-router-dom";
+import { Redirect, Route } from "react-router-dom";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -155,15 +155,10 @@ const App: React.FC = () => {
       >
         <IonReactRouter>
           <IonRouterOutlet>
-            <Route exact path={PAGES.HOME}>
-              <HomeScreen />
-            </Route>
-            <Route exact path={PAGES.SESSION}>
-              <SessionScreen />
-            </Route>
-            <Route exact path={PAGES.TOPPLAYERS}>
-              <TopPlayersScreen />
-            </Route>
+            <Route path={PAGES.HOME} component={HomeScreen} />
+            <Route path={`${PAGES.SESSION}/:id`} component={SessionScreen} />
+            <Route path={PAGES.TOPPLAYERS} component={TopPlayersScreen} />
+            <Redirect exact from="/" to={PAGES.HOME} />
           </IonRouterOutlet>
         </IonReactRouter>
       </UserContext.Provider>
@@ -172,9 +167,9 @@ const App: React.FC = () => {
 };
 
 export enum PAGES {
-  HOME = "",
-  SESSION = "Session",
-  TOPPLAYERS = "Top Players",
+  HOME = "/home",
+  SESSION = "/session",
+  TOPPLAYERS = "/topplayers",
 }
 
 export default App;

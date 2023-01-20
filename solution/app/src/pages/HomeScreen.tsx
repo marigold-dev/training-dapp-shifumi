@@ -1,5 +1,6 @@
 import {
   IonButton,
+  IonButtons,
   IonContent,
   IonHeader,
   IonImg,
@@ -8,7 +9,6 @@ import {
   IonLabel,
   IonList,
   IonModal,
-  IonNavLink,
   IonPage,
   IonSpinner,
   IonTitle,
@@ -24,19 +24,23 @@ import ConnectButton from "../ConnectWallet";
 import DisconnectButton from "../DisconnectWallet";
 import { TransactionInvalidBeaconError } from "../TransactionInvalidBeaconError";
 import { address, nat } from "../type-aliases";
-import { TopPlayersScreen } from "./TopPlayersScreen";
 
-export function HomeScreen() {
+export const HomeScreen: React.FC = () => {
   const [presentAlert] = useIonAlert();
   const history = useHistory();
 
   const createGameModal = useRef<HTMLIonModalElement>(null);
   const selectGameModal = useRef<HTMLIonModalElement>(null);
   function dismissCreateGameModal() {
+    console.log("dismissCreateGameModal");
     createGameModal.current?.dismiss();
   }
   function dismissSelectGameModal() {
     selectGameModal.current?.dismiss();
+    const element = document.getElementById("home");
+    setTimeout(() => {
+      return element && element.remove();
+    }, 1000); // Give a little time to properly unmount your previous page before removing the old one
   }
 
   const {
@@ -84,7 +88,13 @@ export function HomeScreen() {
     })();
   }, [storage]);
 
-  const createSession = async () => {
+  const createSession = async (
+    e: React.MouseEvent<HTMLIonButtonElement, MouseEvent>
+  ) => {
+    console.log("createSession");
+    e.preventDefault();
+    dismissCreateGameModal();
+
     try {
       setLoading(true);
       const op = await mainWalletType!.methods
@@ -94,9 +104,8 @@ export function HomeScreen() {
       const newStorage = await mainWalletType!.storage();
       setStorage(newStorage);
       setLoading(false);
-      history.push(PAGES.SESSION, {
-        id: storage?.next_session.toString(),
-      }); //it was the id created
+      history.push(PAGES.SESSION + "/" + storage?.next_session.toString()); //it was the id created
+      dismissCreateGameModal();
       console.log("newStorage", newStorage);
     } catch (error) {
       console.table(`Error: ${JSON.stringify(error, null, 2)}`);
@@ -134,80 +143,7 @@ export function HomeScreen() {
             </IonItem>
           </div>
         ) : (
-          <div>
-            <IonModal ref={createGameModal} trigger="createGameModalVisible">
-              <div className="centeredView">
-                <div className="modalView">
-                  <div>
-                    <IonLabel className="text">total rounds</IonLabel>
-                    <IonInput
-                      className="input"
-                      onIonChange={(str) => {
-                        if (str.detail.value === undefined) return;
-                        setTotal_rounds(
-                          new BigNumber(str.target.value!) as nat
-                        );
-                      }}
-                      value={total_rounds.toString()}
-                      placeholder="total_rounds"
-                      type="number"
-                    />
-
-                    <IonLabel className="text">Opponent player</IonLabel>
-                    <IonInput
-                      className="input"
-                      onIonChange={(str) => {
-                        if (str.detail.value === undefined) return;
-                        setNewPlayer(str.detail.value as address);
-                      }}
-                      value={newPlayer}
-                      placeholder="tz1..."
-                      type="text"
-                    />
-                  </div>
-                  <div style={{ paddingTop: 20, margin: 20 }}>
-                    <IonButton onClick={createSession} id="createGameModal">
-                      Create
-                    </IonButton>
-                  </div>
-                  <IonButton onClick={() => dismissCreateGameModal()}>
-                    Cancel
-                  </IonButton>
-                </div>
-              </div>
-            </IonModal>
-
-            <IonModal ref={selectGameModal} trigger="selectGameModalVisible">
-              <div className="centeredView">
-                <div className="modalView">
-                  <div>
-                    <IonList inset={true}>
-                      {myGames
-                        ? Array.from(myGames.entries()).map(([key, Value]) => (
-                            <IonItem>
-                              <div className="item">
-                                <IonButton
-                                  onClick={() => {
-                                    history.push(PAGES.SESSION, {
-                                      id: key.toString(),
-                                    });
-                                  }}
-                                >
-                                  {"Game n°" + key.toString()}
-                                </IonButton>
-                              </div>
-                            </IonItem>
-                          ))
-                        : []}
-                    </IonList>
-                  </div>
-                  <IonButton onClick={() => dismissSelectGameModal()}>
-                    Cancel
-                  </IonButton>
-                </div>
-              </div>
-            </IonModal>
-
+          <IonList inset={true}>
             {!userAddress ? (
               <>
                 <div
@@ -231,17 +167,15 @@ export function HomeScreen() {
                     className="logo"
                   />
                 </div>
-                <div>
+                <IonList inset={true}>
                   <ConnectButton
                     Tezos={Tezos}
                     setUserAddress={setUserAddress}
                     setUserBalance={setUserBalance}
                     wallet={wallet}
                   />
-                  <div style={{ paddingTop: 20 }}>
-                    <IonButton>Rules</IonButton>
-                  </div>
-                </div>
+                  <IonButton expand="full">Rules</IonButton>
+                </IonList>
               </>
             ) : (
               <>
@@ -266,37 +200,130 @@ export function HomeScreen() {
                     className="logo"
                   />
                 </div>
-                <div style={{ padding: 20 }}>
+                <div>
                   <DisconnectButton
                     wallet={wallet}
                     setUserAddress={setUserAddress}
                     setUserBalance={setUserBalance}
                   />
-                  <IonLabel style={{ padding: 20, color: "white" }}>
+                  <IonLabel style={{ padding: 20 }}>
                     I am {userAddress} with {userBalance} mutez
                   </IonLabel>
-                  <div style={{ padding: 20 }}>
-                    <IonButton id="createGameModalVisible">New game</IonButton>
+                  <div>
+                    <IonButton id="createGameModalVisible" expand="full">
+                      New game
+                    </IonButton>
+                    <IonModal
+                      ref={createGameModal}
+                      trigger="createGameModalVisible"
+                    >
+                      <IonHeader>
+                        <IonToolbar>
+                          <IonButtons slot="start">
+                            <IonButton onClick={() => dismissCreateGameModal()}>
+                              Cancel
+                            </IonButton>
+                          </IonButtons>
+                          <IonTitle>New Game</IonTitle>
+                          <IonButtons slot="end">
+                            <IonButton
+                              strong={true}
+                              onClick={(e) => createSession(e)}
+                              id="createGameModal"
+                            >
+                              Create
+                            </IonButton>
+                          </IonButtons>
+                        </IonToolbar>
+                      </IonHeader>
+                      <IonContent className="ion-padding">
+                        <IonItem key="total_rounds">
+                          <IonLabel position="stacked" className="text">
+                            total rounds
+                          </IonLabel>
+                          <IonInput
+                            onIonChange={(str) => {
+                              if (str.detail.value === undefined) return;
+                              setTotal_rounds(
+                                new BigNumber(str.target.value!) as nat
+                              );
+                            }}
+                            value={total_rounds.toString()}
+                            placeholder="total_rounds"
+                            type="number"
+                          />
+                        </IonItem>
+                        <IonItem key="newPlayer">
+                          <IonLabel position="stacked" className="text">
+                            Opponent player
+                          </IonLabel>
+                          <IonInput
+                            onIonChange={(str) => {
+                              if (str.detail.value === undefined) return;
+                              setNewPlayer(str.detail.value as address);
+                            }}
+                            value={newPlayer}
+                            placeholder="tz1..."
+                            type="text"
+                          />
+                        </IonItem>
+                      </IonContent>
+                    </IonModal>
                   </div>
 
-                  <div style={{ padding: 20 }}>
-                    <IonButton id="selectGameModalVisible">Join game</IonButton>
+                  <div>
+                    <IonButton id="selectGameModalVisible" expand="full">
+                      Join game
+                    </IonButton>
+                    <IonModal
+                      ref={selectGameModal}
+                      trigger="selectGameModalVisible"
+                    >
+                      <IonHeader>
+                        <IonToolbar>
+                          <IonButtons slot="start">
+                            <IonButton onClick={() => dismissSelectGameModal()}>
+                              Cancel
+                            </IonButton>
+                          </IonButtons>
+                          <IonTitle>Select Game</IonTitle>
+                        </IonToolbar>
+                      </IonHeader>
+                      <IonContent>
+                        <IonList inset={true}>
+                          {myGames
+                            ? Array.from(myGames.entries()).map(
+                                ([key, Value]) => (
+                                  <IonButton
+                                    key={"Game-" + key.toString()}
+                                    expand="full"
+                                    routerLink={
+                                      PAGES.SESSION + "/" + key.toString()
+                                    }
+                                    onClick={dismissSelectGameModal}
+                                  >
+                                    {"Game n°" + key.toString()}
+                                  </IonButton>
+                                )
+                              )
+                            : []}
+                        </IonList>
+                      </IonContent>
+                    </IonModal>
                   </div>
-                  <IonNavLink
-                    style={{ padding: 20 }}
-                    routerDirection="forward"
-                    component={() => <TopPlayersScreen />}
-                  >
-                    <IonButton>Top Players</IonButton>
-                  </IonNavLink>
+                  <div>
+                    <IonButton routerLink={PAGES.TOPPLAYERS} expand="full">
+                      Top Players
+                    </IonButton>
+                  </div>
                 </div>
               </>
             )}
 
             <IonLabel className="text">{description}</IonLabel>
-          </div>
+          </IonList>
         )}
       </IonContent>
     </IonPage>
   );
-}
+};

@@ -21,9 +21,9 @@ const DisconnectButton = ({
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <IonButton onClick={disconnectWallet}>Disconnect wallet</IonButton>
-    </div>
+    <IonButton expand="full" onClick={disconnectWallet}>
+      Disconnect wallet
+    </IonButton>
   );
 };
 

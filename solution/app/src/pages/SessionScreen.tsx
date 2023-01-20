@@ -3,6 +3,7 @@ import {
   IonImg,
   IonItem,
   IonLabel,
+  IonPage,
   IonSpinner,
   useIonAlert,
 } from "@ionic/react";
@@ -11,8 +12,8 @@ import { MichelCodecPacker } from "@taquito/taquito";
 import { BigNumber } from "bignumber.js";
 import * as crypto from "crypto";
 import React, { useEffect, useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
-import { Action, UserContext, UserContextType } from "../App";
+import { RouteComponentProps, useHistory } from "react-router-dom";
+import { Action, PAGES, UserContext, UserContextType } from "../App";
 import { TransactionInvalidBeaconError } from "../TransactionInvalidBeaconError";
 import { bytes, nat, unit } from "../type-aliases";
 
@@ -24,12 +25,17 @@ export enum STATUS {
   FINISHED = "Game ended",
 }
 
-export function SessionScreen() {
+interface SessionScreenProps
+  extends RouteComponentProps<{
+    id: string;
+  }> {}
+
+export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
   const [presentAlert] = useIonAlert();
   const history = useHistory();
-  const params = useParams();
-  console.log("Calling SessionScreen with state history", params);
-  const id: string = params as string;
+
+  console.log("Calling SessionScreen with state history", match.params.id);
+  const id: string = match.params.id;
 
   const {
     Tezos,
@@ -79,42 +85,46 @@ export function SessionScreen() {
   };
 
   useEffect(() => {
-    const session = storage?.sessions.get(new BigNumber(id) as nat);
-    console.log(
-      "Session has changed",
-      session,
-      "round",
-      session!.current_round.toNumber(),
-      "session.decoded_rounds.get(session.current_round)",
-      session!.decoded_rounds.get(session!.current_round)
-    );
-    if (session && ("winner" in session.result || "draw" in session.result)) {
-      setStatus(STATUS.FINISHED);
-    } else if (session) {
-      if (
-        session.decoded_rounds &&
-        session.decoded_rounds.get(session.current_round) &&
-        session.decoded_rounds.get(session.current_round).length == 1 &&
-        session.decoded_rounds.get(session.current_round)[0].player ==
-          userAddress
-      ) {
-        setStatus(STATUS.WAIT_YOUR_OPPONENT_REVEAL);
-      } else if (
-        session.rounds &&
-        session.rounds.get(session.current_round) &&
-        session.rounds.get(session.current_round).length == 2
-      ) {
-        setStatus(STATUS.REVEAL);
-      } else if (
-        session.rounds &&
-        session.rounds.get(session.current_round) &&
-        session.rounds.get(session.current_round).length == 1 &&
-        session.rounds.get(session.current_round)[0].player == userAddress
-      ) {
-        setStatus(STATUS.WAIT_YOUR_OPPONENT_PLAY);
-      } else {
-        setStatus(STATUS.PLAY);
+    if (storage) {
+      const session = storage?.sessions.get(new BigNumber(id) as nat);
+      console.log(
+        "Session has changed",
+        session,
+        "round",
+        session!.current_round.toNumber(),
+        "session.decoded_rounds.get(session.current_round)",
+        session!.decoded_rounds.get(session!.current_round)
+      );
+      if (session && ("winner" in session.result || "draw" in session.result)) {
+        setStatus(STATUS.FINISHED);
+      } else if (session) {
+        if (
+          session.decoded_rounds &&
+          session.decoded_rounds.get(session.current_round) &&
+          session.decoded_rounds.get(session.current_round).length == 1 &&
+          session.decoded_rounds.get(session.current_round)[0].player ==
+            userAddress
+        ) {
+          setStatus(STATUS.WAIT_YOUR_OPPONENT_REVEAL);
+        } else if (
+          session.rounds &&
+          session.rounds.get(session.current_round) &&
+          session.rounds.get(session.current_round).length == 2
+        ) {
+          setStatus(STATUS.REVEAL);
+        } else if (
+          session.rounds &&
+          session.rounds.get(session.current_round) &&
+          session.rounds.get(session.current_round).length == 1 &&
+          session.rounds.get(session.current_round)[0].player == userAddress
+        ) {
+          setStatus(STATUS.WAIT_YOUR_OPPONENT_PLAY);
+        } else {
+          setStatus(STATUS.PLAY);
+        }
       }
+    } else {
+      console.log("Wait parent to init storage ...");
     }
   }, [storage?.sessions.get(new BigNumber(id) as nat)]);
 
@@ -340,14 +350,7 @@ export function SessionScreen() {
   };
 
   return (
-    <div
-      style={{
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#1C1D22",
-      }}
-    >
+    <IonPage className="container">
       {loading ? (
         <div className="loading">
           <IonItem>
@@ -447,11 +450,13 @@ export function SessionScreen() {
               </IonButton>
             </div>
             <div style={{ padding: "7px" }}>
-              <IonButton onClick={() => history.goBack()}>Go back</IonButton>
+              <IonButton routerLink={PAGES.HOME} routerDirection="back">
+                Go back
+              </IonButton>
             </div>
           </div>
         </>
       )}
-    </div>
+    </IonPage>
   );
-}
+};

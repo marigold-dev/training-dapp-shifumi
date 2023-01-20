@@ -40,9 +40,9 @@ const ConnectButton = ({
   };
 
   return (
-    <div className="buttons">
-      <IonButton onClick={connectWallet}>Connect Wallet</IonButton>
-    </div>
+    <IonButton expand="full" onClick={connectWallet}>
+      Connect Wallet
+    </IonButton>
   );
 };
 

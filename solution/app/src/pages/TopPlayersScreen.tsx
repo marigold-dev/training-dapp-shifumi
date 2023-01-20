@@ -8,7 +8,7 @@ import {
 } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 
-export function TopPlayersScreen() {
+export const TopPlayersScreen: React.FC = () => {
   const history = useHistory();
 
   /* 2. Get the param */
@@ -16,17 +16,12 @@ export function TopPlayersScreen() {
     <IonPage className="container">
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Shifumi</IonTitle>
+          <IonTitle>Top Players</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Blank</IonTitle>
-          </IonToolbar>
-        </IonHeader>
         <IonButton onClick={() => history.goBack()}>Go back</IonButton>
       </IonContent>
     </IonPage>
   );
-}
+};
