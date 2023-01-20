@@ -4,7 +4,6 @@
   align-items: center;
   text-align: center;
   justify-content: center;
-  color: white;
   font-family: Roboto;
 }
 
@@ -37,7 +36,6 @@
   align-items: center;
 }
 .item {
-  background-color: #1c1d22;
   padding: 20px;
   margin: 8px 16px;
 }
@@ -53,11 +51,9 @@
   align-items: center;
 }
 .text {
-  color: white;
   padding: 1px;
 }
 .title {
-  color: white;
   font-size: 35px;
   font-weight: bold;
 }
@@ -70,4 +66,9 @@
 }
 
 .buttons {
+  padding: 20px;
+}
+
+#beacon-toast-wrapper {
+  color: black;
 }
