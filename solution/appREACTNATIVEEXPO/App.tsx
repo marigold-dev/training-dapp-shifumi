@@ -221,5 +221,13 @@ export const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "white",
   },
+<<<<<<< HEAD:solution/appREACTNATIVEEXPO/App.tsx
   buttons: {},
+=======
+  ranking:{
+    height:"150px",
+    width:"75px",
+    objectFit: "contain",
+  }
+>>>>>>> Add Ranking page and images:solution/app/App.tsx
 });

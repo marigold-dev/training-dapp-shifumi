@@ -12,7 +12,7 @@ import {
   SafeAreaView,
   Text,
   TextInput,
-  View,
+  View
 } from "react-native";
 import { PAGES, Session, styles, UserContext, UserContextType } from "./App";
 import ConnectButton from "./ConnectWallet";
@@ -52,6 +52,7 @@ export function HomeScreen({ navigation }: { navigation: any }) {
         const myGames = new Map(); //filtering our games
         Array.from(storage.sessions.keys()).forEach((key) => {
           const session = storage.sessions.get(key);
+          console.log(storage)
 
           if (
             session.players.indexOf(userAddress as address) >= 0 &&
@@ -243,15 +244,20 @@ export function HomeScreen({ navigation }: { navigation: any }) {
             <>
               <View
                 style={{
+<<<<<<< HEAD:solution/appREACTNATIVEEXPO/HomeScreen.tsx
                   display: "flex",
                   flexDirection: "row",
                   padding: 5.5,
+=======
+                  flexDirection: "row-reverse",
+                  padding: "5.5em",
+>>>>>>> Add Ranking page and images:solution/app/HomeScreen.tsx
                   justifyContent: "space-around",
                 }}
               >
-                <ImageBackground
-                  source={require("./assets/stone-logo.png")}
-                  resizeMode="contain"
+                 <ImageBackground
+                  source={require("./assets/scissor-logo.png")}
+                  resizeMode="cover"
                   style={styles.logo}
                 />
                 <ImageBackground
@@ -259,9 +265,9 @@ export function HomeScreen({ navigation }: { navigation: any }) {
                   resizeMode="cover"
                   style={styles.logo}
                 />
-                <ImageBackground
-                  source={require("./assets/scissor-logo.png")}
-                  resizeMode="cover"
+                 <ImageBackground
+                  source={require("./assets/stone-logo.png")}
+                  resizeMode="contain"
                   style={styles.logo}
                 />
               </View>

@@ -10,7 +10,7 @@ import {
   Button,
   ImageBackground,
   Text,
-  View,
+  View
 } from "react-native";
 import { Action, styles, UserContext, UserContextType } from "./App";
 import { TransactionInvalidBeaconError } from "./TransactionInvalidBeaconError";
@@ -384,29 +384,23 @@ export function SessionScreen({
             <Text style={styles.text}>
               {"Remaining time :" + remainingTime + " s"}
             </Text>
-            <View style={{ padding: "7px" }}>
-              <Button
-                color="#2B2A2E"
-                disabled={status !== STATUS.PLAY}
-                title="Scissor"
-                onPress={() =>
-                  play(new Action(true as unit, undefined, undefined))
-                }
-              />
-            </View>
+            <View
+            style={{
+              flexDirection: "row",
+              paddingLeft: "6em",
+              paddingRight: "6em",
+              paddingBottom: "2em",
+              justifyContent: "space-around",
+            }}
+          >
+             
 
-            <View style={{ padding: "7px" }}>
-              <Button
-                color="#2B2A2E"
-                disabled={status !== STATUS.PLAY}
-                title="Paper"
-                onPress={() =>
-                  play(new Action(undefined, true as unit, undefined))
-                }
-              />
-            </View>
-
-            <View style={{ padding: "7px" }}>
+            <View style={{ padding: "7px",display:"flex", flexDirection:"column" }}>
+            <ImageBackground
+              source={require("./assets/stone.png")}
+              resizeMode="contain"
+              style={styles.logo}
+            />
               <Button
                 color="#2B2A2E"
                 disabled={status !== STATUS.PLAY}
@@ -417,6 +411,39 @@ export function SessionScreen({
               />
             </View>
 
+            <View style={{ padding: "7px",display:"flex", flexDirection:"column" }}>
+            <ImageBackground
+              source={require("./assets/paper.png")}
+              resizeMode="contain"
+              style={styles.logo}
+            />
+              <Button
+                color="#2B2A2E"
+                disabled={status !== STATUS.PLAY}
+                title="Paper"
+                onPress={() =>
+                  play(new Action(undefined, true as unit, undefined))
+                }
+              />
+            </View>
+            <View style={{ padding: "7px",display:"flex", flexDirection:"column" }}>
+            <ImageBackground
+              source={require("./assets/scissor.png")}
+              resizeMode="contain"
+              style={styles.logo}
+            />
+              <Button
+                color="#2B2A2E"
+                disabled={status !== STATUS.PLAY}
+                title="Scissor"
+                onPress={() =>
+                  play(new Action(true as unit, undefined, undefined))
+                }
+              />
+            </View>
+
+          </View>
+          
             <View style={{ padding: "7px", paddingTop: "30px" }}>
               <Button
                 color="#d8464e"
