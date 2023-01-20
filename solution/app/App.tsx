@@ -222,4 +222,9 @@ export const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "white",
   },
+  ranking:{
+    height:"150px",
+    width:"75px",
+    objectFit: "contain",
+  }
 });
