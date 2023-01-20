@@ -12,7 +12,7 @@ import {
   SafeAreaView,
   Text,
   TextInput,
-  View,
+  View
 } from "react-native";
 import { PAGES, Session, styles, UserContext, UserContextType } from "./App";
 import ConnectButton from "./ConnectWallet";
@@ -242,14 +242,14 @@ export function HomeScreen({ navigation }: { navigation: any }) {
             <>
               <View
                 style={{
-                  flexDirection: "row",
+                  flexDirection: "row-reverse",
                   padding: "5.5em",
                   justifyContent: "space-around",
                 }}
               >
-                <ImageBackground
-                  source={require("./assets/stone-logo.png")}
-                  resizeMode="contain"
+                 <ImageBackground
+                  source={require("./assets/scissor-logo.png")}
+                  resizeMode="cover"
                   style={styles.logo}
                 />
                 <ImageBackground
@@ -257,9 +257,9 @@ export function HomeScreen({ navigation }: { navigation: any }) {
                   resizeMode="cover"
                   style={styles.logo}
                 />
-                <ImageBackground
-                  source={require("./assets/scissor-logo.png")}
-                  resizeMode="cover"
+                 <ImageBackground
+                  source={require("./assets/stone-logo.png")}
+                  resizeMode="contain"
                   style={styles.logo}
                 />
               </View>
