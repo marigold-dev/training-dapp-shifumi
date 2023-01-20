@@ -52,7 +52,6 @@ export function HomeScreen({ navigation }: { navigation: any }) {
         const myGames = new Map(); //filtering our games
         Array.from(storage.sessions.keys()).forEach((key) => {
           const session = storage.sessions.get(key);
-          console.log(storage)
 
           if (
             session.players.indexOf(userAddress as address) >= 0 &&
