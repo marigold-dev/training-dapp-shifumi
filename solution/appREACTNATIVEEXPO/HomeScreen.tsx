@@ -3,16 +3,16 @@ import { BigNumber } from "bignumber.js";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Button,
-  FlatList,
-  ImageBackground,
-  Modal,
-  SafeAreaView,
-  Text,
-  TextInput,
-  View
+    ActivityIndicator,
+    Alert,
+    Button,
+    FlatList,
+    ImageBackground,
+    Modal,
+    SafeAreaView,
+    Text,
+    TextInput,
+    View
 } from "react-native";
 import { PAGES, Session, styles, UserContext, UserContextType } from "./App";
 import ConnectButton from "./ConnectWallet";
