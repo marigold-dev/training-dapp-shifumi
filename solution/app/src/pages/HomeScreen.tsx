@@ -2,7 +2,9 @@ import {
   IonButton,
   IonButtons,
   IonContent,
+  IonFooter,
   IonHeader,
+  IonIcon,
   IonImg,
   IonInput,
   IonItem,
@@ -17,6 +19,7 @@ import {
 } from "@ionic/react";
 import { bytes2Char } from "@taquito/utils";
 import { BigNumber } from "bignumber.js";
+import { cash, person } from "ionicons/icons";
 import React, { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { PAGES, Session, UserContext, UserContextType } from "../App";
@@ -139,7 +142,7 @@ export const HomeScreen: React.FC = () => {
           <div className="loading">
             <IonItem>
               <IonLabel>Refreshing ...</IonLabel>
-              <IonSpinner></IonSpinner>
+              <IonSpinner className="spinner"></IonSpinner>
             </IonItem>
           </div>
         ) : (
@@ -174,156 +177,170 @@ export const HomeScreen: React.FC = () => {
                     setUserBalance={setUserBalance}
                     wallet={wallet}
                   />
-                  <IonButton expand="full">Rules</IonButton>
                 </IonList>
               </>
             ) : (
-              <>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    padding: 5.5,
-                    justifyContent: "space-around",
-                  }}
-                >
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
-                    className="logo"
-                  />
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
-                    className="logo"
-                  />
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
-                    className="logo"
-                  />
-                </div>
-                <div>
-                  <DisconnectButton
-                    wallet={wallet}
-                    setUserAddress={setUserAddress}
-                    setUserBalance={setUserBalance}
-                  />
-                  <IonLabel style={{ padding: 20 }}>
-                    I am {userAddress} with {userBalance} mutez
+              <IonList>
+                <IonItem style={{ padding: 0, margin: 0 }}>
+                  <IonIcon icon={person} />
+                  <IonLabel style={{ fontSize: "0.8em" }}>
+                    {userAddress}
                   </IonLabel>
-                  <div>
-                    <IonButton id="createGameModalVisible" expand="full">
-                      New game
-                    </IonButton>
-                    <IonModal
-                      ref={createGameModal}
-                      trigger="createGameModalVisible"
-                    >
-                      <IonHeader>
-                        <IonToolbar>
-                          <IonButtons slot="start">
-                            <IonButton onClick={() => dismissCreateGameModal()}>
-                              Cancel
-                            </IonButton>
-                          </IonButtons>
-                          <IonTitle>New Game</IonTitle>
-                          <IonButtons slot="end">
+                </IonItem>
+                <IonItem style={{ padding: 0, margin: 0 }}>
+                  <IonIcon icon={cash} />
+                  <IonLabel style={{ padding: 20 }}>
+                    {userBalance / 1000000} Tez
+                  </IonLabel>
+                </IonItem>
+
+                <IonItem>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      padding: 5.5,
+                      justifyContent: "space-around",
+                      width: "100%",
+                    }}
+                  >
+                    <IonImg
+                      src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
+                      className="logo"
+                    />
+                    <IonImg
+                      src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
+                      className="logo"
+                    />
+                    <IonImg
+                      src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
+                      className="logo"
+                    />
+                  </div>
+                </IonItem>
+
+                <IonButton id="createGameModalVisible" expand="full">
+                  New game
+                </IonButton>
+                <IonModal
+                  ref={createGameModal}
+                  trigger="createGameModalVisible"
+                >
+                  <IonHeader>
+                    <IonToolbar>
+                      <IonButtons slot="start">
+                        <IonButton onClick={() => dismissCreateGameModal()}>
+                          Cancel
+                        </IonButton>
+                      </IonButtons>
+                      <IonTitle>New Game</IonTitle>
+                      <IonButtons slot="end">
+                        <IonButton
+                          strong={true}
+                          onClick={(e) => createSession(e)}
+                          id="createGameModal"
+                        >
+                          Create
+                        </IonButton>
+                      </IonButtons>
+                    </IonToolbar>
+                  </IonHeader>
+                  <IonContent>
+                    <IonItem key="total_rounds">
+                      <IonLabel position="stacked" className="text">
+                        total rounds
+                      </IonLabel>
+                      <IonInput
+                        onIonChange={(str) => {
+                          if (str.detail.value === undefined) return;
+                          setTotal_rounds(
+                            new BigNumber(str.target.value!) as nat
+                          );
+                        }}
+                        value={total_rounds.toString()}
+                        placeholder="total_rounds"
+                        type="number"
+                      />
+                    </IonItem>
+                    <IonItem key="newPlayer">
+                      <IonLabel position="stacked" className="text">
+                        Opponent player
+                      </IonLabel>
+                      <IonInput
+                        onIonChange={(str) => {
+                          if (str.detail.value === undefined) return;
+                          setNewPlayer(str.detail.value as address);
+                        }}
+                        value={newPlayer}
+                        placeholder="tz1..."
+                        type="text"
+                      />
+                    </IonItem>
+                  </IonContent>
+                </IonModal>
+
+                <IonButton id="selectGameModalVisible" expand="full">
+                  Join game
+                </IonButton>
+                <IonModal
+                  ref={selectGameModal}
+                  trigger="selectGameModalVisible"
+                >
+                  <IonHeader>
+                    <IonToolbar>
+                      <IonButtons slot="start">
+                        <IonButton onClick={() => dismissSelectGameModal()}>
+                          Cancel
+                        </IonButton>
+                      </IonButtons>
+                      <IonTitle>Select Game</IonTitle>
+                    </IonToolbar>
+                  </IonHeader>
+                  <IonContent>
+                    <IonList inset={true}>
+                      {myGames
+                        ? Array.from(myGames.entries()).map(([key, Value]) => (
                             <IonButton
-                              strong={true}
-                              onClick={(e) => createSession(e)}
-                              id="createGameModal"
+                              key={"Game-" + key.toString()}
+                              expand="full"
+                              routerLink={PAGES.SESSION + "/" + key.toString()}
+                              onClick={dismissSelectGameModal}
                             >
-                              Create
+                              {"Game n°" + key.toString()}
                             </IonButton>
-                          </IonButtons>
-                        </IonToolbar>
-                      </IonHeader>
-                      <IonContent className="ion-padding">
-                        <IonItem key="total_rounds">
-                          <IonLabel position="stacked" className="text">
-                            total rounds
-                          </IonLabel>
-                          <IonInput
-                            onIonChange={(str) => {
-                              if (str.detail.value === undefined) return;
-                              setTotal_rounds(
-                                new BigNumber(str.target.value!) as nat
-                              );
-                            }}
-                            value={total_rounds.toString()}
-                            placeholder="total_rounds"
-                            type="number"
-                          />
-                        </IonItem>
-                        <IonItem key="newPlayer">
-                          <IonLabel position="stacked" className="text">
-                            Opponent player
-                          </IonLabel>
-                          <IonInput
-                            onIonChange={(str) => {
-                              if (str.detail.value === undefined) return;
-                              setNewPlayer(str.detail.value as address);
-                            }}
-                            value={newPlayer}
-                            placeholder="tz1..."
-                            type="text"
-                          />
-                        </IonItem>
-                      </IonContent>
-                    </IonModal>
-                  </div>
+                          ))
+                        : []}
+                    </IonList>
+                  </IonContent>
+                </IonModal>
 
-                  <div>
-                    <IonButton id="selectGameModalVisible" expand="full">
-                      Join game
-                    </IonButton>
-                    <IonModal
-                      ref={selectGameModal}
-                      trigger="selectGameModalVisible"
-                    >
-                      <IonHeader>
-                        <IonToolbar>
-                          <IonButtons slot="start">
-                            <IonButton onClick={() => dismissSelectGameModal()}>
-                              Cancel
-                            </IonButton>
-                          </IonButtons>
-                          <IonTitle>Select Game</IonTitle>
-                        </IonToolbar>
-                      </IonHeader>
-                      <IonContent>
-                        <IonList inset={true}>
-                          {myGames
-                            ? Array.from(myGames.entries()).map(
-                                ([key, Value]) => (
-                                  <IonButton
-                                    key={"Game-" + key.toString()}
-                                    expand="full"
-                                    routerLink={
-                                      PAGES.SESSION + "/" + key.toString()
-                                    }
-                                    onClick={dismissSelectGameModal}
-                                  >
-                                    {"Game n°" + key.toString()}
-                                  </IonButton>
-                                )
-                              )
-                            : []}
-                        </IonList>
-                      </IonContent>
-                    </IonModal>
-                  </div>
-                  <div>
-                    <IonButton routerLink={PAGES.TOPPLAYERS} expand="full">
-                      Top Players
-                    </IonButton>
-                  </div>
-                </div>
-              </>
+                <IonButton routerLink={PAGES.TOPPLAYERS} expand="full">
+                  Top Players
+                </IonButton>
+              </IonList>
             )}
-
-            <IonLabel className="text">{description}</IonLabel>
           </IonList>
         )}
       </IonContent>
+      <IonFooter>
+        <IonToolbar>
+          <IonTitle>
+            <IonButton routerLink={PAGES.RULES} expand="full">
+              Rules
+            </IonButton>
+          </IonTitle>
+        </IonToolbar>
+      </IonFooter>
+
+      {userAddress ? (
+        <DisconnectButton
+          wallet={wallet}
+          setUserAddress={setUserAddress}
+          setUserBalance={setUserBalance}
+        />
+      ) : (
+        <></>
+      )}
     </IonPage>
   );
 };

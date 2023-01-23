@@ -27,6 +27,7 @@ import { TezosToolkit } from "@taquito/taquito";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { MainWalletType, Storage } from "./main.types";
 import { HomeScreen } from "./pages/HomeScreen";
+import { RulesScreen } from "./pages/Rules";
 import { SessionScreen } from "./pages/SessionScreen";
 import { TopPlayersScreen } from "./pages/TopPlayersScreen";
 import { address, bytes, MMap, nat, timestamp, unit } from "./type-aliases";
@@ -158,6 +159,7 @@ const App: React.FC = () => {
             <Route path={PAGES.HOME} component={HomeScreen} />
             <Route path={`${PAGES.SESSION}/:id`} component={SessionScreen} />
             <Route path={PAGES.TOPPLAYERS} component={TopPlayersScreen} />
+            <Route path={PAGES.RULES} component={RulesScreen} />
             <Redirect exact from="/" to={PAGES.HOME} />
           </IonRouterOutlet>
         </IonReactRouter>
@@ -170,6 +172,7 @@ export enum PAGES {
   HOME = "/home",
   SESSION = "/session",
   TOPPLAYERS = "/topplayers",
+  RULES = "/rules",
 }
 
 export default App;

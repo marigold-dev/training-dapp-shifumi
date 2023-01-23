@@ -1,11 +1,11 @@
 import {
   IonButton,
+  IonButtons,
   IonCol,
   IonContent,
   IonGrid,
   IonHeader,
   IonImg,
-  IonLabel,
   IonPage,
   IonRow,
   IonTitle,
@@ -50,37 +50,29 @@ export const TopPlayersScreen: React.FC = () => {
     <IonPage className="container">
       <IonHeader>
         <IonToolbar>
+          <IonButtons slot="start">
+            <IonButton onClick={() => history.goBack()}>Back</IonButton>
+          </IonButtons>
           <IonTitle>Top Players</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonImg
-          src={process.env.PUBLIC_URL + "/assets/ranking.png"}
-          className="ranking"
-        />
+        <div style={{ marginLeft: "40vw" }}>
+          <IonImg
+            src={process.env.PUBLIC_URL + "/assets/ranking.png"}
+            className="ranking"
+            style={{ height: "10em", width: "5em" }}
+          />
+        </div>
 
-        <IonLabel style={{ color: "white", fontSize: "2em" }}>Ranking</IonLabel>
-
-        <IonGrid style={{ color: "white", padding: "30px" }}>
+        <IonGrid fixed={true} style={{ color: "white", padding: "2vh" }}>
           <IonRow
             style={{
-              backgroundColor: "#d8464e",
-              border: "1px solid #ddd",
-              padding: "40px",
+              backgroundColor: "var(--ion-color-primary)",
             }}
           >
-            <IonCol
-              style={{
-                padding: "10px",
-              }}
-            >
-              Address
-            </IonCol>
-            <IonCol
-              style={{
-                padding: "10px",
-              }}
-            >
+            <IonCol className="col">Address</IonCol>
+            <IonCol size="2" className="col">
               Won
             </IonCol>
           </IonRow>
@@ -89,32 +81,17 @@ export const TopPlayersScreen: React.FC = () => {
             ? Array.from(ranking).map(([address, count]) => (
                 <IonRow
                   style={{
-                    backgroundColor: "#2b2a2e",
-                    border: "1px solid #ddd",
-                    padding: "40px",
+                    backgroundColor: "var(--ion-color-secondary)",
                   }}
                 >
-                  <IonCol
-                    style={{
-                      padding: "20px",
-                      fontSize: "12px",
-                    }}
-                  >
-                    {address}
-                  </IonCol>
-                  <IonCol
-                    style={{
-                      padding: "20px",
-                    }}
-                  >
+                  <IonCol className="col">{address}</IonCol>
+                  <IonCol size="2" className="col">
                     {count}
                   </IonCol>
                 </IonRow>
               ))
             : []}
         </IonGrid>
-
-        <IonButton onClick={() => history.goBack()}>Go back</IonButton>
       </IonContent>
     </IonPage>
   );

@@ -1,10 +1,17 @@
 import {
   IonButton,
+  IonButtons,
+  IonContent,
+  IonFooter,
+  IonHeader,
   IonImg,
   IonItem,
   IonLabel,
+  IonList,
   IonPage,
   IonSpinner,
+  IonTitle,
+  IonToolbar,
   useIonAlert,
 } from "@ionic/react";
 import { PackDataParams } from "@taquito/rpc";
@@ -34,7 +41,6 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
   const [presentAlert] = useIonAlert();
   const history = useHistory();
 
-  console.log("Calling SessionScreen with state history", match.params.id);
   const id: string = match.params.id;
 
   const {
@@ -138,12 +144,16 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
           Date.now()) /
           1000
       );
-      if (diff <= 0) setRemainingTime(0);
-      else setRemainingTime(diff);
+
+      if (diff <= 0) {
+        setRemainingTime(0);
+      } else {
+        setRemainingTime(diff);
+      }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [storage?.sessions.get(new BigNumber(id) as nat)]);
 
   const play = async (action: Action) => {
     const session_id = new BigNumber(id) as nat;
@@ -351,112 +361,125 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
 
   return (
     <IonPage className="container">
-      {loading ? (
-        <div className="loading">
-          <IonItem>
-            <IonLabel>Refreshing ...</IonLabel>
-            <IonSpinner></IonSpinner>
-          </IonItem>
-        </div>
-      ) : (
-        <>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              paddingLeft: "6em",
-              paddingRight: "6em",
-              paddingBottom: "4em",
-              justifyContent: "space-around",
-            }}
-          >
-            <IonImg
-              src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
-              className="logo"
-            />
-            <IonImg
-              src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
-              className="logo"
-            />
-            <IonImg
-              src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
-              className="logo"
-            />
+      <IonHeader>
+        <IonToolbar>
+          <IonButtons slot="start">
+            <IonButton onClick={() => history.goBack()}>Back</IonButton>
+          </IonButtons>
+          <IonTitle>Game n°{id}</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent fullscreen>
+        {loading ? (
+          <div className="loading">
+            <IonItem>
+              <IonLabel>Refreshing ...</IonLabel>
+              <IonSpinner className="spinner"></IonSpinner>
+            </IonItem>
           </div>
-          <div>
-            <IonLabel className="text">Session : {id}</IonLabel>
-            <IonLabel className="text">
-              Round :{" "}
-              {"" +
-                storage?.sessions.get(new BigNumber(id) as nat).current_round +
-                "/" +
-                storage?.sessions.get(new BigNumber(id) as nat).total_rounds}
-            </IonLabel>
-            <IonLabel className="text">Status : {status}</IonLabel>
-            <IonLabel className="text">
-              {"Remaining time :" + remainingTime + " s"}
-            </IonLabel>
-            <div style={{ padding: "7px" }}>
-              <IonButton
-                color="secondary"
-                disabled={status !== STATUS.PLAY}
-                onClick={() =>
-                  play(new Action(true as unit, undefined, undefined))
-                }
-              >
-                Scissor
-              </IonButton>
-            </div>
+        ) : (
+          <>
+            <IonTitle style={{ padding: "0.5em" }}>Game Information</IonTitle>
 
-            <div style={{ padding: "7px" }}>
-              <IonButton
-                color="secondary"
-                disabled={status !== STATUS.PLAY}
-                onClick={() =>
-                  play(new Action(undefined, true as unit, undefined))
-                }
-              >
-                Paper
-              </IonButton>
-            </div>
+            <IonList inset={true} style={{ textAlign: "left" }}>
+              <IonItem className="nopm">Status : {status}</IonItem>
+              <IonItem className="nopm">
+                <span>
+                  Opponent :{" "}
+                  {storage?.sessions
+                    .get(new BigNumber(id) as nat)
+                    .players.find((userItem) => userItem !== userAddress)}
+                </span>
+              </IonItem>
+              <IonItem className="nopm">
+                Round :{" "}
+                {"" +
+                  storage?.sessions.get(new BigNumber(id) as nat)
+                    .current_round +
+                  "/" +
+                  storage?.sessions.get(new BigNumber(id) as nat).total_rounds}
+              </IonItem>
 
-            <div style={{ padding: "7px" }}>
-              <IonButton
-                color="secondary"
-                disabled={status !== STATUS.PLAY}
-                onClick={() =>
-                  play(new Action(undefined, undefined, true as unit))
-                }
-              >
-                Stone
-              </IonButton>
-            </div>
+              <IonItem className="nopm">
+                {"Remaining time :" + remainingTime + " s"}
+              </IonItem>
+            </IonList>
 
-            <div style={{ padding: "7px", paddingTop: "30px" }}>
-              <IonButton
-                disabled={status !== STATUS.REVEAL}
-                onClick={() => revealPlay()}
-              >
-                Reveal
-              </IonButton>
-            </div>
+            <div>
+              <div style={{ padding: "7px" }}>
+                <IonButton
+                  disabled={status !== STATUS.PLAY}
+                  onClick={() =>
+                    play(new Action(true as unit, undefined, undefined))
+                  }
+                >
+                  <IonImg
+                    src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
+                    className="logo"
+                  />
+                </IonButton>
+              </div>
 
-            <div style={{ padding: "7px" }}>
-              <IonButton
-                disabled={remainingTime != 0}
-                onClick={() => stopSession()}
-              >
-                Stop session
-              </IonButton>
+              <div style={{ padding: "7px" }}>
+                <IonButton
+                  color="secondary"
+                  disabled={status !== STATUS.PLAY}
+                  onClick={() =>
+                    play(new Action(undefined, true as unit, undefined))
+                  }
+                >
+                  <IonImg
+                    src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
+                    className="logo"
+                  />
+                </IonButton>
+              </div>
+
+              <div style={{ padding: "7px" }}>
+                <IonButton
+                  color="secondary"
+                  disabled={status !== STATUS.PLAY}
+                  onClick={() =>
+                    play(new Action(undefined, undefined, true as unit))
+                  }
+                >
+                  <IonImg
+                    src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
+                    className="logo"
+                  />
+                </IonButton>
+              </div>
+
+              <div style={{ padding: "7px", paddingTop: "30px" }}>
+                <IonButton
+                  disabled={status !== STATUS.REVEAL}
+                  onClick={() => revealPlay()}
+                >
+                  Reveal
+                </IonButton>
+              </div>
+
+              <div style={{ padding: "7px" }}>
+                <IonButton
+                  disabled={remainingTime != 0}
+                  onClick={() => stopSession()}
+                >
+                  Stop session
+                </IonButton>
+              </div>
             </div>
-            <div style={{ padding: "7px" }}>
-              <IonButton routerLink={PAGES.HOME} routerDirection="back">
-                Go back
-              </IonButton>
-            </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </IonContent>
+      <IonFooter>
+        <IonToolbar>
+          <IonTitle>
+            <IonButton routerLink={PAGES.RULES} expand="full">
+              Rules
+            </IonButton>
+          </IonTitle>
+        </IonToolbar>
+      </IonFooter>
     </IonPage>
   );
 };

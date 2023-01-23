@@ -1,5 +1,6 @@
-import { IonButton } from "@ionic/react";
+import { IonFab, IonFabButton, IonIcon } from "@ionic/react";
 import { BeaconWallet } from "@taquito/beacon-wallet";
+import { power } from "ionicons/icons";
 import { Dispatch, SetStateAction } from "react";
 
 interface ButtonProps {
@@ -21,9 +22,11 @@ const DisconnectButton = ({
   };
 
   return (
-    <IonButton expand="full" onClick={disconnectWallet}>
-      Disconnect wallet
-    </IonButton>
+    <IonFab slot="fixed" vertical="top" horizontal="end">
+      <IonFabButton>
+        <IonIcon icon={power} onClick={disconnectWallet} />
+      </IonFabButton>
+    </IonFab>
   );
 };
 
