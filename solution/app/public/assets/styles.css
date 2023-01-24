@@ -59,11 +59,10 @@
 .nopm {
   padding: 0;
   margin: 0;
-  font-size: 0.7em;
 }
 
-.text {
-  padding: 1px;
+.tiny {
+  font-size: 0.8em;
 }
 .title {
   font-size: 35px;

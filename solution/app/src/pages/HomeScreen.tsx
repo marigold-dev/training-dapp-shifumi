@@ -184,13 +184,13 @@ export const HomeScreen: React.FC = () => {
               <IonList>
                 <IonItem style={{ padding: 0, margin: 0 }}>
                   <IonIcon icon={person} />
-                  <IonLabel style={{ fontSize: "0.7em", direction: "rtl" }}>
+                  <IonLabel style={{ fontSize: "0.8em", direction: "rtl" }}>
                     {userAddress}
                   </IonLabel>
                 </IonItem>
                 <IonItem style={{ padding: 0, margin: 0 }}>
                   <IonImg
-                    style={{ height: 24 }}
+                    style={{ height: 24, width: 24 }}
                     src={process.env.PUBLIC_URL + "/assets/xtz.png"}
                   />
                   <IonLabel style={{ direction: "rtl" }}>

@@ -29,14 +29,14 @@ export const RulesScreen: React.FC = () => {
       <IonContent fullscreen>
         <div style={{ textAlign: "left" }}>
           <IonList>
-            <IonItem>
+            <IonItem className="nopm">
               <IonImg
                 src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
                 className="logo"
-              />{" "}
+              />
               Stone (Clenched Fist). Rock beats the scissors by hitting it
             </IonItem>
-            <IonItem>
+            <IonItem className="nopm">
               <IonImg
                 src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
                 className="logo"
@@ -44,7 +44,7 @@ export const RulesScreen: React.FC = () => {
               Paper (open and extended hand) . Paper wins over stone by
               enveloping it
             </IonItem>
-            <IonItem>
+            <IonItem className="nopm">
               <IonImg
                 src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
                 className="logo"
@@ -53,7 +53,7 @@ export const RulesScreen: React.FC = () => {
               cutting it
             </IonItem>
 
-            <IonItem>
+            <IonItem className="nopm">
               <IonImg
                 src={process.env.PUBLIC_URL + "/assets/clock.png"}
                 className="logo"
@@ -62,7 +62,7 @@ export const RulesScreen: React.FC = () => {
               claim the victory
             </IonItem>
 
-            <IonItem>
+            <IonItem className="nopm">
               <IonImg
                 src={process.env.PUBLIC_URL + "/assets/legend.png"}
                 className="logo"

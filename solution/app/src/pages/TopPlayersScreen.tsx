@@ -90,7 +90,7 @@ export const TopPlayersScreen: React.FC = () => {
                     backgroundColor: "var(--ion-color-secondary)",
                   }}
                 >
-                  <IonCol className="col">{address}</IonCol>
+                  <IonCol className="col tiny">{address}</IonCol>
                   <IonCol size="2" className="col">
                     {count}
                   </IonCol>
