@@ -328,7 +328,7 @@ export const HomeScreen: React.FC = () => {
       <IonFooter>
         <IonToolbar>
           <IonTitle>
-            <IonButton routerLink={PAGES.RULES} expand="full">
+            <IonButton color="primary" routerLink={PAGES.RULES} expand="full">
               Rules
             </IonButton>
           </IonTitle>

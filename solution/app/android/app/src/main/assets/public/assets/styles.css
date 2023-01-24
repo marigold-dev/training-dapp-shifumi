@@ -161,3 +161,11 @@ ul li.missing::before {
 #beacon-toast-wrapper {
   color: black;
 }
+
+span.button-inner {
+  color: green;
+}
+
+a.button-native {
+  color: green;
+}
