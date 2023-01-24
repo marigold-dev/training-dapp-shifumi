@@ -21,7 +21,7 @@ import {
 } from "@ionic/react";
 import { bytes2Char } from "@taquito/utils";
 import { BigNumber } from "bignumber.js";
-import { cash, person } from "ionicons/icons";
+import { person } from "ionicons/icons";
 import React, { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { PAGES, Session, UserContext, UserContextType } from "../App";
@@ -184,41 +184,43 @@ export const HomeScreen: React.FC = () => {
               <IonList>
                 <IonItem style={{ padding: 0, margin: 0 }}>
                   <IonIcon icon={person} />
-                  <IonLabel style={{ fontSize: "0.8em" }}>
+                  <IonLabel style={{ fontSize: "0.7em", direction: "rtl" }}>
                     {userAddress}
                   </IonLabel>
                 </IonItem>
                 <IonItem style={{ padding: 0, margin: 0 }}>
-                  <IonIcon icon={cash} />
-                  <IonLabel style={{ padding: 20 }}>
-                    {userBalance / 1000000} Tez
+                  <IonImg
+                    style={{ height: 24 }}
+                    src={process.env.PUBLIC_URL + "/assets/xtz.png"}
+                  />
+                  <IonLabel style={{ direction: "rtl" }}>
+                    {userBalance / 1000000}
                   </IonLabel>
                 </IonItem>
 
-                <IonItem>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      padding: 5.5,
-                      justifyContent: "space-around",
-                      width: "100%",
-                    }}
-                  >
-                    <IonImg
-                      src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
-                      className="logo"
-                    />
-                    <IonImg
-                      src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
-                      className="logo"
-                    />
-                    <IonImg
-                      src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
-                      className="logo"
-                    />
-                  </div>
-                </IonItem>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    paddingTop: "10vh",
+                    paddingBottom: "10vh",
+                    justifyContent: "space-around",
+                    width: "100%",
+                  }}
+                >
+                  <IonImg
+                    src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
+                    className="logo"
+                  />
+                  <IonImg
+                    src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
+                    className="logo"
+                  />
+                  <IonImg
+                    src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
+                    className="logo"
+                  />
+                </div>
 
                 <IonButton id="createGameModalVisible" expand="full">
                   New game

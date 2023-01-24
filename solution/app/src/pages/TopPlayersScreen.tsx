@@ -20,7 +20,6 @@ import { nat } from "../type-aliases";
 
 export const TopPlayersScreen: React.FC = () => {
   const history = useHistory();
-
   const { storage, refreshStorage } = React.useContext(
     UserContext
   ) as UserContextType;
@@ -30,9 +29,9 @@ export const TopPlayersScreen: React.FC = () => {
   useEffect(() => {
     (async () => {
       if (storage) {
+        let ranking = new Map(); //force refresh
         Array.from(storage.sessions.keys()).forEach((key: nat) => {
           let result = storage.sessions.get(key).result;
-          console.log("result", result);
           if ("winner" in result) {
             const winner = result.winner;
             let score = ranking.get(winner);
