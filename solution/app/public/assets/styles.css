@@ -99,22 +99,53 @@ ul li::before {
   line-height: 1em;
 }
 
+div.win {
+  background-color: green;
+  height: 10px;
+  width: 10px;
+  border: 1px white solid;
+}
+
 ul li.win::before {
   color: green;
 }
 
+div.lose {
+  background-color: red;
+  height: 10px;
+  width: 10px;
+  border: 1px white solid;
+}
 ul li.lose::before {
   color: red;
 }
 
+div.draw {
+  background-color: yellow;
+  height: 10px;
+  width: 10px;
+  border: 1px white solid;
+}
 ul li.draw::before {
   color: yellow;
 }
 
+div.current {
+  background-color: white;
+  height: 10px;
+  width: 10px;
+  border: 1px white solid;
+}
 ul li.current::before {
   color: white;
 }
 
+div.missing {
+  background-color: grey;
+  height: 10px;
+  width: 10px;
+  border: 1px white solid;
+}
 ul li.missing::before {
   color: grey;
 }

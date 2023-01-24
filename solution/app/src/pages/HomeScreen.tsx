@@ -12,6 +12,8 @@ import {
   IonList,
   IonModal,
   IonPage,
+  IonRefresher,
+  IonRefresherContent,
   IonSpinner,
   IonTitle,
   IonToolbar,
@@ -58,6 +60,7 @@ export const HomeScreen: React.FC = () => {
     setUserBalance,
     setLoading,
     loading,
+    refreshStorage,
   } = React.useContext(UserContext) as UserContextType;
 
   const [description, setDescription] = useState<string>("");
@@ -132,11 +135,9 @@ export const HomeScreen: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Blank</IonTitle>
-          </IonToolbar>
-        </IonHeader>
+        <IonRefresher slot="fixed" onIonRefresh={refreshStorage}>
+          <IonRefresherContent></IonRefresherContent>
+        </IonRefresher>
 
         {loading ? (
           <div className="loading">

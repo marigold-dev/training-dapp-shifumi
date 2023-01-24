@@ -1,4 +1,9 @@
-import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
+import {
+  IonApp,
+  IonRouterOutlet,
+  RefresherEventDetail,
+  setupIonicReact,
+} from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { Redirect, Route } from "react-router-dom";
 
@@ -83,6 +88,7 @@ export type UserContextType = {
   mainWalletType: MainWalletType | null;
   loading: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>;
+  refreshStorage: (event?: CustomEvent<RefresherEventDetail>) => Promise<void>;
 };
 export let UserContext = React.createContext<UserContextType | null>(null);
 
@@ -104,7 +110,9 @@ const App: React.FC = () => {
   );
   const [loading, setLoading] = useState<boolean>(false);
 
-  const refreshStorage = async () => {
+  const refreshStorage = async (
+    event?: CustomEvent<RefresherEventDetail>
+  ): Promise<void> => {
     if (wallet) {
       const activeAccount = await wallet.client.getActiveAccount();
       var userAddress: string;
@@ -130,6 +138,7 @@ const App: React.FC = () => {
     } else {
       console.log("Not yet a wallet");
     }
+    event?.detail.complete();
   };
 
   useEffect(() => {
@@ -152,6 +161,7 @@ const App: React.FC = () => {
           setStorage,
           loading,
           setLoading,
+          refreshStorage,
         }}
       >
         <IonReactRouter>

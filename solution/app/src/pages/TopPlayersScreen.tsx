@@ -7,6 +7,8 @@ import {
   IonHeader,
   IonImg,
   IonPage,
+  IonRefresher,
+  IonRefresherContent,
   IonRow,
   IonTitle,
   IonToolbar,
@@ -19,7 +21,9 @@ import { nat } from "../type-aliases";
 export const TopPlayersScreen: React.FC = () => {
   const history = useHistory();
 
-  const { storage } = React.useContext(UserContext) as UserContextType;
+  const { storage, refreshStorage } = React.useContext(
+    UserContext
+  ) as UserContextType;
 
   const [ranking, setRanking] = useState<Map<string, number>>(new Map());
 
@@ -57,6 +61,9 @@ export const TopPlayersScreen: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
+        <IonRefresher slot="fixed" onIonRefresh={refreshStorage}>
+          <IonRefresherContent></IonRefresherContent>
+        </IonRefresher>
         <div style={{ marginLeft: "40vw" }}>
           <IonImg
             src={process.env.PUBLIC_URL + "/assets/ranking.png"}
