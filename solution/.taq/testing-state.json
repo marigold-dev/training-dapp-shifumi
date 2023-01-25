@@ -28,6 +28,20 @@
                     "destination": "https://ghostnet.ecadinfra.com"
                 }
             ]
+        },
+        "@taqueria/plugin-taquito.deploy.1674642238716": {
+            "task": "deploy",
+            "plugin": "@taqueria/plugin-taquito",
+            "time": 1674642238716,
+            "output": [
+                {
+                    "contract": "main.tz",
+                    "address": "KT1AQRhZ95sw5aPmFW5j7RXNimc4st6ku3Jp",
+                    "alias": "main",
+                    "balanceInMutez": "0",
+                    "destination": "https://ghostnet.ecadinfra.com"
+                }
+            ]
         }
     }
 }

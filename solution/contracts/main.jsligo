@@ -32,6 +32,19 @@ const find_me_a_name = ([sessionId, missing_players, current_session, store] : [
     return [list([]) as list<operation>, new_storage];
 };
 
+//declare a draw if game is blocked because people don't reveal
+const declare_a_draw = (sessionId : nat, current_session : Session.t, store: Storage.t) : return_ => { 
+    let new_current_session : Session.t = {...current_session, result:Draw() };
+    let new_storage : Storage.t = Storage.update_sessions(store, sessionId, new_current_session);
+    return [list([]) as list<operation>, new_storage];
+};
+
+const is_none : <T>((x : option<T>) => bool) = (x : option<T>) : bool =>
+   match(x, {
+     Some: _ => false,
+     None: () => true}
+     );
+
 // allow players to claim victory if opponent is a troller (refuse to play)
 const stopSession = ([param, store] : [Parameter.stopsession_param, Storage.t]) : return_ => {
     let current_session : Session.t = Storage.getSession(param.sessionId, store);
@@ -46,15 +59,20 @@ const stopSession = ([param, store] : [Parameter.stopsession_param, Storage.t]) 
     if (Set.cardinal(missing_players) > (0 as nat)) {
         return find_me_a_name (param.sessionId, missing_players, current_session, store);
     } else {
-        let current_decoded_round = match (Map.find_opt(current_session.current_round, current_session.decoded_rounds), {
-            None: () => (failwith("SHOULD NOT BE HERE SESSION IS BROKEN") as Session.decoded_player_actions),
-            Some: (rnd: Session.decoded_player_actions) => rnd 
-        });
-        let missing_players_for_reveal = Session.find_missing(current_decoded_round, current_session.players);
-        if (Set.cardinal(missing_players_for_reveal) > (0 as nat)) {
-            return find_me_a_name (param.sessionId, missing_players_for_reveal, current_session, store);
-        } else {
-            return [list([]) as list<operation>, store]
+        
+        let current_decoded_round_opt = Map.find_opt(current_session.current_round, current_session.decoded_rounds);
+        
+        if( is_none(current_decoded_round_opt)) { 
+            return declare_a_draw (param.sessionId, current_session, store);
+            }
+        else { 
+            let current_decoded_round = Option.unopt(current_decoded_round_opt);
+            let missing_players_for_reveal = Session.find_missing(current_decoded_round, current_session.players);
+            if (Set.cardinal(missing_players_for_reveal) > (0 as nat)) {
+                return find_me_a_name (param.sessionId, missing_players_for_reveal, current_session, store);
+            } else {
+                return [list([]) as list<operation>, store]
+            }
         }
     }
 };

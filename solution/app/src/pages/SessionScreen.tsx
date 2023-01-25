@@ -241,14 +241,26 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       setLoading(true);
       const encryptedAction = await packAction(secretAction.action);
 
-      const op = await mainWalletType!.methods
-        .revealPlay(
-          encryptedAction as bytes,
-          new BigNumber(secretAction.secret) as nat,
-          current_session!.current_round,
-          session_id
-        )
-        .send();
+      const preparedCall = await mainWalletType!.methods.revealPlay(
+        encryptedAction as bytes,
+        new BigNumber(secretAction.secret) as nat,
+        current_session!.current_round,
+        session_id
+      );
+
+      const { gasLimit, storageLimit, suggestedFeeMutez } =
+        await Tezos.estimate.transfer(preparedCall.toTransferParams());
+
+      console.log({ gasLimit, storageLimit, suggestedFeeMutez });
+      const op = await preparedCall
+        .send
+        //https://github.com/ecadlabs/taquito/issues/2318
+        /*{
+        gasLimit,
+        fee: suggestedFeeMutez,
+        storageLimit: storageLimit * 2.5,
+      }*/
+        ();
       await op?.confirmation();
       const newStorage = await mainWalletType!.storage();
       setStorage(newStorage);
@@ -364,6 +376,21 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
     return encryptedActionSecret;
   };
 
+  const getFinalResult = (): string | undefined => {
+    if (storage) {
+      const result = storage.sessions.get(new BigNumber(id) as nat).result;
+      if ("winner" in result && result.winner == userAddress) return "win";
+      if ("winner" in result && result.winner != userAddress) return "lose";
+      if ("draw" in result) return "draw";
+    }
+  };
+
+  const isDesktop = () => {
+    const { innerWidth } = window;
+    if (innerWidth > 800) return true;
+    else return false;
+  };
+
   return (
     <IonPage className="container">
       <IonHeader>
@@ -388,7 +415,11 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
         ) : (
           <>
             <IonList inset={true} style={{ textAlign: "left" }}>
-              <IonItem className="nopm">Status : {status}</IonItem>
+              {status != STATUS.FINISHED ? (
+                <IonItem className="nopm">Status : {status}</IonItem>
+              ) : (
+                ""
+              )}
               <IonItem className="nopm">
                 <span>
                   Opponent :{" "}
@@ -397,47 +428,70 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
                     .players.find((userItem) => userItem !== userAddress)}
                 </span>
               </IonItem>
-              <IonItem className="nopm">
-                Round :
-                {Array.from(
-                  Array(
-                    storage?.sessions
+
+              {status != STATUS.FINISHED ? (
+                <IonItem className="nopm">
+                  Round :
+                  {Array.from(
+                    Array(
+                      storage?.sessions
+                        .get(new BigNumber(id) as nat)
+                        .total_rounds.toNumber()
+                    ).keys()
+                  ).map((roundId) => {
+                    const currentRound: number = storage
+                      ? storage?.sessions
+                          .get(new BigNumber(id) as nat)!
+                          .current_round!.toNumber() - 1
+                      : 0;
+                    const roundwinner = storage?.sessions
                       .get(new BigNumber(id) as nat)
-                      .total_rounds.toNumber()
-                  ).keys()
-                ).map((roundId) => {
-                  const currentRound: number = storage
-                    ? storage?.sessions
-                        .get(new BigNumber(id) as nat)!
-                        .current_round!.toNumber() - 1
-                    : 0;
-                  const roundwinner = storage?.sessions
-                    .get(new BigNumber(id) as nat)
-                    .board.get(new BigNumber(roundId + 1) as nat);
+                      .board.get(new BigNumber(roundId + 1) as nat);
 
-                  return (
-                    <div
-                      key={roundId + "-" + roundwinner}
-                      className={
-                        !roundwinner && roundId > currentRound
-                          ? "missing"
-                          : !roundwinner && roundId == currentRound
-                          ? "current"
-                          : !roundwinner
-                          ? "draw"
-                          : roundwinner == userAddress
-                          ? "win"
-                          : "lose"
-                      }
-                    ></div>
-                  );
-                })}
-              </IonItem>
+                    return (
+                      <div
+                        key={roundId + "-" + roundwinner}
+                        className={
+                          !roundwinner && roundId > currentRound
+                            ? "missing"
+                            : !roundwinner && roundId == currentRound
+                            ? "current"
+                            : !roundwinner
+                            ? "draw"
+                            : roundwinner == userAddress
+                            ? "win"
+                            : "lose"
+                        }
+                      ></div>
+                    );
+                  })}
+                </IonItem>
+              ) : (
+                ""
+              )}
 
-              <IonItem className="nopm">
-                {"Remaining time :" + remainingTime + " s"}
-              </IonItem>
+              {status != STATUS.FINISHED ? (
+                <IonItem className="nopm">
+                  {"Remaining time :" + remainingTime + " s"}
+                </IonItem>
+              ) : (
+                ""
+              )}
             </IonList>
+
+            {status == STATUS.FINISHED ? (
+              <IonImg
+                className={"logo-XXL" + (isDesktop() ? "" : " mobile")}
+                src={
+                  process.env.PUBLIC_URL +
+                  "/assets/" +
+                  getFinalResult() +
+                  ".png"
+                }
+              />
+            ) : (
+              ""
+            )}
 
             {status === STATUS.PLAY ? (
               <IonList lines="none" style={{ marginLeft: "calc(50vw - 70px)" }}>
@@ -493,7 +547,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
             ) : (
               ""
             )}
-            {remainingTime == 0 ? (
+            {remainingTime == 0 && status != STATUS.FINISHED ? (
               <IonButton onClick={() => stopSession()}>
                 <IonIcon icon={stopCircle} />
                 Claim victory

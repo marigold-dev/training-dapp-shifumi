@@ -21,6 +21,20 @@
   margin: 10px;
 }
 
+.logo-XXL.mobile {
+  max-height: 60vh;
+  max-width: 60vw;
+  object-fit: contain;
+  margin: 20vh 20vw;
+}
+
+.logo-XXL {
+  max-height: 70vh;
+  max-width: 30vw;
+  object-fit: contain;
+  margin: 20vh 40vw;
+}
+
 .centeredView {
   display: flex;
   justify-content: center;

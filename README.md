@@ -157,7 +157,7 @@ npm i --save-dev @types/react
 
 ```
 
-run web
+run web ou npm run start
 
 ```
 ionic serve

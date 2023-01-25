@@ -1,23 +1,5 @@
 {
     "language": "en",
-    "plugins": [
-        {
-            "name": "@taqueria/plugin-core",
-            "type": "npm"
-        },
-        {
-            "name": "@taqueria/plugin-ligo",
-            "type": "npm"
-        },
-        {
-            "name": "@taqueria/plugin-taquito",
-            "type": "npm"
-        },
-        {
-            "name": "@taqueria/plugin-contract-types",
-            "type": "npm"
-        }
-    ],
     "contractsDir": "contracts",
     "artifactsDir": "artifacts",
     "contracts": {
@@ -62,7 +44,7 @@
             "sandboxes": [],
             "aliases": {
                 "main": {
-                    "address": "KT1EE9ES3uhnNNgtUmv4mTdvXfAj29KHpKvk"
+                    "address": "KT1AQRhZ95sw5aPmFW5j7RXNimc4st6ku3Jp"
                 }
             }
         }
@@ -73,5 +55,26 @@
         "john": "3_000_000_000",
         "jane": "3_000_000_000",
         "joe": "3_000_000_000"
-    }
+    },
+    "plugins": [
+        {
+            "name": "@taqueria/plugin-core",
+            "type": "npm"
+        },
+        {
+            "name": "@taqueria/plugin-ligo",
+            "type": "npm"
+        },
+        {
+            "name": "@taqueria/plugin-taquito",
+            "type": "npm"
+        },
+        {
+            "name": "@taqueria/plugin-contract-types",
+            "type": "npm"
+        }
+    ],
+    "projectDir": "/home/zamrokk/training-dapp-shifumi/solution",
+    "configFile": "/home/zamrokk/training-dapp-shifumi/solution/.taq/config.json",
+    "hash": "f4a40b178a2b846e05bce52727646b3bb390a82796ca945647ed96a71c1f302e"
 }
