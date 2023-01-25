@@ -29,14 +29,14 @@ const find_me_a_name = ([sessionId, missing_players, current_session, store] : [
     let winner : address = Option.unopt(List.head_opt(winners_list));
     let new_current_session : Session.t = {...current_session, result:Winner(winner) };
     let new_storage : Storage.t = Storage.update_sessions(store, sessionId, new_current_session);
-    return [list([]) as list<operation>, new_storage];
+    return [list([Tezos.emit("%gameStatus","win") ]) as list<operation>, new_storage];
 };
 
 //declare a draw if game is blocked because people don't reveal
 const declare_a_draw = (sessionId : nat, current_session : Session.t, store: Storage.t) : return_ => { 
     let new_current_session : Session.t = {...current_session, result:Draw() };
     let new_storage : Storage.t = Storage.update_sessions(store, sessionId, new_current_session);
-    return [list([]) as list<operation>, new_storage];
+    return [list([Tezos.emit("%gameStatus","draw")]) as list<operation>, new_storage];
 };
 
 const is_none : <T>((x : option<T>) => bool) = (x : option<T>) : bool =>
@@ -88,7 +88,13 @@ const play = ([param, store] : [Parameter.play_param, Storage.t]) : return_ => {
     let new_rounds = Session.add_in_rounds(current_session.current_round, current_session, (Tezos.get_sender ()), param.action);
     let new_session : Session.t = Session.update_rounds(current_session, new_rounds);
     let new_storage : Storage.t = Storage.update_sessions(store, param.sessionId, new_session);
-    return [list([]) as list<operation>, new_storage];
+    return match (Map.find_opt(new_session.current_round,new_session.rounds), {
+        None : () => [list([]) as list<operation>, new_storage],
+        Some : (current_round : Session.rounds) => {
+            if( List.size( current_round  ) != (2 as nat) ){ return [list([]) as list<operation>, new_storage]}
+            else { return  [list([ Tezos.emit("%reveal","")  ]) as list<operation>, new_storage]}
+        }
+    });
 };
 
 // Once all players have committed their bytes, they must reveal the content of their bytes
@@ -117,7 +123,11 @@ const reveal = ([param, store] : [Parameter.reveal_param, Storage.t]) : return_ 
     let final_current_session = Session.finalize_session(modified_new_current_session);
     
     let new_storage : Storage.t = Storage.update_sessions(store, param.sessionId, final_current_session);
-    return [list([]) as list<operation>, new_storage]
+    return match(final_current_session.result, {
+        Inplay : () => [list([]) as list<operation>, new_storage],
+        Draw : () => [list([ Tezos.emit("%gameStatus","draw")  ]) as list<operation>, new_storage],
+        Winner : (_winner : address) => [list([ Tezos.emit("%gameStatus","win")  ]) as list<operation>, new_storage]
+    });
 };
 
 export const main = ([ep, store] : [parameter, storage]) : return_ => {
@@ -132,7 +142,8 @@ export const main = ([ep, store] : [parameter, storage]) : return_ => {
     });
 };
 
-[@view] const board = ([sessionId, store]: [nat, storage]): Views.sessionBoard => { 
+//@view 
+const board = ([sessionId, store]: [nat, storage]): Views.sessionBoard => { 
     match (Map.find_opt(sessionId, store.sessions), {
         Some: (sess: Session.t) => Views.retrieve_board(sess),
         None: () => (failwith("Unknown session") as Views.sessionBoard)

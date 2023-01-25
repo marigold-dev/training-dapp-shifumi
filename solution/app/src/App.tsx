@@ -28,7 +28,7 @@ import "./theme/variables.css";
 
 import { NetworkType } from "@airgap/beacon-types";
 import { BeaconWallet } from "@taquito/beacon-wallet";
-import { TezosToolkit } from "@taquito/taquito";
+import { PollingSubscribeProvider, TezosToolkit } from "@taquito/taquito";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { MainWalletType, Storage } from "./main.types";
 import { HomeScreen } from "./pages/HomeScreen";
@@ -143,6 +143,25 @@ const App: React.FC = () => {
 
   useEffect(() => {
     Tezos.setWalletProvider(wallet);
+    Tezos.setStreamProvider(
+      Tezos.getFactory(PollingSubscribeProvider)({
+        shouldObservableSubscriptionRetry: true,
+        pollingIntervalMilliseconds: 1500,
+      })
+    );
+    try {
+      const sub = Tezos.stream.subscribeEvent({
+        tag: "gameStatus",
+        address: process.env.REACT_APP_CONTRACT_ADDRESS!,
+      });
+
+      sub.on("data", (e) => {
+        console.log("on gameStatus event :", e);
+        refreshStorage();
+      });
+    } catch (e) {
+      console.log("Error with Smart contract event pooling", e);
+    }
     (async () => await refreshStorage())();
   }, [wallet]);
 

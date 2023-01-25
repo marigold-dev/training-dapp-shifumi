@@ -66,6 +66,24 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
   const [remainingTime, setRemainingTime] = useState<number>(10 * 60);
   const [action, setAction] = useState<Action>();
 
+  useEffect(() => {
+    try {
+      const sub = Tezos.stream.subscribeEvent({
+        tag: "reveal",
+        address: process.env.REACT_APP_CONTRACT_ADDRESS!,
+      });
+
+      sub.on("data", (e) => {
+        console.log("on reveal event :", e);
+        if (!e.result.errors || e.result.errors.length == 0) revealPlay();
+        else
+          console.log("Warning : here we ignore a failing transaction event");
+      });
+    } catch (e) {
+      console.log("Error with Smart contract event pooling", e);
+    }
+  }, []);
+
   const buildSessionStorageKey = (
     userAddress: string,
     sessionNumber: number,
@@ -247,11 +265,11 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
         current_session!.current_round,
         session_id
       );
-
+      /*
       const { gasLimit, storageLimit, suggestedFeeMutez } =
         await Tezos.estimate.transfer(preparedCall.toTransferParams());
 
-      console.log({ gasLimit, storageLimit, suggestedFeeMutez });
+      console.log({ gasLimit, storageLimit, suggestedFeeMutez });*/
       const op = await preparedCall
         .send
         //https://github.com/ecadlabs/taquito/issues/2318
@@ -341,7 +359,6 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       const newStorage = await mainWalletType!.storage();
       setStorage(newStorage);
       setLoading(false);
-      history.goBack();
       console.log("newStorage", newStorage);
     } catch (error) {
       console.table(`Error: ${JSON.stringify(error, null, 2)}`);

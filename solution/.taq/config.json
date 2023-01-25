@@ -1,80 +1,76 @@
 {
-    "language": "en",
-    "contractsDir": "contracts",
-    "artifactsDir": "artifacts",
-    "contracts": {
-        "shifumi.jsligo": {
-            "sourceFile": "shifumi.jsligo",
-            "hash": "5737454d4dd7c3947452a5d2003c30353b62f19a6d73f98ad830a187574b3751"
+  "language": "en",
+  "contractsDir": "contracts",
+  "artifactsDir": "artifacts",
+  "contracts": {
+    "shifumi.jsligo": {
+      "sourceFile": "shifumi.jsligo",
+      "hash": "5737454d4dd7c3947452a5d2003c30353b62f19a6d73f98ad830a187574b3751"
+    }
+  },
+  "network": {
+    "ghostnet": {
+      "label": "ghostnet",
+      "rpcUrl": "https://ghostnet.tezos.marigold.dev",
+      "protocol": "PtLimaPtLMwfNinJi9rCfDPWea8dFgTZ1MeJ9f1m2SRic6ayiwW",
+      "accounts": {
+        "taqOperatorAccount": {
+          "publicKey": "edpkvGfYw3LyB1UcCahKQk4rF2tvbMUk8GFiTuMjL75uGXrpvKXhjn",
+          "publicKeyHash": "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
+          "privateKey": "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq"
         }
+      }
+    }
+  },
+  "sandbox": {
+    "local": {
+      "label": "Local Tezos Sandbox",
+      "rpcUrl": "http://localhost:20000",
+      "protocol": "PtKathmankSpLLDALzWw7CGD2j2MtyveTwboEYokqUCP4a1LxMg"
+    }
+  },
+  "environment": {
+    "default": "development",
+    "development": {
+      "networks": [],
+      "sandboxes": ["local"]
     },
-    "network": {
-        "ghostnet": {
-            "label": "ghostnet",
-            "rpcUrl": "https://ghostnet.ecadinfra.com",
-            "protocol": "PtKathmankSpLLDALzWw7CGD2j2MtyveTwboEYokqUCP4a1LxMg",
-            "accounts": {
-                "taqOperatorAccount": {
-                    "publicKey": "edpkvGfYw3LyB1UcCahKQk4rF2tvbMUk8GFiTuMjL75uGXrpvKXhjn",
-                    "publicKeyHash": "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
-                    "privateKey": "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq"
-                }
-            }
+    "testing": {
+      "networks": ["ghostnet"],
+      "sandboxes": [],
+      "aliases": {
+        "main": {
+          "address": "KT1AQRhZ95sw5aPmFW5j7RXNimc4st6ku3Jp"
         }
+      }
+    }
+  },
+  "accounts": {
+    "bob": "3_000_000_000",
+    "alice": "3_000_000_000",
+    "john": "3_000_000_000",
+    "jane": "3_000_000_000",
+    "joe": "3_000_000_000"
+  },
+  "plugins": [
+    {
+      "name": "@taqueria/plugin-core",
+      "type": "npm"
     },
-    "sandbox": {
-        "local": {
-            "label": "Local Tezos Sandbox",
-            "rpcUrl": "http://localhost:20000",
-            "protocol": "PtKathmankSpLLDALzWw7CGD2j2MtyveTwboEYokqUCP4a1LxMg"
-        }
+    {
+      "name": "@taqueria/plugin-ligo",
+      "type": "npm"
     },
-    "environment": {
-        "default": "development",
-        "development": {
-            "networks": [],
-            "sandboxes": [
-                "local"
-            ]
-        },
-        "testing": {
-            "networks": [
-                "ghostnet"
-            ],
-            "sandboxes": [],
-            "aliases": {
-                "main": {
-                    "address": "KT1AQRhZ95sw5aPmFW5j7RXNimc4st6ku3Jp"
-                }
-            }
-        }
+    {
+      "name": "@taqueria/plugin-taquito",
+      "type": "npm"
     },
-    "accounts": {
-        "bob": "3_000_000_000",
-        "alice": "3_000_000_000",
-        "john": "3_000_000_000",
-        "jane": "3_000_000_000",
-        "joe": "3_000_000_000"
-    },
-    "plugins": [
-        {
-            "name": "@taqueria/plugin-core",
-            "type": "npm"
-        },
-        {
-            "name": "@taqueria/plugin-ligo",
-            "type": "npm"
-        },
-        {
-            "name": "@taqueria/plugin-taquito",
-            "type": "npm"
-        },
-        {
-            "name": "@taqueria/plugin-contract-types",
-            "type": "npm"
-        }
-    ],
-    "projectDir": "/home/zamrokk/training-dapp-shifumi/solution",
-    "configFile": "/home/zamrokk/training-dapp-shifumi/solution/.taq/config.json",
-    "hash": "f4a40b178a2b846e05bce52727646b3bb390a82796ca945647ed96a71c1f302e"
+    {
+      "name": "@taqueria/plugin-contract-types",
+      "type": "npm"
+    }
+  ],
+  "projectDir": "/home/zamrokk/training-dapp-shifumi/solution",
+  "configFile": "/home/zamrokk/training-dapp-shifumi/solution/.taq/config.json",
+  "hash": "f4a40b178a2b846e05bce52727646b3bb390a82796ca945647ed96a71c1f302e"
 }

@@ -16,7 +16,7 @@ export type decoded_player_action = an_action<action>;
 export type player_actions = list<player_action>;
 export type decoded_player_actions = list<decoded_player_action>;
 
-type rounds<a> = map<round, list<an_action<a>> >;
+export type rounds<a> = map<round, list<an_action<a>> >;
 
 type board = map<round, option<player> >;
 

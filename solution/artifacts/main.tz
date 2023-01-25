@@ -19,7 +19,8 @@
                          (or %result (or (unit %draw) (unit %inplay)) (address %winner)))
                    (map %rounds nat (list (pair (bytes %action) (address %player))))
                    (nat %total_rounds)))) ;
-  code { PUSH string "Wrong current round parameter" ;
+  code { PUSH bool True ;
+         PUSH string "Wrong current round parameter" ;
          LAMBDA
            (pair (pair address (set address)) string)
            unit
@@ -185,14 +186,18 @@
              PAIR ;
              EXEC ;
              NIL operation ;
+             PUSH string "win" ;
+             EMIT %gameStatus string ;
+             CONS ;
              PAIR } ;
          DUP 3 ;
          APPLY ;
-         DIG 6 ;
+         DIG 7 ;
          UNPAIR ;
          IF_LEFT
            { DIG 2 ;
-             DROP ;
+             DIG 8 ;
+             DROP 2 ;
              IF_LEFT
                { DIG 2 ;
                  DIG 3 ;
@@ -245,7 +250,8 @@
                  UPDATE ;
                  SWAP ;
                  CAR ;
-                 PAIR }
+                 PAIR ;
+                 NIL operation }
                { DUP 2 ;
                  DUP 2 ;
                  CDR ;
@@ -380,13 +386,33 @@
                  SWAP ;
                  CAR ;
                  PAIR ;
-                 SWAP ;
-                 CDR ;
+                 DUP ;
                  DIG 2 ;
+                 CDR ;
+                 DIG 3 ;
                  PAIR ;
                  PAIR ;
-                 EXEC } ;
-             NIL operation ;
+                 DIG 2 ;
+                 SWAP ;
+                 EXEC ;
+                 DUP 2 ;
+                 CDR ;
+                 CDR ;
+                 CAR ;
+                 DIG 2 ;
+                 CAR ;
+                 CDR ;
+                 CAR ;
+                 GET ;
+                 IF_NONE
+                   { NIL operation }
+                   { PUSH nat 2 ;
+                     SWAP ;
+                     SIZE ;
+                     COMPARE ;
+                     NEQ ;
+                     IF { NIL operation }
+                        { NIL operation ; PUSH string "" ; EMIT %reveal string ; CONS } } } ;
              PAIR }
            { IF_LEFT
                { DIG 2 ;
@@ -612,7 +638,7 @@
                  CAR ;
                  GET ;
                  IF_NONE { NIL (pair (or (or unit unit) unit) address) } {} ;
-                 PUSH bool True ;
+                 DUP 6 ;
                  PAIR ;
                  DUP 2 ;
                  CDR ;
@@ -632,7 +658,7 @@
                         AND ;
                         PAIR } ;
                  CAR ;
-                 PUSH bool True ;
+                 DUP 6 ;
                  SWAP ;
                  COMPARE ;
                  EQ ;
@@ -750,30 +776,53 @@
                       PAIR ;
                       SWAP ;
                       LAMBDA
-                        (pair (pair (pair (option address) nat) bool) address nat)
+                        (pair bool (pair (pair (pair (option address) nat) bool) address nat))
                         (pair (pair (option address) nat) bool)
                         { UNPAIR ;
+                          SWAP ;
+                          UNPAIR ;
                           UNPAIR ;
                           UNPAIR ;
                           DUP ;
                           IF_NONE
-                            { DROP 3 ; PUSH bool False ; DUP 2 ; CDR ; DIG 2 ; CAR ; SOME }
+                            { SWAP ;
+                              DIG 2 ;
+                              DIG 4 ;
+                              DROP 4 ;
+                              PUSH bool False ;
+                              DUP 2 ;
+                              CDR ;
+                              DIG 2 ;
+                              CAR ;
+                              SOME }
                             { DROP ;
                               DUP 2 ;
                               DUP 5 ;
                               CDR ;
                               COMPARE ;
                               GT ;
-                              IF { DROP 3 ; PUSH bool False ; DUP 2 ; CDR ; DIG 2 ; CAR ; SOME }
+                              IF { SWAP ;
+                                   DIG 2 ;
+                                   DIG 4 ;
+                                   DROP 4 ;
+                                   PUSH bool False ;
+                                   DUP 2 ;
+                                   CDR ;
+                                   DIG 2 ;
+                                   CAR ;
+                                   SOME }
                                  { DUP 2 ;
                                    DIG 4 ;
                                    CDR ;
                                    COMPARE ;
                                    EQ ;
-                                   IF { DIG 2 ; DROP ; PUSH bool True } { DIG 2 } ;
-                                   DUG 2 } } ;
+                                   IF { DIG 2 ; DROP } { DIG 3 ; DROP } } } ;
                           PAIR ;
                           PAIR } ;
+                      DUP 9 ;
+                      APPLY ;
+                      DIG 8 ;
+                      DROP ;
                       DUG 2 ;
                       ITER { SWAP ; PAIR ; DUP 2 ; SWAP ; EXEC } ;
                       SWAP ;
@@ -792,15 +841,30 @@
                       SWAP ;
                       CAR ;
                       PAIR }
-                    {} ;
+                    { DIG 4 ; DROP } ;
+                 DUP ;
+                 DIG 2 ;
+                 CDR ;
+                 CDR ;
+                 DIG 3 ;
+                 PAIR ;
+                 PAIR ;
+                 DIG 2 ;
+                 SWAP ;
+                 EXEC ;
                  SWAP ;
                  CDR ;
+                 CAR ;
                  CDR ;
-                 DIG 2 ;
-                 PAIR ;
-                 PAIR ;
-                 EXEC ;
-                 NIL operation ;
+                 IF_LEFT
+                   { IF_LEFT
+                       { DROP ;
+                         NIL operation ;
+                         PUSH string "draw" ;
+                         EMIT %gameStatus string ;
+                         CONS }
+                       { DROP ; NIL operation } }
+                   { DROP ; NIL operation ; PUSH string "win" ; EMIT %gameStatus string ; CONS } ;
                  PAIR }
                { DIG 7 ;
                  DROP ;
@@ -866,7 +930,17 @@
                  SIZE ;
                  COMPARE ;
                  GT ;
-                 IF { DIG 5 ; DROP ; DIG 3 ; DIG 2 ; PAIR ; SWAP ; DIG 2 ; PAIR ; PAIR ; EXEC }
+                 IF { DIG 5 ;
+                      DIG 6 ;
+                      DROP 2 ;
+                      DIG 3 ;
+                      DIG 2 ;
+                      PAIR ;
+                      SWAP ;
+                      DIG 2 ;
+                      PAIR ;
+                      PAIR ;
+                      EXEC }
                     { DROP ;
                       DUP ;
                       CAR ;
@@ -878,7 +952,7 @@
                       CAR ;
                       GET ;
                       DUP ;
-                      IF_NONE { PUSH bool True } { DROP ; PUSH bool False } ;
+                      IF_NONE { DIG 6 } { DIG 7 ; DROP 2 ; PUSH bool False } ;
                       IF { DIG 4 ;
                            DROP 2 ;
                            DIG 2 ;
@@ -905,6 +979,9 @@
                            PAIR ;
                            EXEC ;
                            NIL operation ;
+                           PUSH string "draw" ;
+                           EMIT %gameStatus string ;
+                           CONS ;
                            PAIR }
                          { DIG 5 ;
                            DROP ;
