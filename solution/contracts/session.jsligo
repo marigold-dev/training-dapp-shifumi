@@ -1,4 +1,5 @@
 #import "errors.jsligo" "Errors"
+#import "listUtils.jsligo" "ListUtils"
 
 export type player = address;
 export type round = nat;
@@ -22,16 +23,17 @@ type board = map<round, option<player> >;
 
 export type t = {
     total_rounds : nat,
-    players : set<player>,
+    players : list<player>,
     current_round : nat,
     rounds : rounds<bytes>,
     decoded_rounds : rounds<action>,
     board : board,
     result : result,
-    asleep : timestamp
+    asleep : timestamp,
+    pool : tez     //bet pool in tez. 1 tez / round play movement
 };
 
-export const new = ([total_rounds, players] : [nat, set<player>]): t => {
+export const new = ([total_rounds, players] : [nat, list<player>]): t => {
     return { 
       asleep:(Tezos.get_now ()) + 600,
       total_rounds:total_rounds,
@@ -40,7 +42,8 @@ export const new = ([total_rounds, players] : [nat, set<player>]): t => {
       rounds:(Map.empty as rounds<bytes>),
       decoded_rounds:(Map.empty as rounds<action>),
       board:(Map.empty as board),
-      result: Inplay()
+      result: Inplay(),
+      pool : 0 as tez
     };  
 };
 
@@ -67,9 +70,14 @@ export const update_decoded_rounds = ([session, decoded_rounds]: [t, map<round, 
     return { ...session, asleep:(Tezos.get_now ()) + 600, decoded_rounds:decoded_rounds };
 };
 
-export const find_missing : <_a>((p: [list<an_action<_a>>, set<player>]) => set<player>) = ([pactions, all_players] : [list<an_action<_a>>, set<player>]) => {
-    let discard_player = ([acc, elt] : [set<address>, an_action<_a>]) : set<address> => Set.remove(elt.player, acc);
-    List.fold(discard_player, pactions, all_players); 
+
+export const find_missing : <_a>((p: [list<an_action<_a>>, list<player>]) => list<player>) = ([pactions, all_players] : [list<an_action<_a>>, list<player>]) => {
+    let addIfNotParticipant = ([acc, elt] : [list<player>, player]) : list<player> =>  
+        match(ListUtils.find_opt( ((paction : an_action<_a>) => paction.player == elt), pactions ), {
+            None : () => list([elt,...acc]) ,
+            Some : (_an : an_action<_a>) => acc
+        });
+    List.fold(addIfNotParticipant, all_players, list([]) as list<player>); 
 };
 
 // @inline
@@ -200,7 +208,7 @@ export const finalize_current_round = (session: t) : t => {
         let [acc, pactions] = accAndList;        
         return [acc && has_played(pactions, elt), pactions];
     };
-    let [check_all_players_have_revealed, _all_decoded_actions] : [bool, decoded_player_actions] = Set.fold(all_player_have_revealed, session.players, [true, performed_actions]);
+    let [check_all_players_have_revealed, _all_decoded_actions] : [bool, decoded_player_actions] = List.fold(all_player_have_revealed, session.players, [true, performed_actions]);
     // all players have given their actions, now the board can be updated and session goes to next round
     if (check_all_players_have_revealed == true) { 
         return { ...session, current_round:session.current_round+(1 as nat), board:update_board(session, session.current_round) };

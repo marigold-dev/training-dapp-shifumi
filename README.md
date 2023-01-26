@@ -105,6 +105,12 @@ taq install @taqueria/plugin-taquito
 taq deploy main.tz -e "testing"
 ```
 
+octez version with taq bug on events :
+
+```bash
+octez-client originate contract shifumi transferring 0 from alice running "./artifacts/main.tz" --init "$(cat ./artifacts/main.default_storage.tz)" --burn-cap 3 --force
+```
+
 > Note : if it is the first time you use taqueria, I recommend to look at this training first [https://github.com/marigold-dev/training-dapp-1#ghostnet-testnet-wallet](https://github.com/marigold-dev/training-dapp-1#ghostnet-testnet-wallet)
 > For advanced users, just go to `.taq/config.json` and change the default account on path `/network/ghostnet/accounts` to alice settings (publicKey,publicKeyHash,privateKey) and then redeploy
 >

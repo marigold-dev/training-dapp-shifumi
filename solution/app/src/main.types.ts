@@ -1,6 +1,6 @@
 
 import { ContractAbstractionFromContractType, WalletContractAbstractionFromContractType } from './type-utils';
-import { address, BigMap, bytes, MMap, nat, timestamp, unit } from './type-aliases';
+import { address, BigMap, bytes, MMap, mutez, nat, timestamp, unit } from './type-aliases';
 
 export type Storage = {
     metadata: BigMap<string, bytes>;
@@ -18,6 +18,7 @@ export type Storage = {
             player: address;
         }>>;
         players: Array<address>;
+        pool: mutez;
         result: (
             { draw: unit }
             | { inplay: unit }

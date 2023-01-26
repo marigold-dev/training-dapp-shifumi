@@ -208,7 +208,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       );
       const op = await mainWalletType!.methods
         .play(encryptedAction, current_session!.current_round, session_id)
-        .send();
+        .send({ amount: 1, mutez: false });
       await op?.confirmation();
       const newStorage = await mainWalletType!.storage();
       setStorage(newStorage);

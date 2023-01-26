@@ -1,6 +1,6 @@
 export type createsession_param = {
     total_rounds : nat,
-    players : set<address>
+    players : list<address>
 };
 
 export type stopsession_param = {
