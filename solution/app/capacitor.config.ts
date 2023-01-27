@@ -2,7 +2,7 @@ import { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
   appId: "dev.marigold.shifumi",
-  appName: "app",
+  appName: "Tezos Shifumi",
   webDir: "build",
   bundledWebRuntime: false,
 };
