@@ -775,7 +775,7 @@
                      SOME ;
                      DIG 2 ;
                      UPDATE } ;
-                 SWAP ;
+                 DUP 2 ;
                  DUP ;
                  CDR ;
                  DUP 2 ;
@@ -839,7 +839,7 @@
                  ITER { SWAP ;
                         UNPAIR ;
                         DUP 2 ;
-                        DUP 11 ;
+                        DUP 12 ;
                         DIG 3 ;
                         ITER { SWAP ;
                                DUP ;
@@ -980,7 +980,7 @@
                                  IF_NONE
                                    { SWAP ; PUSH nat 1 ; DIG 2 ; SWAP ; SOME ; SWAP ; UPDATE }
                                    { DIG 2 ; PUSH nat 1 ; DIG 2 ; ADD ; SOME ; DIG 2 ; UPDATE } } } ;
-                      DUP 10 ;
+                      DUP 11 ;
                       PUSH nat 0 ;
                       NONE address ;
                       PAIR ;
@@ -1015,9 +1015,9 @@
                                    DUG 2 } } ;
                           PAIR ;
                           PAIR } ;
-                      DUP 12 ;
+                      DUP 13 ;
                       APPLY ;
-                      DIG 11 ;
+                      DIG 12 ;
                       DROP ;
                       DUG 2 ;
                       ITER { SWAP ; PAIR ; DUP 2 ; SWAP ; EXEC } ;
@@ -1039,25 +1039,27 @@
                       CAR ;
                       PAIR ;
                       PAIR }
-                    { DIG 6 ; DROP } ;
+                    { DIG 7 ; DROP } ;
                  DUP ;
-                 DIG 3 ;
-                 CDR ;
-                 CDR ;
                  DIG 4 ;
+                 CDR ;
+                 CDR ;
+                 DIG 5 ;
                  PAIR ;
                  PAIR ;
-                 DIG 3 ;
+                 DIG 4 ;
                  SWAP ;
                  EXEC ;
-                 SWAP ;
+                 DUP 2 ;
                  CAR ;
                  CDR ;
                  CDR ;
                  CAR ;
                  IF_LEFT
                    { IF_LEFT
-                       { DROP ;
+                       { DIG 2 ;
+                         DIG 4 ;
+                         DROP 3 ;
                          DUP 3 ;
                          DUP 3 ;
                          CAR ;
@@ -1115,8 +1117,27 @@
                          CONS ;
                          DIG 2 ;
                          CONS }
-                       { DIG 2 ; DIG 3 ; DROP 3 ; NIL operation } }
-                   { CONTRACT unit ;
+                       { DIG 3 ;
+                         DIG 5 ;
+                         DROP 3 ;
+                         DIG 2 ;
+                         CAR ;
+                         CAR ;
+                         CDR ;
+                         CAR ;
+                         DIG 2 ;
+                         CAR ;
+                         CAR ;
+                         CDR ;
+                         CAR ;
+                         COMPARE ;
+                         EQ ;
+                         IF { NIL operation }
+                            { NIL operation ; PUSH string "" ; EMIT %newRound string ; CONS } } }
+                   { DIG 2 ;
+                     DIG 4 ;
+                     DROP 2 ;
+                     CONTRACT unit ;
                      IF_NONE { DIG 2 ; FAILWITH } { DIG 3 ; DROP } ;
                      DIG 2 ;
                      CAR ;

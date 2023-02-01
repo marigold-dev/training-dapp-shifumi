@@ -68,16 +68,26 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
 
   useEffect(() => {
     try {
-      const sub = Tezos.stream.subscribeEvent({
+      const subReveal = Tezos.stream.subscribeEvent({
         tag: "reveal",
         address: process.env.REACT_APP_CONTRACT_ADDRESS!,
       });
 
-      sub.on("data", (e) => {
+      const subNewRound = Tezos.stream.subscribeEvent({
+        tag: "newRound",
+        address: process.env.REACT_APP_CONTRACT_ADDRESS!,
+      });
+
+      subReveal.on("data", (e) => {
         console.log("on reveal event :", e);
         if (!e.result.errors || e.result.errors.length == 0) revealPlay();
         else
           console.log("Warning : here we ignore a failing transaction event");
+      });
+
+      subNewRound.on("data", (e) => {
+        console.log("on new round event :", e);
+        refreshStorage();
       });
     } catch (e) {
       console.log("Error with Smart contract event pooling", e);
@@ -206,9 +216,29 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
         "current_round",
         current_session!.current_round
       );
-      const op = await mainWalletType!.methods
-        .play(encryptedAction, current_session!.current_round, session_id)
-        .send({ amount: 1, mutez: false });
+
+      const preparedCall = mainWalletType!.methods.play(
+        encryptedAction,
+        current_session!.current_round,
+        session_id
+      );
+
+      const { gasLimit, storageLimit, suggestedFeeMutez } =
+        await Tezos.estimate.transfer({
+          ...preparedCall.toTransferParams(),
+          amount: 1,
+          mutez: false,
+        });
+
+      console.log({ gasLimit, storageLimit, suggestedFeeMutez });
+      const op = await preparedCall.send({
+        gasLimit: gasLimit + 1000, //we take a margin +100 for an eventual event in case of paralell execution
+        fee: suggestedFeeMutez,
+        storageLimit: storageLimit,
+        amount: 1,
+        mutez: false,
+      });
+
       await op?.confirmation();
       const newStorage = await mainWalletType!.storage();
       setStorage(newStorage);
@@ -265,20 +295,16 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
         current_session!.current_round,
         session_id
       );
-      /*
+
       const { gasLimit, storageLimit, suggestedFeeMutez } =
         await Tezos.estimate.transfer(preparedCall.toTransferParams());
 
-      console.log({ gasLimit, storageLimit, suggestedFeeMutez });*/
-      const op = await preparedCall
-        .send
-        //https://github.com/ecadlabs/taquito/issues/2318
-        /*{
-        gasLimit,
+      //console.log({ gasLimit, storageLimit, suggestedFeeMutez });
+      const op = await preparedCall.send({
+        gasLimit: gasLimit * 3,
         fee: suggestedFeeMutez,
-        storageLimit: storageLimit * 2.5,
-      }*/
-        ();
+        storageLimit: storageLimit * 3, //we take a margin in case of paralell execution
+      });
       await op?.confirmation();
       const newStorage = await mainWalletType!.storage();
       setStorage(newStorage);

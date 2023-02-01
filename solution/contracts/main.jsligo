@@ -136,7 +136,8 @@ const reveal = ([param, store] : [Parameter.reveal_param, Storage.t]) : return_ 
     
     let new_storage : Storage.t = Storage.update_sessions(store, param.sessionId, final_current_session);
     return match(final_current_session.result, {
-        Inplay : () => [list([]) as list<operation>, new_storage],
+        Inplay : () => { if(final_current_session.current_round == current_session.current_round) {return [list([]) as list<operation>, new_storage]}
+                         else {return [list([Tezos.emit("%newRound","")]) as list<operation>, new_storage]}},
         Draw : () => {
             let player1ToRedeemOp : operation = Tezos.transaction(unit,(new_current_session.pool / (2 as tez)) * (1 as tez) ,Tezos.get_contract_with_error(Option.unopt(List.head_opt(new_current_session.players)),Errors.player_contract_address_not_found));
             let player2ToRedeemOp : operation = Tezos.transaction(unit,(new_current_session.pool / (2 as tez)) * (1 as tez),Tezos.get_contract_with_error(Option.unopt(List.head_opt(Option.unopt(List.tail_opt(new_current_session.players)))),Errors.player_contract_address_not_found));
