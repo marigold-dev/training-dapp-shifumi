@@ -14,3 +14,5 @@ export const failed_to_open_bytes : string = "Failed to check bytes";
 export const user_already_revealed : string = "You already have revealed your play for this round";
 export const failed_to_unpack_payload : string = "Failed to unpack the payload";
 export const no_winner : string = "No players have played in the current round, thus cannot deduce troller";
+export const player_needs_to_pay_to_play = "Player needs to pay 1 Tez to play a round";
+export const player_contract_address_not_found = "Cannot find the contract from player address";
