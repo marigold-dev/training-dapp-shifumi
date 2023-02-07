@@ -95,7 +95,7 @@ const default_storage = {
 Compile again
 
 ```bash
-TAQ_LIGO_IMAGE=ligolang/ligo:0.58.0 taq compile main.jsligo
+TAQ_LIGO_IMAGE=ligolang/ligo:0.59.0 taq compile main.jsligo
 ```
 
 ## Step 3 : Deploy to Ghostnet

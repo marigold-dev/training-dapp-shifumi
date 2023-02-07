@@ -49,14 +49,10 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
 
   const {
     Tezos,
-    wallet,
     userAddress,
-    userBalance,
     storage,
     mainWalletType,
     setStorage,
-    setUserAddress,
-    setUserBalance,
     setLoading,
     loading,
     refreshStorage,
@@ -64,7 +60,6 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
 
   const [status, setStatus] = useState<STATUS>();
   const [remainingTime, setRemainingTime] = useState<number>(10 * 60);
-  const [action, setAction] = useState<Action>();
 
   useEffect(() => {
     try {
@@ -80,7 +75,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
 
       subReveal.on("data", (e) => {
         console.log("on reveal event :", e);
-        if (!e.result.errors || e.result.errors.length == 0) revealPlay();
+        if (!e.result.errors || e.result.errors.length === 0) revealPlay();
         else
           console.log("Warning : here we ignore a failing transaction event");
       });
@@ -115,9 +110,9 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
     return {
       secret: Number(value.split("-")[0]),
       action:
-        actionStr == "cisor"
+        actionStr === "cisor"
           ? new Action(true as unit, undefined, undefined)
-          : actionStr == "paper"
+          : actionStr === "paper"
           ? new Action(undefined, true as unit, undefined)
           : new Action(undefined, undefined, true as unit),
     };
@@ -140,22 +135,22 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
         if (
           session.decoded_rounds &&
           session.decoded_rounds.get(session.current_round) &&
-          session.decoded_rounds.get(session.current_round).length == 1 &&
-          session.decoded_rounds.get(session.current_round)[0].player ==
+          session.decoded_rounds.get(session.current_round).length === 1 &&
+          session.decoded_rounds.get(session.current_round)[0].player ===
             userAddress
         ) {
           setStatus(STATUS.WAIT_YOUR_OPPONENT_REVEAL);
         } else if (
           session.rounds &&
           session.rounds.get(session.current_round) &&
-          session.rounds.get(session.current_round).length == 2
+          session.rounds.get(session.current_round).length === 2
         ) {
           setStatus(STATUS.REVEAL);
         } else if (
           session.rounds &&
           session.rounds.get(session.current_round) &&
-          session.rounds.get(session.current_round).length == 1 &&
-          session.rounds.get(session.current_round)[0].player == userAddress
+          session.rounds.get(session.current_round).length === 1 &&
+          session.rounds.get(session.current_round)[0].player === userAddress
         ) {
           setStatus(STATUS.WAIT_YOUR_OPPONENT_PLAY);
         } else {
@@ -191,7 +186,6 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
   const play = async (action: Action) => {
     const session_id = new BigNumber(id) as nat;
     const current_session = storage?.sessions.get(session_id);
-    setAction(action);
     try {
       setLoading(true);
       const secret = Math.round(Math.random() * 63); //FIXME it should be 654843, but we limit the size of the output hexa because expo-crypto is buggy
@@ -422,8 +416,8 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
   const getFinalResult = (): string | undefined => {
     if (storage) {
       const result = storage.sessions.get(new BigNumber(id) as nat).result;
-      if ("winner" in result && result.winner == userAddress) return "win";
-      if ("winner" in result && result.winner != userAddress) return "lose";
+      if ("winner" in result && result.winner === userAddress) return "win";
+      if ("winner" in result && result.winner !== userAddress) return "lose";
       if ("draw" in result) return "draw";
     }
   };
@@ -458,7 +452,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
         ) : (
           <>
             <IonList inset={true} style={{ textAlign: "left" }}>
-              {status != STATUS.FINISHED ? (
+              {status !== STATUS.FINISHED ? (
                 <IonItem className="nopm">Status : {status}</IonItem>
               ) : (
                 ""
@@ -472,7 +466,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
                 </span>
               </IonItem>
 
-              {status != STATUS.FINISHED ? (
+              {status !== STATUS.FINISHED ? (
                 <IonItem className="nopm">
                   Round :
                   {Array.from(
@@ -497,11 +491,11 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
                         className={
                           !roundwinner && roundId > currentRound
                             ? "missing"
-                            : !roundwinner && roundId == currentRound
+                            : !roundwinner && roundId === currentRound
                             ? "current"
                             : !roundwinner
                             ? "draw"
-                            : roundwinner == userAddress
+                            : roundwinner === userAddress
                             ? "win"
                             : "lose"
                         }
@@ -513,7 +507,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
                 ""
               )}
 
-              {status != STATUS.FINISHED ? (
+              {status !== STATUS.FINISHED ? (
                 <IonItem className="nopm">
                   {"Remaining time :" + remainingTime + " s"}
                 </IonItem>
@@ -522,7 +516,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
               )}
             </IonList>
 
-            {status == STATUS.FINISHED ? (
+            {status === STATUS.FINISHED ? (
               <IonImg
                 className={"logo-XXL" + (isDesktop() ? "" : " mobile")}
                 src={
@@ -582,7 +576,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
               ""
             )}
 
-            {status == STATUS.REVEAL ? (
+            {status === STATUS.REVEAL ? (
               <IonButton onClick={() => revealPlay()}>
                 <IonIcon icon={eye} />
                 Reveal
@@ -590,7 +584,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
             ) : (
               ""
             )}
-            {remainingTime == 0 && status != STATUS.FINISHED ? (
+            {remainingTime === 0 && status !== STATUS.FINISHED ? (
               <IonButton onClick={() => stopSession()}>
                 <IonIcon icon={stopCircle} />
                 Claim victory

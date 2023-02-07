@@ -17,7 +17,7 @@ const createSession = ([param, store] : [Parameter.createsession_param, Storage.
         next_session: store.next_session + (1 as nat), 
         sessions: Map.add(store.next_session, new_session, store.sessions)
     };
-    [list([]) as list<operation>, new_storage]
+    return [list([]) as list<operation>, new_storage];
 };
 
 
@@ -99,7 +99,6 @@ const play = ([param, store] : [Parameter.play_param, Storage.t]) : return_ => {
     let new_session : Session.t = Session.update_rounds({...current_session,pool:(current_session.pool + (1 as tez))}, new_rounds);
     let new_storage : Storage.t = Storage.update_sessions(store, param.sessionId, new_session);
     
-
     return match (Map.find_opt(new_session.current_round,new_session.rounds), {
         None : () => [list([]) as list<operation>, new_storage],
         Some : (current_round : Session.rounds) => {
@@ -155,15 +154,13 @@ export const main = ([ep, store] : [parameter, storage]) : return_ => {
         Play: (p: Parameter.play_param) => play(p, store),
         RevealPlay: (r: Parameter.reveal_param) => reveal(r, store),
         StopSession: (c: Parameter.stopsession_param) => stopSession(c, store)
-        //Play: (p: Parameter.play_param) => [list([]) as list<operation>, new_storage],
-        //RevealPlay: (r: Parameter.reveal_param) => [list([]) as list<operation>, new_storage],
-        //StopSession: (c: Parameter.stopsession_param) => [list([]) as list<operation>, new_storage]
     });
 };
 
+
 //@view 
 const board = ([sessionId, store]: [nat, storage]): Views.sessionBoard => { 
-    match (Map.find_opt(sessionId, store.sessions), {
+    return match (Map.find_opt(sessionId, store.sessions), {
         Some: (sess: Session.t) => Views.retrieve_board(sess),
         None: () => (failwith("Unknown session") as Views.sessionBoard)
     });

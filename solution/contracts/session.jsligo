@@ -56,7 +56,7 @@ export const get_round_actions = ([roundId, session] : [nat, t]) : player_action
 
 // @inline
 const get_decoded_round_actions = ([roundId, session] : [nat, t]) : decoded_player_actions => {
-    match (Map.find_opt(roundId, session.decoded_rounds), { 
+    return match (Map.find_opt(roundId, session.decoded_rounds), { 
         None: () => failwith(Errors.missing_all_decoded_bytes),
         Some: (decoded_round_actions: decoded_player_actions) => decoded_round_actions 
     });
@@ -77,13 +77,13 @@ export const find_missing : <_a>((p: [list<an_action<_a>>, list<player>]) => lis
             None : () => list([elt,...acc]) ,
             Some : (_an : an_action<_a>) => acc
         });
-    List.fold(addIfNotParticipant, all_players, list([]) as list<player>); 
+    return List.fold(addIfNotParticipant, all_players, list([]) as list<player>); 
 };
 
 // @inline
 const has_played : <_a>((p: [list<an_action<_a>>, player]) => bool) = ([pactions, player]: [list<an_action<_a>>, player]) : bool => {
     let check_contains = ([acc, elt] : [bool, an_action<_a>]) : bool => { if (acc) { return acc } else { return (elt.player == player) } };
-    List.fold(check_contains, pactions, false); 
+    return List.fold(check_contains, pactions, false); 
 };
 
 // @inline
@@ -99,7 +99,7 @@ export const add_in_decoded_rounds = ([roundId, session, user, decoded_action]: 
         None: () => Map.add(roundId, list([{ player:user, action:decoded_action }]), session.decoded_rounds),
         Some: (decodedPlayerActions : list<an_action<action>>) => {
             let _check_player_has_revealed_this_round = assert_with_error( (has_played_round(session.decoded_rounds, roundId, user) == false), Errors.user_already_revealed);
-            Map.update(roundId, (Some( list([ {player:user, action:decoded_action}, ...decodedPlayerActions]))), session.decoded_rounds);
+            return Map.update(roundId, (Some( list([ {player:user, action:decoded_action}, ...decodedPlayerActions]))), session.decoded_rounds);
         }
     });
 };
@@ -109,7 +109,7 @@ export const add_in_rounds = ([roundId, session, user, action] : [nat, t, addres
         None: () => Map.add(roundId, list([{player:user, action:action}]), session.rounds),
         Some: (playerActions: list<an_action<bytes>>) => {
             let _check_player_has_played_this_round = assert_with_error( (has_played_round(session.rounds, roundId, user) == false), Errors.user_already_played);
-            Map.update(roundId, (Some( list([ {player:user, action:action},  ...playerActions]))), session.rounds);
+            return Map.update(roundId, (Some( list([ {player:user, action:action},  ...playerActions]))), session.rounds);
         }
     });
 };
