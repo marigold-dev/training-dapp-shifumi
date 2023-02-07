@@ -1,8 +1,19 @@
 #import "errors.jsligo" "Errors"
 #import "session.jsligo" "Session"
 
-export const check_player_authorized = ([player, allowed_players, error_message] : [Session.player, set<Session.player>, string]) : unit => {
-    assert_with_error( Set.mem(player, allowed_players), error_message);
+
+//redefining find_opt function
+const find_opt : <T>(f : (x : T) => bool, xs : list<T>) => option<T> 
+= (f : (x : T) => bool, xs : list<T>) : option<T> =>
+match(xs ,list([
+  ([] : list<T>) => None(),
+  ([x,... xs] : list<T>) => {
+    if(f(x)) { return Some(x); } else {return find_opt(f, xs); } 
+  } 
+]));
+
+export const check_player_authorized = ([player, allowed_players, error_message] : [Session.player, list<Session.player>, string]) : unit => {
+    assert_with_error( (find_opt(( (a : address) => a == player), allowed_players) != (None() as option<Session.player>))  , error_message);
 };
 
 export const check_session_end = ([result, expected] : [Session.result, Session.result]) : unit => {

@@ -24,7 +24,7 @@ const createSession = ([param, store] : [Parameter.createsession_param, Storage.
 // search for a non troller in the session
 const find_me_a_name = ([sessionId, missing_players, current_session, store] : [nat, list<Session.player>, Session.t, Storage.t]) : return_ => { 
     
-    assert_with_error( List.size(missing_players) == (0 as nat) || List.size(missing_players) == (2 as nat), Errors.no_winner);
+    assert_with_error( List.size(missing_players) == (1 as nat), Errors.no_winner);
     
     const loser = Option.unopt(List.head_opt(missing_players));
     let winners_list : list<address> = ListUtils.remove(( (a : address) => a == loser), current_session.players, (list([]) as list<address>));

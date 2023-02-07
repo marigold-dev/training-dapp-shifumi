@@ -19,7 +19,7 @@
                          (or %result (or (unit %draw) (unit %inplay)) (address %winner))
                          (map %rounds nat (list (pair (bytes %action) (address %player)))))
                    (nat %total_rounds)))) ;
-  code { PUSH bool False ;
+  code { UNIT ;
          PUSH string "Wrong current round parameter" ;
          PUSH string "Cannot find the contract from player address" ;
          LAMBDA
@@ -152,7 +152,8 @@
                                                  (or (or unit unit) address)
                                                  (map nat (list (pair bytes address))))
                                            nat))))
-                       string)
+                       string
+                       unit)
                  (pair (pair nat (list address))
                        (pair (pair (pair (pair timestamp (map nat (option address)))
                                          nat
@@ -181,23 +182,17 @@
                                   (map nat (list (pair bytes address))))
                             nat)))
            { UNPAIR ;
+             UNPAIR 3 ;
+             DIG 3 ;
+             UNPAIR ;
              UNPAIR ;
              DIG 2 ;
              UNPAIR ;
-             UNPAIR ;
-             DIG 2 ;
-             UNPAIR ;
-             PUSH nat 2 ;
+             PUSH nat 1 ;
              DUP 5 ;
              SIZE ;
              COMPARE ;
              EQ ;
-             PUSH nat 0 ;
-             DUP 6 ;
-             SIZE ;
-             COMPARE ;
-             EQ ;
-             OR ;
              IF {}
                 { PUSH string
                        "No players have played in the current round, thus cannot deduce troller" ;
@@ -283,7 +278,7 @@
              CDR ;
              CAR ;
              CDR ;
-             UNIT ;
+             DIG 3 ;
              TRANSFER_TOKENS ;
              SWAP ;
              NIL operation ;
@@ -293,24 +288,25 @@
              DIG 2 ;
              CONS ;
              PAIR } ;
-         DUP 6 ;
-         DUP 4 ;
-         PAIR ;
+         DUP 8 ;
+         DUP 7 ;
+         DUP 5 ;
+         PAIR 3 ;
          APPLY ;
          DIG 8 ;
          UNPAIR ;
          IF_LEFT
            { DIG 2 ;
              DIG 7 ;
-             DROP 2 ;
+             DIG 9 ;
+             DROP 3 ;
              IF_LEFT
                { DIG 2 ;
                  DIG 3 ;
                  DIG 4 ;
                  DIG 5 ;
                  DIG 6 ;
-                 DIG 7 ;
-                 DROP 6 ;
+                 DROP 5 ;
                  DUP ;
                  CDR ;
                  EMPTY_MAP nat (list (pair bytes address)) ;
@@ -410,7 +406,7 @@
                  AMOUNT ;
                  COMPARE ;
                  LT ;
-                 IF { DROP 5 ;
+                 IF { DROP 4 ;
                       PUSH string "Player needs to pay 1 Tez to play a round" ;
                       FAILWITH }
                     { DUP 2 ;
@@ -434,9 +430,7 @@
                       DUP 4 ;
                       GET ;
                       IF_NONE
-                        { DIG 8 ;
-                          DROP ;
-                          DIG 3 ;
+                        { DIG 3 ;
                           CAR ;
                           CDR ;
                           CDR ;
@@ -452,7 +446,7 @@
                           SWAP ;
                           UPDATE }
                         { PUSH string "You already have played for this round" ;
-                          DUP 11 ;
+                          PUSH bool False ;
                           DUP 7 ;
                           CAR ;
                           CDR ;
@@ -461,8 +455,8 @@
                           DUP 7 ;
                           GET ;
                           IF_NONE
-                            { DIG 11 }
-                            { DIG 12 ;
+                            { PUSH bool False }
+                            { PUSH bool False ;
                               SWAP ;
                               ITER { SWAP ;
                                      DUP ;
@@ -744,7 +738,7 @@
                      SWAP ;
                      UPDATE }
                    { PUSH string "You already have revealed your play for this round" ;
-                     DUP 12 ;
+                     PUSH bool False ;
                      DUP 7 ;
                      CAR ;
                      CAR ;
@@ -753,8 +747,8 @@
                      DUP 7 ;
                      GET ;
                      IF_NONE
-                       { DUP 13 }
-                       { DUP 14 ;
+                       { PUSH bool False }
+                       { PUSH bool False ;
                          SWAP ;
                          ITER { SWAP ;
                                 DUP ;
@@ -839,7 +833,7 @@
                  ITER { SWAP ;
                         UNPAIR ;
                         DUP 2 ;
-                        DUP 12 ;
+                        PUSH bool False ;
                         DIG 3 ;
                         ITER { SWAP ;
                                DUP ;
@@ -980,33 +974,29 @@
                                  IF_NONE
                                    { SWAP ; PUSH nat 1 ; DIG 2 ; SWAP ; SOME ; SWAP ; UPDATE }
                                    { DIG 2 ; PUSH nat 1 ; DIG 2 ; ADD ; SOME ; DIG 2 ; UPDATE } } } ;
-                      DUP 11 ;
+                      PUSH bool False ;
                       PUSH nat 0 ;
                       NONE address ;
                       PAIR ;
                       PAIR ;
                       SWAP ;
                       LAMBDA
-                        (pair bool (pair (pair (pair (option address) nat) bool) address nat))
+                        (pair (pair (pair (option address) nat) bool) address nat)
                         (pair (pair (option address) nat) bool)
                         { UNPAIR ;
-                          SWAP ;
-                          UNPAIR ;
                           UNPAIR ;
                           UNPAIR ;
                           DUP ;
                           IF_NONE
-                            { DROP 3 ; SWAP ; DUP 2 ; CDR ; DIG 2 ; CAR ; SOME }
+                            { DROP 3 ; PUSH bool False ; DUP 2 ; CDR ; DIG 2 ; CAR ; SOME }
                             { DROP ;
                               DUP 2 ;
                               DUP 5 ;
                               CDR ;
                               COMPARE ;
                               GT ;
-                              IF { DROP 3 ; SWAP ; DUP 2 ; CDR ; DIG 2 ; CAR ; SOME }
-                                 { DIG 4 ;
-                                   DROP ;
-                                   DUP 2 ;
+                              IF { DROP 3 ; PUSH bool False ; DUP 2 ; CDR ; DIG 2 ; CAR ; SOME }
+                                 { DUP 2 ;
                                    DIG 4 ;
                                    CDR ;
                                    COMPARE ;
@@ -1015,10 +1005,6 @@
                                    DUG 2 } } ;
                           PAIR ;
                           PAIR } ;
-                      DUP 13 ;
-                      APPLY ;
-                      DIG 12 ;
-                      DROP ;
                       DUG 2 ;
                       ITER { SWAP ; PAIR ; DUP 2 ; SWAP ; EXEC } ;
                       SWAP ;
@@ -1039,7 +1025,7 @@
                       CAR ;
                       PAIR ;
                       PAIR }
-                    { DIG 7 ; DROP } ;
+                    {} ;
                  DUP ;
                  DIG 4 ;
                  CDR ;
@@ -1081,7 +1067,7 @@
                          IF_NONE { PUSH string "DIV by 0" ; FAILWITH } {} ;
                          CAR ;
                          MUL ;
-                         UNIT ;
+                         DUP 6 ;
                          TRANSFER_TOKENS ;
                          DIG 3 ;
                          DUP 4 ;
@@ -1106,7 +1092,7 @@
                          IF_NONE { PUSH string "DIV by 0" ; FAILWITH } {} ;
                          CAR ;
                          MUL ;
-                         UNIT ;
+                         DIG 4 ;
                          TRANSFER_TOKENS ;
                          DIG 2 ;
                          NIL operation ;
@@ -1119,7 +1105,8 @@
                          CONS }
                        { DIG 3 ;
                          DIG 5 ;
-                         DROP 3 ;
+                         DIG 6 ;
+                         DROP 4 ;
                          DIG 2 ;
                          CAR ;
                          CAR ;
@@ -1144,7 +1131,7 @@
                      CDR ;
                      CAR ;
                      CDR ;
-                     UNIT ;
+                     DIG 3 ;
                      TRANSFER_TOKENS ;
                      SWAP ;
                      NIL operation ;
@@ -1280,7 +1267,7 @@
                       CAR ;
                       GET ;
                       DUP ;
-                      IF_NONE { DIG 7 ; DROP ; PUSH bool True } { DROP ; DIG 7 } ;
+                      IF_NONE { PUSH bool True } { DROP ; PUSH bool False } ;
                       IF { DIG 4 ;
                            DROP 2 ;
                            DIG 2 ;
@@ -1336,7 +1323,7 @@
                            IF_NONE { PUSH string "DIV by 0" ; FAILWITH } {} ;
                            CAR ;
                            MUL ;
-                           UNIT ;
+                           DUP 6 ;
                            TRANSFER_TOKENS ;
                            DIG 3 ;
                            DUP 4 ;
@@ -1361,7 +1348,7 @@
                            IF_NONE { PUSH string "DIV by 0" ; FAILWITH } {} ;
                            CAR ;
                            MUL ;
-                           UNIT ;
+                           DIG 4 ;
                            TRANSFER_TOKENS ;
                            DIG 2 ;
                            NIL operation ;
@@ -1375,7 +1362,8 @@
                            PAIR }
                          { DIG 5 ;
                            DIG 6 ;
-                           DROP 2 ;
+                           DIG 7 ;
+                           DROP 3 ;
                            IF_NONE { PUSH string "option is None" ; FAILWITH } {} ;
                            DUP 2 ;
                            CAR ;
