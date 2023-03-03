@@ -1,0 +1,19 @@
+{
+    "name": "Shifumi Example",
+    "description": "An Example Shifumi Contract",
+    "version": "beta",
+    "license": {
+        "name": "MIT"
+    },
+    "authors": [
+        "smart-chain <tezos@smart-chain.fr>"
+    ],
+    "homepage": "https://github.com/ligolang/shifumi-jsligo",
+    "source": {
+        "tools": "jsligo",
+        "location": "https://github.com/ligolang/shifumi-jsligo/contracts"
+    },
+    "interfaces": [
+        "TZIP-016"
+    ]
+}
