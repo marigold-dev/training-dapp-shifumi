@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@airgap/beacon-sdk": "^3.3.2",
+    "@capacitor/android": "4.6.3",
     "@capacitor/app": "4.1.1",
     "@capacitor/core": "4.6.3",
     "@capacitor/haptics": "4.1.0",

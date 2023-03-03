@@ -196,7 +196,7 @@ npm i --save-dev @types/react
 
 This was painful :/, but it was the worst so far
 
-Modify the default package.json default scripts (to fix an issue between ionic and react-rewired)
+Modify the default package.json default scripts (to fix an issue between ionic and react-rewired, during postinstall stepn we do some symbolic linking)
 
 ```
   "scripts": {
@@ -215,9 +215,7 @@ npm run postinstall
 npm run start
 ```
 
-## Step 2 : Connect / disconnect the wallet
-
-We will declare 2 React Button components and a display of address and balance while connected
+## Step 2 : Edit the default Application file to configure page routing and add style
 
 Edit src/App.tsx file
 
@@ -431,7 +429,30 @@ export enum PAGES {
 export default App;
 ```
 
-Let's create the 2 missing src component files and put code in it. On src folder, create these files.
+Explanations :
+
+- `import "@ionic..."` : Default Ionic imports, nothing special here
+- `import ... from "@airgap/beacon-types" ... from "@taquito/beacon-wallet" ... from "@taquito/taquito"` : Require libraries to interact with the Tezos node and the wallet
+- `export class Action implements ActionCisor, ActionPaper, ActionStone {...}` : Representation of the ligo variant `Action` in Typescript, we will need it when passing arguments on `Play` function
+- `export type Session = {...}` : Taqueria export the global Storage type but sadly not this sub-type from the Storage type, we will need it later
+- `export let UserContext = React.createContext<UserContextType | null>(null)`: Global React context that is passed along pages. More info [here](https://beta.reactjs.org/learn/passing-data-deeply-with-context)
+- `const refreshStorage = async (event?: CustomEvent<RefresherEventDetail>): Promise<void> => {...` : useful fonction to force the smart contract Storage to refresh on React state (user balance, state of the game)
+- `useEffect(() => { ... Tezos.setStreamProvider(...) ... Tezos.stream.subscribeEvent({...` : During Application initialization, we configure the wallet, the websocket listening to smart contract events
+- `<IonApp><UserContext.Provider ... ><IonReactRouter><IonRouterOutlet><Route path={PAGES.HOME} component={HomeScreen} /> ... ` : We inject the React context to all pages. We declare the global routing of the application
+- `export enum PAGES {  HOME = "/home", ...` : Declaration of the global routes
+
+To add the default theming (CSS,pictures,etc...), copy content of the git repo `assets` folder to your local setup (considering you cloned the repo and assets folder is on root folder and your project folder is called `shifumi`)
+
+```bash
+cp -r ./assets/* ./shifumi/app/
+```
+
+## Step 3 : Connect / disconnect the wallet
+
+We will declare 2 React Button components and fetch the user public hash key + balance
+
+Let's create the 2 missing src component files and put code in it.
+On src folder, create these files.
 
 ```bash
 touch src/ConnectWallet.tsx
@@ -534,7 +555,9 @@ export default DisconnectButton;
 
 Save both file, the dev server should refresh the page
 
-Let's add missing pages and error utility class
+## Step 4 : Add missing pages and error utility class
+
+Let's create the missing pages and the error utility class
 
 ```bash
 touch src/pages/HomeScreen.tsx
@@ -544,9 +567,11 @@ touch src/pages/TopPlayersScreen.tsx
 touch src/TransactionInvalidBeaconError.ts
 ```
 
+Error utility class is used to display human readable message from Beacon errors
+
 Edit all files
 
-HomeScreen.tsx
+- HomeScreen.tsx
 
 ```typescript
 import {
@@ -570,7 +595,6 @@ import {
   IonToolbar,
   useIonAlert,
 } from "@ionic/react";
-import { bytes2Char } from "@taquito/utils";
 import { BigNumber } from "bignumber.js";
 import { person } from "ionicons/icons";
 import React, { useEffect, useRef, useState } from "react";
@@ -614,8 +638,6 @@ export const HomeScreen: React.FC = () => {
     refreshStorage,
   } = React.useContext(UserContext) as UserContextType;
 
-  const [description, setDescription] = useState<string>("");
-
   const [newPlayer, setNewPlayer] = useState<address>("" as address);
   const [total_rounds, setTotal_rounds] = useState<nat>(
     new BigNumber(1) as nat
@@ -625,7 +647,6 @@ export const HomeScreen: React.FC = () => {
   useEffect(() => {
     (async () => {
       if (storage) {
-        const metadata: any = await storage.metadata.get("contents");
         const myGames = new Map(); //filtering our games
         Array.from(storage.sessions.keys()).forEach((key) => {
           const session = storage.sessions.get(key);
@@ -638,7 +659,6 @@ export const HomeScreen: React.FC = () => {
           }
         });
         setMyGames(myGames);
-        setDescription(JSON.parse(bytes2Char(metadata)).description);
       } else {
         console.log("storage is not ready yet");
       }
@@ -900,7 +920,18 @@ export const HomeScreen: React.FC = () => {
 };
 ```
 
-SessionScreen.tsx
+Explanation :
+
+- `const createGameModal` : The popup to create a new game
+- `const selectGameModal` : The popup to select a game to join
+- `const [newPlayer, setNewPlayer] = useState<address>("" as address)` : Used on `New Game` form to add on opponent
+- `const [total_rounds, setTotal_rounds] = useState<nat>(new BigNumber(1) as nat)` : Used on `New Game` form to set number of round for one game
+- `const [myGames, setMyGames] = useState<Map<nat, Session>>()` : Used on `Join Game` popup to display game we have created or we are invited to
+- `Array.from(storage.sessions.keys()).forEach((key) => { ... if (session.players.indexOf(userAddress as address) >= 0 && "inplay" in session.result ...` : On storage change event, we fetch and filter only games we can join and play (i.e with `inplay` status and where user appear on list of players)
+- `const createSession = async (...) => { ...  const op = await mainWalletType!.methods.createSession([userAddress as address, newPlayer], total_rounds).send(); ... ` : createSession function will call the Smart contract entrypoint passing on arguments : current user address,opponent address and total rounds, then it will redirect to the game page
+- `{...<IonButton ... routerLink={PAGES.SESSION + "/" + key.toString()}` : If you click on a game button from the list it will redirect you to the game to play
+
+- SessionScreen.tsx
 
 ```typescript
 import { IonPage } from "@ionic/react";
@@ -911,7 +942,9 @@ export const SessionScreen: React.FC = () => {
 };
 ```
 
-TopPlayersScreen.tsx
+We leave it empty for now and edit it later
+
+- TopPlayersScreen.tsx
 
 ```typescript
 import { IonPage } from "@ionic/react";
@@ -922,7 +955,9 @@ export const TopPlayersScreen: React.FC = () => {
 };
 ```
 
-Rules.tsx
+We leave it empty for now and edit it later
+
+- Rules.tsx
 
 ```typescript
 import {
@@ -1010,29 +1045,17 @@ export const RulesScreen: React.FC = () => {
 };
 ```
 
-TransactionInvalidBeaconError.ts
+No need to comment this, it is just static page to display the rules
+
+- TransactionInvalidBeaconError.ts
 
 ```typescript
-const errorMap: Map<string, string> = new Map([
-  ["0", "Enter a positive and not null amount"],
-  ["1", "Operation not allowed, you need to be administrator"],
-  ["2", "You cannot sell more than your current balance"],
-  ["3", "Cannot find the offer you entered for buying"],
-  ["4", "You entered a quantity to buy than is more than the offer quantity"],
-  [
-    "5",
-    "Not enough funds, you need to pay at least quantity * bif price to get the tokens",
-  ],
-  ["6", "Cannot find the contract relative to implicit address"],
-]);
-
 export class TransactionInvalidBeaconError {
   name: string;
   title: string;
   message: string;
   description: string;
   data_contract_handle: string;
-  data_with_string: string;
   data_expected_form: string;
   data_message: string;
 
@@ -1052,7 +1075,6 @@ export class TransactionInvalidBeaconError {
     this.message = transactionInvalidBeaconError.message;
     this.description = transactionInvalidBeaconError.description;
     this.data_contract_handle = "";
-    this.data_with_string = "";
     this.data_expected_form = "";
     this.data_message = this.message;
     if (transactionInvalidBeaconError.data !== undefined) {
@@ -1066,9 +1088,6 @@ export class TransactionInvalidBeaconError {
       );
       this.data_contract_handle =
         contract_handle !== undefined ? contract_handle.contract_handle : "";
-      let withString = dataArray.find((obj) => obj.with !== undefined);
-      this.data_with_string =
-        withString !== undefined ? withString.with.string : "";
       let expected_form = dataArray.find(
         (obj) => obj.expected_form !== undefined
       );
@@ -1082,9 +1101,6 @@ export class TransactionInvalidBeaconError {
         (this.data_contract_handle
           ? "Error on contract : " + this.data_contract_handle + " "
           : "") +
-        (this.data_with_string
-          ? "error : " + errorMap.get(this.data_with_string) + " "
-          : "") +
         (this.data_expected_form
           ? "error : " + this.data_expected_form + " "
           : "");
@@ -1093,49 +1109,796 @@ export class TransactionInvalidBeaconError {
 }
 ```
 
-As Temple is configured well, Click on Connect button
+## Step 4 : Test it
 
-On the popup, select your Temple wallet, then your account and connect. :warning: Do not forget to stay on the "ghostnet" testnet
+We consider that you wallet is well configured and has some XTZ on Ghostnet, so click on Connect button
+(To get some free XTZ on Ghostnet, follow this link to the [faucet](https://faucet.marigold.dev/))
 
-:confetti_ball: your are "logged"
+On the popup, select your Wallet, then your account and connect.
 
-Click on the Disconnect button to logout to test it
+:confetti_ball: You are "logged"
 
-## Step 3 : Access to contract storage and display the state
-
-### Display About metadata
-
-### List sessions
-
-## Step 4 : Create a session
+Click on the Disconnect button to logout
 
 ## Step 5 : Play on a session
 
-## Step 6 : Reveal your choice
+Click on `New Game` button from Home page and then create a new game
+Confirm the operation with your wallet
 
-## Step 7 : Close session
+You are redirected the new game session page (that is empty)
 
-## Now let's try Android version (or iOS if you have this OS instead)
+Edit the file `./src/SessionScreen.tsx`
+
+```typescript
+import {
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonFooter,
+  IonHeader,
+  IonIcon,
+  IonImg,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonPage,
+  IonRefresher,
+  IonRefresherContent,
+  IonSpinner,
+  IonTitle,
+  IonToolbar,
+  useIonAlert,
+} from "@ionic/react";
+import { PackDataParams } from "@taquito/rpc";
+import { MichelCodecPacker } from "@taquito/taquito";
+import { BigNumber } from "bignumber.js";
+import * as crypto from "crypto";
+import { eye, stopCircle } from "ionicons/icons";
+import React, { useEffect, useState } from "react";
+import { RouteComponentProps, useHistory } from "react-router-dom";
+import { Action, PAGES, UserContext, UserContextType } from "../App";
+import { TransactionInvalidBeaconError } from "../TransactionInvalidBeaconError";
+import { bytes, nat, unit } from "../type-aliases";
+
+export enum STATUS {
+  PLAY = "Play !",
+  WAIT_YOUR_OPPONENT_PLAY = "Wait for your opponent move",
+  REVEAL = "Reveal your choice now",
+  WAIT_YOUR_OPPONENT_REVEAL = "Wait for your opponent to reveal his choice",
+  FINISHED = "Game ended",
+}
+
+interface SessionScreenProps
+  extends RouteComponentProps<{
+    id: string;
+  }> {}
+
+export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
+  const [presentAlert] = useIonAlert();
+  const history = useHistory();
+
+  const id: string = match.params.id;
+
+  const {
+    Tezos,
+    userAddress,
+    storage,
+    mainWalletType,
+    setStorage,
+    setLoading,
+    loading,
+    refreshStorage,
+  } = React.useContext(UserContext) as UserContextType;
+
+  const [status, setStatus] = useState<STATUS>();
+  const [remainingTime, setRemainingTime] = useState<number>(10 * 60);
+
+  useEffect(() => {
+    try {
+      const subReveal = Tezos.stream.subscribeEvent({
+        tag: "reveal",
+        address: process.env.REACT_APP_CONTRACT_ADDRESS!,
+      });
+
+      const subNewRound = Tezos.stream.subscribeEvent({
+        tag: "newRound",
+        address: process.env.REACT_APP_CONTRACT_ADDRESS!,
+      });
+
+      subReveal.on("data", (e) => {
+        console.log("on reveal event :", e);
+        if (!e.result.errors || e.result.errors.length === 0) revealPlay();
+        else
+          console.log("Warning : here we ignore a failing transaction event");
+      });
+
+      subNewRound.on("data", (e) => {
+        console.log("on new round event :", e);
+        refreshStorage();
+      });
+    } catch (e) {
+      console.log("Error with Smart contract event pooling", e);
+    }
+  }, []);
+
+  const buildSessionStorageKey = (
+    userAddress: string,
+    sessionNumber: number,
+    roundNumber: number
+  ): string => {
+    return userAddress + "-" + sessionNumber + "-" + roundNumber;
+  };
+
+  const buildSessionStorageValue = (secret: number, action: Action): string => {
+    return (
+      secret + "-" + (action.cisor ? "cisor" : action.paper ? "paper" : "stone")
+    );
+  };
+
+  const extractSessionStorageValue = (
+    value: string
+  ): { secret: number; action: Action } => {
+    const actionStr = value.split("-")[1];
+    return {
+      secret: Number(value.split("-")[0]),
+      action:
+        actionStr === "cisor"
+          ? new Action(true as unit, undefined, undefined)
+          : actionStr === "paper"
+          ? new Action(undefined, true as unit, undefined)
+          : new Action(undefined, undefined, true as unit),
+    };
+  };
+
+  useEffect(() => {
+    if (storage) {
+      const session = storage?.sessions.get(new BigNumber(id) as nat);
+      console.log(
+        "Session has changed",
+        session,
+        "round",
+        session!.current_round.toNumber(),
+        "session.decoded_rounds.get(session.current_round)",
+        session!.decoded_rounds.get(session!.current_round)
+      );
+      if (session && ("winner" in session.result || "draw" in session.result)) {
+        setStatus(STATUS.FINISHED);
+      } else if (session) {
+        if (
+          session.decoded_rounds &&
+          session.decoded_rounds.get(session.current_round) &&
+          session.decoded_rounds.get(session.current_round).length === 1 &&
+          session.decoded_rounds.get(session.current_round)[0].player ===
+            userAddress
+        ) {
+          setStatus(STATUS.WAIT_YOUR_OPPONENT_REVEAL);
+        } else if (
+          session.rounds &&
+          session.rounds.get(session.current_round) &&
+          session.rounds.get(session.current_round).length === 2
+        ) {
+          setStatus(STATUS.REVEAL);
+        } else if (
+          session.rounds &&
+          session.rounds.get(session.current_round) &&
+          session.rounds.get(session.current_round).length === 1 &&
+          session.rounds.get(session.current_round)[0].player === userAddress
+        ) {
+          setStatus(STATUS.WAIT_YOUR_OPPONENT_PLAY);
+        } else {
+          setStatus(STATUS.PLAY);
+        }
+      }
+    } else {
+      console.log("Wait parent to init storage ...");
+    }
+  }, [storage?.sessions.get(new BigNumber(id) as nat)]);
+
+  //setRemainingTime
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const diff = Math.round(
+        (new Date(
+          storage?.sessions.get(new BigNumber(id) as nat).asleep!
+        ).getTime() -
+          Date.now()) /
+          1000
+      );
+
+      if (diff <= 0) {
+        setRemainingTime(0);
+      } else {
+        setRemainingTime(diff);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [storage?.sessions.get(new BigNumber(id) as nat)]);
+
+  const play = async (action: Action) => {
+    const session_id = new BigNumber(id) as nat;
+    const current_session = storage?.sessions.get(session_id);
+    try {
+      setLoading(true);
+      const secret = Math.round(Math.random() * 63); //FIXME it should be 654843, but we limit the size of the output hexa because expo-crypto is buggy
+      // see https://forums.expo.dev/t/how-to-hash-buffer-with-expo-for-an-array-reopen/64587 or https://github.com/expo/expo/issues/20706 );
+      localStorage.setItem(
+        buildSessionStorageKey(
+          userAddress,
+          Number(id),
+          storage!.sessions
+            .get(new BigNumber(id) as nat)
+            .current_round.toNumber()
+        ),
+        buildSessionStorageValue(secret, action)
+      );
+      console.log("PLAY - pushing to session storage ", secret, action);
+      const encryptedAction = await create_bytes(action, secret);
+      console.log(
+        "encryptedAction",
+        encryptedAction,
+        "session_id",
+        session_id,
+        "current_round",
+        current_session!.current_round
+      );
+
+      const preparedCall = mainWalletType!.methods.play(
+        encryptedAction,
+        current_session!.current_round,
+        session_id
+      );
+
+      const { gasLimit, storageLimit, suggestedFeeMutez } =
+        await Tezos.estimate.transfer({
+          ...preparedCall.toTransferParams(),
+          amount: 1,
+          mutez: false,
+        });
+
+      console.log({ gasLimit, storageLimit, suggestedFeeMutez });
+      const op = await preparedCall.send({
+        gasLimit: gasLimit + 1000, //we take a margin +100 for an eventual event in case of paralell execution
+        fee: suggestedFeeMutez,
+        storageLimit: storageLimit,
+        amount: 1,
+        mutez: false,
+      });
+
+      await op?.confirmation();
+      const newStorage = await mainWalletType!.storage();
+      setStorage(newStorage);
+      setLoading(false);
+      console.log("newStorage", newStorage);
+    } catch (error) {
+      console.table(`Error: ${JSON.stringify(error, null, 2)}`);
+      let tibe: TransactionInvalidBeaconError =
+        new TransactionInvalidBeaconError(error);
+      presentAlert({
+        header: "Error",
+        message: tibe.data_message,
+        buttons: ["Close"],
+      });
+      setLoading(false);
+    }
+    setLoading(false);
+  };
+
+  const revealPlay = async () => {
+    const session_id = new BigNumber(id) as nat;
+    const current_session = storage?.sessions.get(session_id);
+
+    //fecth from session storage
+    const secretActionStr = localStorage.getItem(
+      buildSessionStorageKey(
+        userAddress,
+        session_id.toNumber(),
+        current_session!.current_round.toNumber()
+      )
+    );
+
+    if (!secretActionStr) {
+      presentAlert({
+        header: "Internal error",
+        message:
+          "You lose the session storage, no more possible to retrieve secrets, stop Session please",
+        buttons: ["Close"],
+      });
+      setLoading(false);
+      return;
+    }
+
+    const secretAction = extractSessionStorageValue(secretActionStr);
+    console.log("REVEAL - Fetch from session storage", secretAction);
+
+    try {
+      setLoading(true);
+      const encryptedAction = await packAction(secretAction.action);
+
+      const preparedCall = await mainWalletType!.methods.revealPlay(
+        encryptedAction as bytes,
+        new BigNumber(secretAction.secret) as nat,
+        current_session!.current_round,
+        session_id
+      );
+
+      const { gasLimit, storageLimit, suggestedFeeMutez } =
+        await Tezos.estimate.transfer(preparedCall.toTransferParams());
+
+      //console.log({ gasLimit, storageLimit, suggestedFeeMutez });
+      const op = await preparedCall.send({
+        gasLimit: gasLimit * 3,
+        fee: suggestedFeeMutez,
+        storageLimit: storageLimit * 3, //we take a margin in case of paralell execution
+      });
+      await op?.confirmation();
+      const newStorage = await mainWalletType!.storage();
+      setStorage(newStorage);
+      setLoading(false);
+      console.log("newStorage", newStorage);
+    } catch (error) {
+      console.table(`Error: ${JSON.stringify(error, null, 2)}`);
+      let tibe: TransactionInvalidBeaconError =
+        new TransactionInvalidBeaconError(error);
+      presentAlert({
+        header: "Error",
+        message: tibe.data_message,
+        buttons: ["Close"],
+      });
+      setLoading(false);
+    }
+    setLoading(false);
+  };
+
+  /** Pack an action variant to bytes. Same is Pack.bytes()  */
+  async function packAction(action: Action): Promise<string> {
+    const p = new MichelCodecPacker();
+    let actionbytes: PackDataParams = {
+      data: action.stone
+        ? { prim: "Right", args: [{ prim: "Unit" }] }
+        : action.cisor
+        ? { prim: "Left", args: [{ prim: "Left", args: [{ prim: "Unit" }] }] }
+        : { prim: "Left", args: [{ prim: "Right", args: [{ prim: "Unit" }] }] },
+      type: {
+        prim: "Or",
+        annots: ["%action"],
+        args: [
+          {
+            prim: "Or",
+            args: [
+              { prim: "Unit", annots: ["%cisor"] },
+              { prim: "Unit", annots: ["%paper"] },
+            ],
+          },
+          { prim: "Unit", annots: ["%stone"] },
+        ],
+      },
+    };
+    return (await p.packData(actionbytes)).packed;
+  }
+
+  /** Pack an pair [actionBytes,secret] to bytes. Same is Pack.bytes()  */
+  async function packActionBytesSecret(
+    actionBytes: bytes,
+    secret: number
+  ): Promise<string> {
+    const p = new MichelCodecPacker();
+    let actionBytesSecretbytes: PackDataParams = {
+      data: {
+        prim: "Pair",
+        args: [{ bytes: actionBytes }, { int: secret.toString() }],
+      },
+      type: {
+        prim: "pair",
+        args: [
+          {
+            prim: "bytes",
+          },
+          { prim: "nat" },
+        ],
+      },
+    };
+    return (await p.packData(actionBytesSecretbytes)).packed;
+  }
+
+  const stopSession = async () => {
+    try {
+      setLoading(true);
+      const op = await mainWalletType!.methods
+        .stopSession(new BigNumber(id) as nat)
+        .send();
+      await op?.confirmation(2);
+      const newStorage = await mainWalletType!.storage();
+      setStorage(newStorage);
+      setLoading(false);
+      console.log("newStorage", newStorage);
+    } catch (error) {
+      console.table(`Error: ${JSON.stringify(error, null, 2)}`);
+      let tibe: TransactionInvalidBeaconError =
+        new TransactionInvalidBeaconError(error);
+      presentAlert({
+        header: "Error",
+        message: tibe.data_message,
+        buttons: ["Close"],
+      });
+      setLoading(false);
+    }
+    setLoading(false);
+  };
+
+  const create_bytes = async (
+    action: Action,
+    secret: number
+  ): Promise<bytes> => {
+    const actionBytes = (await packAction(action)) as bytes;
+    console.log("actionBytes", actionBytes);
+    const bytes = (await packActionBytesSecret(actionBytes, secret)) as bytes;
+    console.log("bytes", bytes);
+
+    /* correct implemetation with a REAL library */
+    const encryptedActionSecret = crypto
+      .createHash("sha512")
+      .update(Buffer.from(bytes, "hex"))
+      .digest("hex") as bytes;
+
+    console.log("encryptedActionSecret", encryptedActionSecret);
+    return encryptedActionSecret;
+  };
+
+  const getFinalResult = (): string | undefined => {
+    if (storage) {
+      const result = storage.sessions.get(new BigNumber(id) as nat).result;
+      if ("winner" in result && result.winner === userAddress) return "win";
+      if ("winner" in result && result.winner !== userAddress) return "lose";
+      if ("draw" in result) return "draw";
+    }
+  };
+
+  const isDesktop = () => {
+    const { innerWidth } = window;
+    if (innerWidth > 800) return true;
+    else return false;
+  };
+
+  return (
+    <IonPage className="container">
+      <IonHeader>
+        <IonToolbar>
+          <IonButtons slot="start">
+            <IonButton onClick={() => history.goBack()}>Back</IonButton>
+          </IonButtons>
+          <IonTitle>Game n°{id}</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent fullscreen>
+        <IonRefresher slot="fixed" onIonRefresh={refreshStorage}>
+          <IonRefresherContent></IonRefresherContent>
+        </IonRefresher>
+        {loading ? (
+          <div className="loading">
+            <IonItem>
+              <IonLabel>Refreshing ...</IonLabel>
+              <IonSpinner className="spinner"></IonSpinner>
+            </IonItem>
+          </div>
+        ) : (
+          <>
+            <IonList inset={true} style={{ textAlign: "left" }}>
+              {status !== STATUS.FINISHED ? (
+                <IonItem className="nopm">Status : {status}</IonItem>
+              ) : (
+                ""
+              )}
+              <IonItem className="nopm">
+                <span>
+                  Opponent :{" "}
+                  {storage?.sessions
+                    .get(new BigNumber(id) as nat)
+                    .players.find((userItem) => userItem !== userAddress)}
+                </span>
+              </IonItem>
+
+              {status !== STATUS.FINISHED ? (
+                <IonItem className="nopm">
+                  Round :
+                  {Array.from(
+                    Array(
+                      storage?.sessions
+                        .get(new BigNumber(id) as nat)
+                        .total_rounds.toNumber()
+                    ).keys()
+                  ).map((roundId) => {
+                    const currentRound: number = storage
+                      ? storage?.sessions
+                          .get(new BigNumber(id) as nat)!
+                          .current_round!.toNumber() - 1
+                      : 0;
+                    const roundwinner = storage?.sessions
+                      .get(new BigNumber(id) as nat)
+                      .board.get(new BigNumber(roundId + 1) as nat);
+
+                    return (
+                      <div
+                        key={roundId + "-" + roundwinner}
+                        className={
+                          !roundwinner && roundId > currentRound
+                            ? "missing"
+                            : !roundwinner && roundId === currentRound
+                            ? "current"
+                            : !roundwinner
+                            ? "draw"
+                            : roundwinner === userAddress
+                            ? "win"
+                            : "lose"
+                        }
+                      ></div>
+                    );
+                  })}
+                </IonItem>
+              ) : (
+                ""
+              )}
+
+              {status !== STATUS.FINISHED ? (
+                <IonItem className="nopm">
+                  {"Remaining time :" + remainingTime + " s"}
+                </IonItem>
+              ) : (
+                ""
+              )}
+            </IonList>
+
+            {status === STATUS.FINISHED ? (
+              <IonImg
+                className={"logo-XXL" + (isDesktop() ? "" : " mobile")}
+                src={
+                  process.env.PUBLIC_URL +
+                  "/assets/" +
+                  getFinalResult() +
+                  ".png"
+                }
+              />
+            ) : (
+              ""
+            )}
+
+            {status === STATUS.PLAY ? (
+              <IonList lines="none" style={{ marginLeft: "calc(50vw - 70px)" }}>
+                <IonItem style={{ margin: 0, padding: 0 }}>
+                  <IonButton
+                    style={{ height: "auto" }}
+                    onClick={() =>
+                      play(new Action(true as unit, undefined, undefined))
+                    }
+                  >
+                    <IonImg
+                      src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
+                      className="logo"
+                    />
+                  </IonButton>
+                </IonItem>
+                <IonItem style={{ margin: 0, padding: 0 }}>
+                  <IonButton
+                    style={{ height: "auto" }}
+                    onClick={() =>
+                      play(new Action(undefined, true as unit, undefined))
+                    }
+                  >
+                    <IonImg
+                      src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
+                      className="logo"
+                    />
+                  </IonButton>
+                </IonItem>
+                <IonItem style={{ margin: 0, padding: 0 }}>
+                  <IonButton
+                    style={{ height: "auto" }}
+                    onClick={() =>
+                      play(new Action(undefined, undefined, true as unit))
+                    }
+                  >
+                    <IonImg
+                      src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
+                      className="logo"
+                    />
+                  </IonButton>
+                </IonItem>
+              </IonList>
+            ) : (
+              ""
+            )}
+
+            {status === STATUS.REVEAL ? (
+              <IonButton onClick={() => revealPlay()}>
+                <IonIcon icon={eye} />
+                Reveal
+              </IonButton>
+            ) : (
+              ""
+            )}
+            {remainingTime === 0 && status !== STATUS.FINISHED ? (
+              <IonButton onClick={() => stopSession()}>
+                <IonIcon icon={stopCircle} />
+                Claim victory
+              </IonButton>
+            ) : (
+              ""
+            )}
+          </>
+        )}
+      </IonContent>
+      <IonFooter>
+        <IonToolbar>
+          <IonTitle>
+            <IonButton routerLink={PAGES.RULES} expand="full">
+              Rules
+            </IonButton>
+          </IonTitle>
+        </IonToolbar>
+      </IonFooter>
+    </IonPage>
+  );
+};
+```
+
+Explanations :
+
+- `export enum STATUS {...` : This enum is used to guess what is the actual status of the game based on different field values. It gives for connected user the next action to do, and so control the display of the buttons
+- `const subReveal = Tezos.stream.subscribeEvent({tag: "reveal",...` : websocket subscription to smartcontract `reveal` event. When is time to reveal, we can trigger the action from the mobile without asking the user to click on the button
+- `const subNewRound = Tezos.stream.subscribeEvent({tag: "newRound",...` : websocket subscription to smartcontract `newround` event. when a new round is ready, this event notifies the mobile to refresh the current game so the player can play on next round
+- `const buildSessionStorageKey ...` : this function is an helper to store on browser storage a unique secret key of the player. This secret is a salt that is added to encrypt the Play action and then to decrypt the Reveal action
+- `const buildSessionStorageValue ...` : same as above but for the value stored as a string
+- `const play = async (action: Action) => { ... ` : Play action. We create a player secret for this Play action randomly `Math.round(Math.random() * 63)` and store it on the browser storage `localStorage.setItem(buildSessionStorageKey(...`. Then we pack and ecrypt the Play action calling `create_bytes(action, secret)`, we estimate the cost of the transaction and we add an extra for the event cost `mainWalletType!.methods.play(encryptedAction,current_session!.current_round,session_id) ... Tezos.estimate.transfer(...) ... preparedCall.send({gasLimit: gasLimit + 1000, ...`. We ask 1 XTZ for each player doing a Play action. This money is stacked on the contract and free/dispatched when game is ended. Shifumi game does not take any extra fee by default. Only players win or lose money
+- `const revealPlay = async () => {...` : Reveal action. We fetch the secret from `localStorage.getItem(...`, then we pack the secret action and we reveal what was the secret `mainWalletType!.methods.revealPlay(encryptedAction as bytes,new BigNumber(secretAction.secret) as nat,current_session!.current_round,session_id);`. We add again some extra gas limit `gasLimit: gasLimit * 3`. Note on why to increase the gas limit : the reason is because if two players reveal actions are on the same block, the primary estimation of gas made by the wallet will not be enough. The reason is that the execution of the second reveal play action will execute another business logic because the first action will modify the initial state, so the estimation at this time (i.e with this previous state) is no more valid
+- `const getFinalResult` : based on some fields, it will give the final Status of the game once is ended. when game is ended the winner will get the money stacked by the loser. In case of draw, stacked money is sent back to the players.
+- `const stopSession = async () => {...`: There is a countdown of 10min while inaction. If no player wants to play anymore and the game is unfinished, someone can claim the victory and close the game calling `mainWalletType!.methods.stopSession(`. The smart contract will look at different configuration to guess if there is someone guilty or it is just a draw because no one want to play anymore. Gains will be sent to the winner or in a case of draw, will be sent back to players
+
+## Step 6 : Top player score page
+
+Last step is to see the score of all players
+
+Edit TopPlayersScreen.tsx
+
+```typescript
+import {
+  IonButton,
+  IonButtons,
+  IonCol,
+  IonContent,
+  IonGrid,
+  IonHeader,
+  IonImg,
+  IonPage,
+  IonRefresher,
+  IonRefresherContent,
+  IonRow,
+  IonTitle,
+  IonToolbar,
+} from "@ionic/react";
+import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import { UserContext, UserContextType } from "../App";
+import { nat } from "../type-aliases";
+
+export const TopPlayersScreen: React.FC = () => {
+  const history = useHistory();
+  const { storage, refreshStorage } = React.useContext(
+    UserContext
+  ) as UserContextType;
+
+  const [ranking, setRanking] = useState<Map<string, number>>(new Map());
+
+  useEffect(() => {
+    (async () => {
+      if (storage) {
+        let ranking = new Map(); //force refresh
+        Array.from(storage.sessions.keys()).forEach((key: nat) => {
+          let result = storage.sessions.get(key).result;
+          if ("winner" in result) {
+            const winner = result.winner;
+            let score = ranking.get(winner);
+            if (score) score++;
+            else score = 1;
+            ranking.set(winner, score);
+          }
+        });
+
+        setRanking(ranking);
+      } else {
+        console.log("storage is not ready yet");
+      }
+    })();
+  }, [storage]);
+
+  /* 2. Get the param */
+  return (
+    <IonPage className="container">
+      <IonHeader>
+        <IonToolbar>
+          <IonButtons slot="start">
+            <IonButton onClick={() => history.goBack()}>Back</IonButton>
+          </IonButtons>
+          <IonTitle>Top Players</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent fullscreen>
+        <IonRefresher slot="fixed" onIonRefresh={refreshStorage}>
+          <IonRefresherContent></IonRefresherContent>
+        </IonRefresher>
+        <div style={{ marginLeft: "40vw" }}>
+          <IonImg
+            src={process.env.PUBLIC_URL + "/assets/ranking.png"}
+            className="ranking"
+            style={{ height: "10em", width: "5em" }}
+          />
+        </div>
+
+        <IonGrid fixed={true} style={{ color: "white", padding: "2vh" }}>
+          <IonRow
+            style={{
+              backgroundColor: "var(--ion-color-primary)",
+            }}
+          >
+            <IonCol className="col">Address</IonCol>
+            <IonCol size="2" className="col">
+              Won
+            </IonCol>
+          </IonRow>
+
+          {ranking && ranking.size > 0
+            ? Array.from(ranking).map(([address, count]) => (
+                <IonRow
+                  style={{
+                    backgroundColor: "var(--ion-color-secondary)",
+                  }}
+                >
+                  <IonCol className="col tiny">{address}</IonCol>
+                  <IonCol size="2" className="col">
+                    {count}
+                  </IonCol>
+                </IonRow>
+              ))
+            : []}
+        </IonGrid>
+      </IonContent>
+    </IonPage>
+  );
+};
+```
+
+Explanations :
+
+- `let ranking = new Map()` : we prepare a map to count the score for each winner. Looping of all sessions `storage.sessions.keys()).forEach` we take only where there is a winner `if ("winner" in result)`then we increment score `if (score) score++;else score = 1` and push it to the map `ranking.set(winner, score);`
+
+## Step 7 : Bundle for Android
 
 > Note : you need to install [Android SDK](https://developer.android.com/about/versions/13/setup-sdk) or [iOS]() stack first
 
-Prepare android release
+Stay on the app folder, and prepare Android release
 
-```
+```bash
 ionic capacitor add android
 ```
 
-For Capacitor, open the capacitor.config.json file and modify the appId property.
+To modify the name of your app, open the `capacitor.config.json` file and change `appId` and `appName` properties
 
-```
+> Hack : To be sure that the symlink is done and ionic capacitor will not have issue with crypto library, you can re-run : `npm run postinstall`
+
+Then these lines will copy all to android folder + the images ressources used by the store
+
+```bash
 ionic capacitor copy android
 
 npm install -g cordova-res
 cordova-res android --skip-config --copy
 ```
 
-Note : in case of broken gradle : ionic capacitor sync android, ionic capacitor update and click on sync on Android studio > build
-Note on .gitignore on android folder and git uncommitted fields : git add android/app/src/main/assets/\* -f , git add capacitor-cordova-android-plugins -f
+Open Android Studio
+
+> Note 1 : in case of broken gradle : ionic capacitor sync android, ionic capacitor update and click on sync on Android studio > build
+> Note 2 : If you have `WSL2` and difficulties to run an emulator on it, I advice you to install Android studio on Windows and build, test and package all on this OS. Push your files on your git repo, and check on .gitignore for `android` folder that there is no filters on assets. If yes, force it to be included on committed files : `git add android/app/src/main/assets/\* -f , git add capacitor-cordova-android-plugins -f`
+
+## Step 8 : Publish your app to Google Play store
 
 # :palm_tree: Conclusion :sun_with_face:
 
