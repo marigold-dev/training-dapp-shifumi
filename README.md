@@ -1888,14 +1888,13 @@ Then these lines will copy all to android folder + the images ressources used by
 
 ```bash
 ionic capacitor copy android
-
 npm install -g cordova-res
 cordova-res android --skip-config --copy
 ionic capacitor sync android
 ionic capacitor update
 ```
 
-Open Android Studio
+Open Android Studio and do a `Build` or `Make Project` action
 
 > Note 1 : in case of broken gradle : ionic capacitor sync android, ionic capacitor update and click on sync on Android studio > build
 
@@ -1916,7 +1915,7 @@ Comment end lines on file app/android/.gitignore
 #app/src/main/res/xml/config.xml
 ```
 
-If yes, force it to be included on committed files : `git add android/app/src/main/assets/\* -f ; git add android/capacitor-cordova-android-plugins -f`
+If yes, force it to be included on committed files : `git add android/app/src/main/assets/  ; git add android/capacitor-cordova-android-plugins/`
 
 ## Step 8 : Publish your app to Google Play store
 
