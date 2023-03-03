@@ -1891,6 +1891,7 @@ ionic capacitor copy android
 
 npm install -g cordova-res
 cordova-res android --skip-config --copy
+ionic capacitor sync android
 ```
 
 Open Android Studio
