@@ -1899,7 +1899,24 @@ Open Android Studio
 
 > Note 1 : in case of broken gradle : ionic capacitor sync android, ionic capacitor update and click on sync on Android studio > build
 
-> Note : If you have `WSL2` and difficulties to run an emulator on it, I advice you to install Android studio on Windows and build, test and package all on this OS. Push your files on your git repo, and check on .gitignore for `android` folder that there is no filters on assets. If yes, force it to be included on committed files : `git add android/app/src/main/assets/\* -f ; git add android/capacitor-cordova-android-plugins -f`
+> Note : If you have `WSL2` and difficulties to run an emulator on it, I advice you to install Android studio on Windows and build, test and package all on this OS. Push your files on your git repo, and check on .gitignore for `android` folder that there is no filters on assets.
+
+Comment end lines on file app/android/.gitignore
+
+```
+# Cordova plugins for Capacitor
+#capacitor-cordova-android-plugins
+
+# Copied web assets
+#app/src/main/assets/public
+
+# Generated Config files
+#app/src/main/assets/capacitor.config.json
+#app/src/main/assets/capacitor.plugins.json
+#app/src/main/res/xml/config.xml
+```
+
+If yes, force it to be included on committed files : `git add android/app/src/main/assets/\* -f ; git add android/capacitor-cordova-android-plugins -f`
 
 ## Step 8 : Publish your app to Google Play store
 
