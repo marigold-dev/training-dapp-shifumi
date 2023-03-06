@@ -1896,28 +1896,79 @@ ionic capacitor update
 
 Open Android Studio and do a `Build` or `Make Project` action
 
-> Note 1 : in case of broken gradle : ionic capacitor sync android, ionic capacitor update and click on sync on Android studio > build
-
+> Note 1 : in case of broken gradle : ionic capacitor sync android and click on sync on Android studio > build
+>
 > Note : If you have `WSL2` and difficulties to run an emulator on it, I advice you to install Android studio on Windows and build, test and package all on this OS. Push your files on your git repo, and check on .gitignore for `android` folder that there is no filters on assets.
+> Comment end lines on file app/android/.gitignore
+>
+> ```
+> # Cordova plugins for Capacitor
+> #capacitor-cordova-android-plugins
+>
+> # Copied web assets
+> #app/src/main/assets/public
+>
+> # Generated Config files
+> #app/src/main/assets/capacitor.config.json
+> #app/src/main/assets/capacitor.plugins.json
+> #app/src/main/res/xml/config.xml
+> ```
+>
+> and comment also the `node_modules` at your root project because it will require files from @capacitor and you need to install this libraries
+>
+> ```
+> #node_modules/
+> ```
+>
+> Force it to be included on committed files : `git add android/app/src/main/assets/  ; git add android/capacitor-cordova-android-plugins/` and push to git
+> Then try again `Build` or `Make Project` action on Android Studio
 
-Comment end lines on file app/android/.gitignore
+![build.png](./doc/build.png)
 
+Start the emulator of your choice (or a physical device) and click on `Run app`
+
+![run.png](./doc/run.png)
+
+I recommend to connect with a web wallet like Kukai (because some mobile wallet does not work on the emulator)
+
+![kukai.png](./doc/kukai.png)
+
+Once connected, you can start a new game
+
+![home.png](./doc/home.png)
+
+Invite Alice to play, click on the address of the opponent player and enter this on your Android Studio terminal
+
+```bash
+adb shell input text "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb"
 ```
-# Cordova plugins for Capacitor
-#capacitor-cordova-android-plugins
 
-# Copied web assets
-#app/src/main/assets/public
+![alice.png](./doc/alice.png)
 
-# Generated Config files
-#app/src/main/assets/capacitor.config.json
-#app/src/main/assets/capacitor.plugins.json
-#app/src/main/res/xml/config.xml
-```
+then click on Create on top right button
+Confirm the transaction in Kukai and come back to the app
 
-If yes, force it to be included on committed files : `git add android/app/src/main/assets/  ; git add android/capacitor-cordova-android-plugins/`
+Perfect, the round is starting !
+
+Now you can run the web version on VScode, connect with alice and play the party with your 2 players
+
+Watch the video here to see how to finish a round/party
+
+![youtube](https://www.youtube.com/watch?v=SHg8VPmF_NY)
 
 ## Step 8 : Publish your app to Google Play store
+
+To publish your app to Android store, read the Google documentation.
+You will need a developer account : https://developer.android.com/distribute/console/
+It costs $25 for life (Apple developer account costs 99$/ year ...)
+
+Go to Build > Generate Signed bundle / APK...
+![sign.png](./doc/sign.png)
+
+Follow the Google instruction to set your keystore, and click next.
+Watch where your binary is store and upload it to your Google Play console app
+
+After passing a long configuration of your application and passed all Google validation, your app will be published
 
 # :palm_tree: Conclusion :sun_with_face:
 
