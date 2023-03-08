@@ -1970,6 +1970,7 @@ Watch the video here to see how to play a party
 
 To publish your app to Android store, read the Google documentation.
 You will need a developer account : https://developer.android.com/distribute/console/
+
 It costs 25$ for life (for information : Apple developer account costs 99$/ year ...)
 
 Go to Build > Generate Signed bundle / APK...
