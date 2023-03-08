@@ -54,7 +54,7 @@ cp -r shifumiTemplate/src/* contracts/
 
 ## Step 2 : Add initial storage and compile
 
-Compile the contract once to create the default file `main.storageList.jsligo` for deployment
+Compile the contract once, in order to create the default required file `main.storageList.jsligo` used at deployment step later
 
 ```bash
 taq compile main.jsligo
@@ -132,9 +132,9 @@ HOORAY :confetti_ball: your smart contract is ready on the Ghostnet !
 
 # Mobile app
 
-We will use Ionic React to be able to reuse the beaconSDK (Typescript) on a webview
+We will use Ionic React to be able to reuse the [BeaconSDK](https://github.com/airgap-it/beacon-sdk) (Typescript) on a webview. Beacon is the protocol of communication between the dapp and the wallet.
 
-> Note : I do not recommend right know to develop a dapp in Flutter or React Native because you will need to use native beacon library without wallet popup mechanism to conffirm transactions
+> Note : I do not recommend right know to develop a dapp in Flutter or React Native because you will need to use native beacon library without wallet popup mechanism to confirm transactions
 
 ## Step 1 : Install IONIC
 
@@ -145,14 +145,14 @@ npm install -g @ionic/cli
 ionic start app blank --type react
 ```
 
-Generate Smart contract types from taqueria plugin
+Generate Smart contract types from taqueria plugin. It will generate Typescript classes from Smart contract interface definition that we will use on our frontend.
 
 ```bash
 taq install @taqueria/plugin-contract-types
 taq generate types ./app/src
 ```
 
-Install require tezos web3 dependencies
+Install required Tezos web3 dependencies
 
 ```
 cd app
@@ -214,7 +214,7 @@ Modify the default `package.json` default scripts (to fix an issue between ionic
   },
 ```
 
-Run web version for development
+Run web version as it is easier to develop/test/debug first (Note : Remember postinstall will create the missing symbolic link we need to fix Ionic/React current issue with web3 ..)
 
 ```bash
 npm run postinstall
@@ -1116,7 +1116,7 @@ export class TransactionInvalidBeaconError {
 ## Step 4 : Test it
 
 We consider that you wallet is well configured and has some XTZ on Ghostnet, so click on Connect button
-(To get some free XTZ on Ghostnet, follow this link to the [faucet](https://faucet.marigold.dev/))
+(Note : If you don't have tokens, to get some free XTZ on Ghostnet, follow this link to the [faucet](https://faucet.marigold.dev/))
 
 On the popup, select your Wallet, then your account and connect.
 
@@ -1124,12 +1124,12 @@ On the popup, select your Wallet, then your account and connect.
 
 Click on the Disconnect button to logout
 
-## Step 5 : Play on a session
+## Step 5 : Play on a game session
 
 Click on `New Game` button from Home page and then create a new game
 Confirm the operation with your wallet
 
-You are redirected the new game session page (that is empty)
+You are redirected the new game session page (that is blank page right now)
 
 Edit the file `./src/SessionScreen.tsx`
 
@@ -1757,11 +1757,13 @@ Explanations :
 - `const getFinalResult` : based on some fields, it will give the final Status of the game once is ended. when game is ended the winner will get the money stacked by the loser. In case of draw, stacked money is sent back to the players.
 - `const stopSession = async () => {...`: There is a countdown of 10min while inaction. If no player wants to play anymore and the game is unfinished, someone can claim the victory and close the game calling `mainWalletType!.methods.stopSession(`. The smart contract will look at different configuration to guess if there is someone guilty or it is just a draw because no one want to play anymore. Gains will be sent to the winner or in a case of draw, will be sent back to players
 
+When page refreshed, then you can see the game session :bowtie:
+
 ## Step 6 : Top player score page
 
 Last step is to see the score of all players
 
-Edit TopPlayersScreen.tsx
+Edit `TopPlayersScreen.tsx`
 
 ```typescript
 import {
@@ -1874,9 +1876,13 @@ Explanations :
 
 - `let ranking = new Map()` : we prepare a map to count the score for each winner. Looping of all sessions `storage.sessions.keys()).forEach` we take only where there is a winner `if ("winner" in result)`then we increment score `if (score) score++;else score = 1` and push it to the map `ranking.set(winner, score);`
 
+Ok, so we have all pages now. The Game dapp is done ! :sunglasses:
+
 ## Step 7 : Bundle for Android
 
-> Note : you need to install [Android SDK](https://developer.android.com/about/versions/13/setup-sdk) or [iOS]() stack first
+If you want the Android version of the game, follow below instructions
+
+> Note : you need to install [Android SDK](https://developer.android.com/about/versions/13/setup-sdk) or [iOS](https://developer.apple.com/documentation/xcode) stack. Recommendation : Easier to start with Android
 
 Stay on the app folder, and prepare Android release
 
@@ -1886,7 +1892,7 @@ ionic capacitor add android
 
 To modify the name of your app, open the `capacitor.config.json` file and change `appId` and `appName` properties
 
-> Hack : To be sure that the symlink is done and ionic capacitor will not have issue with crypto library, you can re-run : `npm run postinstall`
+> Hack : To be sure that the symlink is done and ionic capacitor will not have issue with crypto library, in case you can re-run : `npm run postinstall`
 
 Then these lines will copy all to android folder + the images ressources used by the store
 
@@ -1956,7 +1962,7 @@ Perfect, the round is starting !
 
 Now you can run the web version on VScode, connect with alice and play the party with your 2 players
 
-Watch the video here to see how to finish a round/party
+Watch the video here to see how to play a party
 
 ![youtube](https://www.youtube.com/watch?v=SHg8VPmF_NY)
 
@@ -1964,15 +1970,15 @@ Watch the video here to see how to finish a round/party
 
 To publish your app to Android store, read the Google documentation.
 You will need a developer account : https://developer.android.com/distribute/console/
-It costs $25 for life (Apple developer account costs 99$/ year ...)
+It costs $25 for life (for information : Apple developer account costs 99$/ year ...)
 
 Go to Build > Generate Signed bundle / APK...
 ![sign.png](./doc/sign.png)
 
 Follow the Google instruction to set your keystore, and click next.
-Watch where your binary is store and upload it to your Google Play console app
+Watch where your binary is stored and upload it to your Google Play console app
 
-After passing a long configuration of your application and passed all Google validation, your app will be published
+After passing a (long) configuration of your application on Google Play Store and passed all Google validations, your app will be published and everyone can download it on Earth
 
 # :palm_tree: Conclusion :sun_with_face:
 
