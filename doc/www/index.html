@@ -1,0 +1,1984 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Training mobile Shifumi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100;0,200;0,300;1,200&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
+      integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls"
+      crossorigin="anonymous"
+    />
+    <link href="./main.css" rel="stylesheet" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/images/favicon-16x16.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/images/favicon-32x32.png"
+    />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Training mobile Shifumi" />
+    <meta
+      property="og:description"
+      content="Trainings mobile Shifumi decentralized application for Tezos blockchain made by Marigold"
+    />
+    <meta
+      property="og:url"
+      content="https://marigold-dev.github.io/training-dapp-shifumi/"
+    />
+    <meta property="og:site_name" content="Training mobile Shifumi" />
+    <meta property="og:image:width" content="400" />
+    <meta property="og:image:height" content="400" />
+    <meta name="twitter:card" content="summary" />
+    <meta
+      name="twitter:description"
+      content="Trainings mobile Shifumi decentralized application for Tezos blockchain made by Marigold."
+    />
+    <meta name="twitter:title" content="Training mobile Shifumi" />
+    <meta name="twitter:site" content="@tezos" />
+    <meta name="twitter:creator" content="@Marigold_Dev" />
+  </head>
+  <body>
+    <div class="container">
+      <input type="checkbox" class="toggle-button" />
+    </div>
+    <section>
+<h2>📍 <a href="https://github.com/marigold-dev/training-dapp-shifumi">See Github version and full code here</a></h2>
+</section>
+<section>
+<h1>Training Shifumi (📱 version)</h1>
+</section>
+<section>
+<h1>✊ ✋ ✌️ Shifumi 🗻 📄 ✂️</h1>
+<p><img src="./solution/app/public/assets/picHOME.png" alt="home"></p>
+<p>Rock paper scissors (also known by other orderings of the three items, with &quot;rock&quot; sometimes being called &quot;stone,&quot; or as Rochambeau, roshambo, or ro-sham-bo) is a hand game originating from China, usually played between two people, in which each player simultaneously forms one of three shapes with an outstretched hand.</p>
+<p>These shapes are &quot;rock&quot; (a closed fist), &quot;paper&quot; (a flat hand), and &quot;scissors&quot; (a fist with the index finger and middle finger extended, forming a V). &quot;Scissors&quot; is identical to the two-fingered V sign (also indicating &quot;victory&quot; or &quot;peace&quot;) except that it is pointed horizontally instead of being held upright in the air.</p>
+<p><a href="https://en.wikipedia.org/wiki/Rock_paper_scissors">Wikipedia link</a></p>
+</section>
+<section>
+<h1>📝 Prerequisites</h1>
+<p>Please install this software first on your machine or use online alternative :</p>
+<ul>
+<li>[ ] <a href="https://code.visualstudio.com/download">VS Code</a> : as text editor</li>
+<li>[ ] <a href="https://nodejs.org/en/download/">npm</a> : we will use a typescript React client app</li>
+<li>[ ] <a href="https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable">yarn</a> : because yet another package manager (https://www.geeksforgeeks.org/difference-between-npm-and-yarn/)</li>
+<li>[ ] <a href="https://github.com/ecadlabs/taqueria">taqueria v0.28.3</a> : Tezos Dapp project tooling</li>
+<li>[ ] <a href="https://marketplace.visualstudio.com/items?itemName=ecadlabs.taqueria-vscode">taqueria VS Code extension</a> : visualize your project and execute tasks</li>
+<li>[ ] <a href="https://marketplace.visualstudio.com/items?itemName=ligolang-publish.ligo-vscode">ligo VS Code extension</a> : for smart contract highlighting, completion, etc ..</li>
+<li>[ ] <a href="https://templewallet.com/">Temple wallet</a> : an easy to use Tezos wallet in your browser (but any other should work, as we will see Kukai is a good option for the Android emulator)</li>
+<li>[ ] <a href="https://docs.docker.com/engine/install/">Docker</a> you cannot do anything without containers today ...</li>
+</ul>
+<blockquote>
+<p>⚠️ 🐳 About Taqueria : taqueria is using software images from Docker to run Ligo, etc ... Docker should be running on your machine 🐋</p>
+</blockquote>
+</section>
+<section>
+<h1>📜 Smart contract</h1>
+<section>
+<h2>Step 1 : Create folder &amp; file</h2>
+<blockquote>
+<p>Note : We will use CLI here but you can also use GUI from the IDE or Taqueria plugin</p>
+</blockquote>
+<pre class="hljs language-bash"><code>taq init shifumi
+<span class="hljs-built_in">cd</span> shifumi
+taq install @taqueria/plugin-ligo
+</code></pre>
+<blockquote>
+<p>⚠️ HACK note : create a dummy esy.json file with <code>{}</code> content on it. I will be used by the ligo package installer to not override the default package.json file of taqueria</p>
+</blockquote>
+<pre class="hljs language-bash"><code><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;{}&quot;</span> &gt; esy.json
+</code></pre>
+<p>Clone the ligo template locally, we will take only the source for our training</p>
+<pre class="hljs language-bash"><code>taq ligo --<span class="hljs-built_in">command</span> <span class="hljs-string">&quot;init contract --template shifumi-jsligo shifumiTemplate&quot;</span>
+<span class="hljs-built_in">cp</span> -r shifumiTemplate/src/* contracts/
+</code></pre>
+</section>
+<section>
+<h2>Step 2 : Add initial storage and compile</h2>
+<p>Compile the contract once, in order to create the default required file <code>main.storageList.jsligo</code> used at deployment step later</p>
+<pre class="hljs language-bash"><code>taq compile main.jsligo
+</code></pre>
+<p>Edit <code>main.storageList.jsligo</code></p>
+<pre class="hljs"><code>#include &quot;main.jsligo&quot;
+
+const default_storage = {
+    metadata: Big_map.literal(list([[&quot;&quot;,bytes `tezos-storage:contents`],
+    [&quot;contents&quot;, bytes `
+    {
+    &quot;name&quot;: &quot;Shifumi Example&quot;,
+    &quot;description&quot;: &quot;An Example Shifumi Contract&quot;,
+    &quot;version&quot;: &quot;beta&quot;,
+    &quot;license&quot;: {
+        &quot;name&quot;: &quot;MIT&quot;
+    },
+    &quot;authors&quot;: [
+        &quot;smart-chain &lt;tezos@smart-chain.fr&gt;&quot;
+    ],
+    &quot;homepage&quot;: &quot;https://github.com/ligolang/shifumi-jsligo&quot;,
+    &quot;source&quot;: {
+        &quot;tools&quot;: &quot;jsligo&quot;,
+        &quot;location&quot;: &quot;https://github.com/ligolang/shifumi-jsligo/contracts&quot;
+    },
+    &quot;interfaces&quot;: [
+        &quot;TZIP-016&quot;
+    ]
+    }
+    `]
+    ]))   as big_map&lt;string, bytes&gt;,
+    next_session: 0 as nat,
+    sessions: Map.empty as  map&lt;nat, Session.t&gt;,
+  }
+</code></pre>
+<p>Compile again</p>
+<pre class="hljs language-bash"><code>taq compile main.jsligo
+</code></pre>
+</section>
+<section>
+<h2>Step 3 : Deploy to Ghostnet</h2>
+<pre class="hljs language-bash"><code>taq install @taqueria/plugin-taquito
+taq deploy main.tz -e <span class="hljs-string">&quot;testing&quot;</span>
+</code></pre>
+<blockquote>
+<p>Note : if it is the first time you use taqueria, I recommend to look at this training first <a href="https://github.com/marigold-dev/training-dapp-1#ghostnet-testnet-wallet">https://github.com/marigold-dev/training-dapp-1#ghostnet-testnet-wallet</a>
+For advanced users, just go to <code>.taq/config.local.testing.json</code> and change the default account on path <code>/accounts</code> to alice settings (publicKey,publicKeyHash,privateKey) and then redeploy</p>
+<pre class="hljs language-json"><code><span class="hljs-attr">&quot;accounts&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+               <span class="hljs-attr">&quot;taqOperatorAccount&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+                   <span class="hljs-attr">&quot;publicKey&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;edpkvGfYw3LyB1UcCahKQk4rF2tvbMUk8GFiTuMjL75uGXrpvKXhjn&quot;</span><span class="hljs-punctuation">,</span>
+                   <span class="hljs-attr">&quot;publicKeyHash&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb&quot;</span><span class="hljs-punctuation">,</span>
+                   <span class="hljs-attr">&quot;privateKey&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq&quot;</span>
+               <span class="hljs-punctuation">}</span>
+           <span class="hljs-punctuation">}</span>
+</code></pre>
+</blockquote>
+<p>HOORAY 🎊 your smart contract is ready on the Ghostnet !</p>
+<pre class="hljs"><code>┌──────────┬──────────────────────────────────────┬───────┬──────────────────┬────────────────────────────────┐
+│ Contract │ Address                              │ Alias │ Balance In Mutez │ Destination                    │
+├──────────┼──────────────────────────────────────┼───────┼──────────────────┼────────────────────────────────┤
+│ main.tz  │ KT1B72K7dwo9m4qVYtfBofNHQVGak5h7Nemp │ main  │ 0                │ https://ghostnet.ecadinfra.com │
+└──────────┴──────────────────────────────────────┴───────┴──────────────────┴────────────────────────────────┘
+</code></pre>
+</section>
+</section>
+<section>
+<h1>Mobile app</h1>
+<p>We will use Ionic React to be able to reuse the <a href="https://github.com/airgap-it/beacon-sdk">BeaconSDK</a> (Typescript) on a webview. Beacon is the protocol of communication between the dapp and the wallet.</p>
+<blockquote>
+<p>Note : I do not recommend right know to develop a dapp in Flutter or React Native because you will need to use native beacon library without wallet popup mechanism to confirm transactions</p>
+</blockquote>
+<section>
+<h2>Step 1 : Install IONIC</h2>
+<p>Install <a href="https://ionicframework.com/docs/react">Ionic</a></p>
+<pre class="hljs"><code>npm install -g @ionic/cli
+ionic start app blank --type react
+</code></pre>
+<p>Generate Smart contract types from taqueria plugin. It will generate Typescript classes from Smart contract interface definition that we will use on our frontend.</p>
+<pre class="hljs language-bash"><code>taq install @taqueria/plugin-contract-types
+taq generate types ./app/src
+</code></pre>
+<p>Install required Tezos web3 dependencies</p>
+<pre class="hljs"><code>cd app
+npm install -S add @taquito/taquito @taquito/beacon-wallet @airgap/beacon-sdk  @dipdup/tzkt-api
+npm install -S -D @airgap/beacon-types
+npm i --save-dev @types/react
+</code></pre>
+<blockquote>
+<p>⚠️ ⚠️ ⚠️ Last React version uses <code>react-script 5.x</code> , follow these steps to rewire webpack for all encountered missing libraries : https://github.com/ChainSafe/web3.js#troubleshooting-and-known-issues</p>
+</blockquote>
+<blockquote>
+<p>For example, in my case, I installed this :</p>
+<pre class="hljs language-bash"><code>yarn add --dev react-app-rewired process crypto-browserify stream-browserify assert stream-http https-browserify os-browserify url path-browserify
+</code></pre>
+<p>and my <code>config-overrides.js</code> file was :</p>
+<pre class="hljs language-js"><code><span class="hljs-keyword">const</span> webpack = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;webpack&quot;</span>);
+
+<span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = <span class="hljs-keyword">function</span> <span class="hljs-title function_">override</span>(<span class="hljs-params">config</span>) {
+  <span class="hljs-keyword">const</span> fallback = config.<span class="hljs-property">resolve</span>.<span class="hljs-property">fallback</span> || {};
+  <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">assign</span>(fallback, {
+    <span class="hljs-attr">crypto</span>: <span class="hljs-built_in">require</span>.<span class="hljs-title function_">resolve</span>(<span class="hljs-string">&quot;crypto-browserify&quot;</span>),
+    <span class="hljs-attr">stream</span>: <span class="hljs-built_in">require</span>.<span class="hljs-title function_">resolve</span>(<span class="hljs-string">&quot;stream-browserify&quot;</span>),
+    <span class="hljs-attr">assert</span>: <span class="hljs-built_in">require</span>.<span class="hljs-title function_">resolve</span>(<span class="hljs-string">&quot;assert&quot;</span>),
+    <span class="hljs-attr">http</span>: <span class="hljs-built_in">require</span>.<span class="hljs-title function_">resolve</span>(<span class="hljs-string">&quot;stream-http&quot;</span>),
+    <span class="hljs-attr">https</span>: <span class="hljs-built_in">require</span>.<span class="hljs-title function_">resolve</span>(<span class="hljs-string">&quot;https-browserify&quot;</span>),
+    <span class="hljs-attr">os</span>: <span class="hljs-built_in">require</span>.<span class="hljs-title function_">resolve</span>(<span class="hljs-string">&quot;os-browserify&quot;</span>),
+    <span class="hljs-attr">url</span>: <span class="hljs-built_in">require</span>.<span class="hljs-title function_">resolve</span>(<span class="hljs-string">&quot;url&quot;</span>),
+    <span class="hljs-attr">path</span>: <span class="hljs-built_in">require</span>.<span class="hljs-title function_">resolve</span>(<span class="hljs-string">&quot;path-browserify&quot;</span>),
+  });
+  config.<span class="hljs-property">ignoreWarnings</span> = [<span class="hljs-regexp">/Failed to parse source map/</span>];
+  config.<span class="hljs-property">resolve</span>.<span class="hljs-property">fallback</span> = fallback;
+  config.<span class="hljs-property">plugins</span> = (config.<span class="hljs-property">plugins</span> || []).<span class="hljs-title function_">concat</span>([
+    <span class="hljs-keyword">new</span> webpack.<span class="hljs-title class_">ProvidePlugin</span>({
+      <span class="hljs-attr">process</span>: <span class="hljs-string">&quot;process/browser&quot;</span>,
+      <span class="hljs-title class_">Buffer</span>: [<span class="hljs-string">&quot;buffer&quot;</span>, <span class="hljs-string">&quot;Buffer&quot;</span>],
+    }),
+  ]);
+  <span class="hljs-keyword">return</span> config;
+};
+</code></pre>
+<p>⚠️</p>
+</blockquote>
+<p>This was painful 😕, but it was the worst so far</p>
+<p>Modify the default <code>package.json</code> default scripts (to fix an issue between ionic and react-rewired, during postinstall step, we do some symbolic linking, the we extract the last deployed smart contract address from Taqueria configuration file)</p>
+<pre class="hljs language-json"><code>  <span class="hljs-attr">&quot;scripts&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;postinstall&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cd ./node_modules &amp;&amp; ln -s crypto-browserify crypto &amp;&amp; cd .bin &amp;&amp; mv react-scripts react-scripts-real &amp;&amp; ln -s ../react-app-rewired/bin/index.js react-scripts&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;start&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;jq -r &#x27;\&quot;REACT_APP_CONTRACT_ADDRESS=\&quot; + last(.tasks[]).output[0].address&#x27; ../.taq/testing-state.json &gt; .env &amp;&amp; react-scripts start&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;build&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;react-scripts build&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;test&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;react-scripts test --transformIgnorePatterns &#x27;node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons)/)&#x27;&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;eject&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;react-scripts eject&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+</code></pre>
+<p>Run web version as it is easier to develop/test/debug first (Note : Remember postinstall will create the missing symbolic link we need to fix Ionic/React current issue with web3 ..)</p>
+<pre class="hljs language-bash"><code>npm run postinstall
+npm run start
+</code></pre>
+</section>
+<section>
+<h2>Step 2 : Edit the default Application file to configure page routing and add the style</h2>
+<p>First, remove React strict mode and enable dark mode on <code>app/index.tsx</code> with these lines edit :</p>
+<pre class="hljs language-typescript"><code><span class="hljs-comment">// Add or remove the &quot;dark&quot; class based on if the media query matches</span>
+<span class="hljs-variable language_">document</span>.<span class="hljs-property">body</span>.<span class="hljs-property">classList</span>.<span class="hljs-title function_">add</span>(<span class="hljs-string">&quot;dark&quot;</span>);
+
+root.<span class="hljs-title function_">render</span>(<span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">App</span> /&gt;</span></span>);
+</code></pre>
+<p>Then edit <code>src/App.tsx</code> main file</p>
+<pre class="hljs language-typescript"><code><span class="hljs-keyword">import</span> {
+  <span class="hljs-title class_">IonApp</span>,
+  <span class="hljs-title class_">IonRouterOutlet</span>,
+  <span class="hljs-title class_">RefresherEventDetail</span>,
+  setupIonicReact,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@ionic/react&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">IonReactRouter</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@ionic/react-router&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">Redirect</span>, <span class="hljs-title class_">Route</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-router-dom&quot;</span>;
+
+<span class="hljs-comment">/* Core CSS required for Ionic components to work properly */</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;@ionic/react/css/core.css&quot;</span>;
+
+<span class="hljs-comment">/* Basic CSS for apps built with Ionic */</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;@ionic/react/css/normalize.css&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;@ionic/react/css/structure.css&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;@ionic/react/css/typography.css&quot;</span>;
+
+<span class="hljs-comment">/* Optional CSS utils that can be commented out */</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;@ionic/react/css/display.css&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;@ionic/react/css/flex-utils.css&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;@ionic/react/css/float-elements.css&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;@ionic/react/css/padding.css&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;@ionic/react/css/text-alignment.css&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;@ionic/react/css/text-transformation.css&quot;</span>;
+
+<span class="hljs-comment">/* Theme variables */</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;./theme/variables.css&quot;</span>;
+
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">NetworkType</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@airgap/beacon-types&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">BeaconWallet</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@taquito/beacon-wallet&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">PollingSubscribeProvider</span>, <span class="hljs-title class_">TezosToolkit</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@taquito/taquito&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span>, { <span class="hljs-title class_">Dispatch</span>, <span class="hljs-title class_">SetStateAction</span>, useEffect, useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">MainWalletType</span>, <span class="hljs-title class_">Storage</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./main.types&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">HomeScreen</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./pages/HomeScreen&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">RulesScreen</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./pages/Rules&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">SessionScreen</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./pages/SessionScreen&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">TopPlayersScreen</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./pages/TopPlayersScreen&quot;</span>;
+<span class="hljs-keyword">import</span> { address, bytes, <span class="hljs-title class_">MMap</span>, nat, timestamp, unit } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./type-aliases&quot;</span>;
+
+<span class="hljs-title function_">setupIonicReact</span>();
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Action</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">ActionCisor</span>, <span class="hljs-title class_">ActionPaper</span>, <span class="hljs-title class_">ActionStone</span> {
+  cisor?: unit;
+  paper?: unit;
+  stone?: unit;
+  <span class="hljs-title function_">constructor</span>(<span class="hljs-params">cisor?: unit, paper?: unit, stone?: unit</span>) {
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">cisor</span> = cisor;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">paper</span> = paper;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">stone</span> = stone;
+  }
+}
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">type</span> <span class="hljs-title class_">ActionCisor</span> = { cisor?: unit };
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">type</span> <span class="hljs-title class_">ActionPaper</span> = { paper?: unit };
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">type</span> <span class="hljs-title class_">ActionStone</span> = { stone?: unit };
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">type</span> <span class="hljs-title class_">Session</span> = {
+  <span class="hljs-attr">asleep</span>: timestamp;
+  <span class="hljs-attr">board</span>: <span class="hljs-title class_">MMap</span>&lt;nat, address&gt;;
+  <span class="hljs-attr">current_round</span>: nat;
+  <span class="hljs-attr">decoded_rounds</span>: <span class="hljs-title class_">MMap</span>&lt;
+    nat,
+    <span class="hljs-title class_">Array</span>&lt;{
+      <span class="hljs-attr">action</span>: { <span class="hljs-attr">cisor</span>: unit } | { <span class="hljs-attr">paper</span>: unit } | { <span class="hljs-attr">stone</span>: unit };
+      <span class="hljs-attr">player</span>: address;
+    }&gt;
+  &gt;;
+  <span class="hljs-attr">players</span>: <span class="hljs-title class_">Array</span>&lt;address&gt;;
+  <span class="hljs-attr">result</span>: { <span class="hljs-attr">draw</span>: unit } | { <span class="hljs-attr">inplay</span>: unit } | { <span class="hljs-attr">winner</span>: address };
+  <span class="hljs-attr">rounds</span>: <span class="hljs-title class_">MMap</span>&lt;
+    nat,
+    <span class="hljs-title class_">Array</span>&lt;{
+      <span class="hljs-attr">action</span>: bytes;
+      <span class="hljs-attr">player</span>: address;
+    }&gt;
+  &gt;;
+  <span class="hljs-attr">total_rounds</span>: nat;
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">type</span> <span class="hljs-title class_">UserContextType</span> = {
+  <span class="hljs-attr">storage</span>: <span class="hljs-title class_">Storage</span> | <span class="hljs-literal">null</span>;
+  <span class="hljs-attr">setStorage</span>: <span class="hljs-title class_">Dispatch</span>&lt;<span class="hljs-title class_">SetStateAction</span>&lt;<span class="hljs-title class_">Storage</span> | <span class="hljs-literal">null</span>&gt;&gt;;
+  <span class="hljs-attr">userAddress</span>: <span class="hljs-built_in">string</span>;
+  <span class="hljs-attr">setUserAddress</span>: <span class="hljs-title class_">Dispatch</span>&lt;<span class="hljs-title class_">SetStateAction</span>&lt;<span class="hljs-built_in">string</span>&gt;&gt;;
+  <span class="hljs-attr">userBalance</span>: <span class="hljs-built_in">number</span>;
+  <span class="hljs-attr">setUserBalance</span>: <span class="hljs-title class_">Dispatch</span>&lt;<span class="hljs-title class_">SetStateAction</span>&lt;<span class="hljs-built_in">number</span>&gt;&gt;;
+  <span class="hljs-title class_">Tezos</span>: <span class="hljs-title class_">TezosToolkit</span>;
+  <span class="hljs-attr">wallet</span>: <span class="hljs-title class_">BeaconWallet</span>;
+  <span class="hljs-attr">mainWalletType</span>: <span class="hljs-title class_">MainWalletType</span> | <span class="hljs-literal">null</span>;
+  <span class="hljs-attr">loading</span>: <span class="hljs-built_in">boolean</span>;
+  <span class="hljs-attr">setLoading</span>: <span class="hljs-title class_">Dispatch</span>&lt;<span class="hljs-title class_">SetStateAction</span>&lt;<span class="hljs-built_in">boolean</span>&gt;&gt;;
+  <span class="hljs-attr">refreshStorage</span>: <span class="hljs-function">(<span class="hljs-params">event?: CustomEvent&lt;RefresherEventDetail&gt;</span>) =&gt;</span> <span class="hljs-title class_">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt;;
+};
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">let</span> <span class="hljs-title class_">UserContext</span> = <span class="hljs-title class_">React</span>.<span class="hljs-property">createContext</span>&lt;<span class="hljs-title class_">UserContextType</span> | <span class="hljs-literal">null</span>&gt;(<span class="hljs-literal">null</span>);
+
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">App</span>: <span class="hljs-title class_">React</span>.<span class="hljs-property">FC</span> = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">const</span> [<span class="hljs-title class_">Tezos</span>, setTezos] = useState&lt;<span class="hljs-title class_">TezosToolkit</span>&gt;(
+    <span class="hljs-keyword">new</span> <span class="hljs-title class_">TezosToolkit</span>(<span class="hljs-string">&quot;https://ghostnet.tezos.marigold.dev&quot;</span>)
+  );
+  <span class="hljs-keyword">const</span> [wallet, setWallet] = useState&lt;<span class="hljs-title class_">BeaconWallet</span>&gt;(
+    <span class="hljs-keyword">new</span> <span class="hljs-title class_">BeaconWallet</span>({
+      <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Training&quot;</span>,
+      <span class="hljs-attr">preferredNetwork</span>: <span class="hljs-title class_">NetworkType</span>.<span class="hljs-property">GHOSTNET</span>,
+    })
+  );
+  <span class="hljs-keyword">const</span> [userAddress, setUserAddress] = useState&lt;<span class="hljs-built_in">string</span>&gt;(<span class="hljs-string">&quot;&quot;</span>);
+  <span class="hljs-keyword">const</span> [userBalance, setUserBalance] = useState&lt;<span class="hljs-built_in">number</span>&gt;(<span class="hljs-number">0</span>);
+  <span class="hljs-keyword">const</span> [storage, setStorage] = useState&lt;<span class="hljs-title class_">Storage</span> | <span class="hljs-literal">null</span>&gt;(<span class="hljs-literal">null</span>);
+  <span class="hljs-keyword">const</span> [mainWalletType, setMainWalletType] = useState&lt;<span class="hljs-title class_">MainWalletType</span> | <span class="hljs-literal">null</span>&gt;(
+    <span class="hljs-literal">null</span>
+  );
+  <span class="hljs-keyword">const</span> [loading, setLoading] = useState&lt;<span class="hljs-built_in">boolean</span>&gt;(<span class="hljs-literal">false</span>);
+
+  <span class="hljs-keyword">const</span> refreshStorage = <span class="hljs-keyword">async</span> (
+    event?: <span class="hljs-title class_">CustomEvent</span>&lt;<span class="hljs-title class_">RefresherEventDetail</span>&gt;
+  ): <span class="hljs-title class_">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt; =&gt; {
+    <span class="hljs-keyword">if</span> (wallet) {
+      <span class="hljs-keyword">const</span> activeAccount = <span class="hljs-keyword">await</span> wallet.<span class="hljs-property">client</span>.<span class="hljs-title function_">getActiveAccount</span>();
+      <span class="hljs-keyword">var</span> <span class="hljs-attr">userAddress</span>: <span class="hljs-built_in">string</span>;
+      <span class="hljs-keyword">if</span> (activeAccount) {
+        userAddress = activeAccount.<span class="hljs-property">address</span>;
+        <span class="hljs-title function_">setUserAddress</span>(userAddress);
+        <span class="hljs-keyword">const</span> balance = <span class="hljs-keyword">await</span> <span class="hljs-title class_">Tezos</span>.<span class="hljs-property">tz</span>.<span class="hljs-title function_">getBalance</span>(userAddress);
+        <span class="hljs-title function_">setUserBalance</span>(balance.<span class="hljs-title function_">toNumber</span>());
+      }
+
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(
+        <span class="hljs-string">&quot;REACT_APP_CONTRACT_ADDRESS:&quot;</span>,
+        process.<span class="hljs-property">env</span>.<span class="hljs-property">REACT_APP_CONTRACT_ADDRESS</span>!
+      );
+      <span class="hljs-keyword">const</span> <span class="hljs-attr">mainWalletType</span>: <span class="hljs-title class_">MainWalletType</span> =
+        <span class="hljs-keyword">await</span> <span class="hljs-title class_">Tezos</span>.<span class="hljs-property">wallet</span>.<span class="hljs-property">at</span>&lt;<span class="hljs-title class_">MainWalletType</span>&gt;(
+          process.<span class="hljs-property">env</span>.<span class="hljs-property">REACT_APP_CONTRACT_ADDRESS</span>!
+        );
+      <span class="hljs-keyword">const</span> <span class="hljs-attr">storage</span>: <span class="hljs-title class_">Storage</span> = <span class="hljs-keyword">await</span> mainWalletType.<span class="hljs-title function_">storage</span>();
+      <span class="hljs-title function_">setMainWalletType</span>(mainWalletType);
+      <span class="hljs-title function_">setStorage</span>(storage);
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Storage refreshed&quot;</span>);
+    } <span class="hljs-keyword">else</span> {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Not yet a wallet&quot;</span>);
+    }
+    event?.<span class="hljs-property">detail</span>.<span class="hljs-title function_">complete</span>();
+  };
+
+  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-title class_">Tezos</span>.<span class="hljs-title function_">setWalletProvider</span>(wallet);
+    <span class="hljs-title class_">Tezos</span>.<span class="hljs-title function_">setStreamProvider</span>(
+      <span class="hljs-title class_">Tezos</span>.<span class="hljs-title function_">getFactory</span>(<span class="hljs-title class_">PollingSubscribeProvider</span>)({
+        <span class="hljs-attr">shouldObservableSubscriptionRetry</span>: <span class="hljs-literal">true</span>,
+        <span class="hljs-attr">pollingIntervalMilliseconds</span>: <span class="hljs-number">1500</span>,
+      })
+    );
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-keyword">const</span> sub = <span class="hljs-title class_">Tezos</span>.<span class="hljs-property">stream</span>.<span class="hljs-title function_">subscribeEvent</span>({
+        <span class="hljs-attr">tag</span>: <span class="hljs-string">&quot;gameStatus&quot;</span>,
+        <span class="hljs-attr">address</span>: process.<span class="hljs-property">env</span>.<span class="hljs-property">REACT_APP_CONTRACT_ADDRESS</span>!,
+      });
+
+      sub.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;data&quot;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;on gameStatus event :&quot;</span>, e);
+        <span class="hljs-title function_">refreshStorage</span>();
+      });
+    } <span class="hljs-keyword">catch</span> (e) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Error with Smart contract event pooling&quot;</span>, e);
+    }
+    (<span class="hljs-keyword">async</span> () =&gt; <span class="hljs-keyword">await</span> <span class="hljs-title function_">refreshStorage</span>())();
+  }, [wallet]);
+
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">IonApp</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">UserContext.Provider</span>
+        <span class="hljs-attr">value</span>=<span class="hljs-string">{{</span>
+          <span class="hljs-attr">userAddress</span>,
+          <span class="hljs-attr">userBalance</span>,
+          <span class="hljs-attr">Tezos</span>,
+          <span class="hljs-attr">wallet</span>,
+          <span class="hljs-attr">storage</span>,
+          <span class="hljs-attr">mainWalletType</span>,
+          <span class="hljs-attr">setUserAddress</span>,
+          <span class="hljs-attr">setUserBalance</span>,
+          <span class="hljs-attr">setStorage</span>,
+          <span class="hljs-attr">loading</span>,
+          <span class="hljs-attr">setLoading</span>,
+          <span class="hljs-attr">refreshStorage</span>,
+        }}
+      &gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">IonReactRouter</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">IonRouterOutlet</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">{PAGES.HOME}</span> <span class="hljs-attr">component</span>=<span class="hljs-string">{HomeScreen}</span> /&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">{</span>`${<span class="hljs-attr">PAGES.SESSION</span>}/<span class="hljs-attr">:id</span>`} <span class="hljs-attr">component</span>=<span class="hljs-string">{SessionScreen}</span> /&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">{PAGES.TOPPLAYERS}</span> <span class="hljs-attr">component</span>=<span class="hljs-string">{TopPlayersScreen}</span> /&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">{PAGES.RULES}</span> <span class="hljs-attr">component</span>=<span class="hljs-string">{RulesScreen}</span> /&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">Redirect</span> <span class="hljs-attr">exact</span> <span class="hljs-attr">from</span>=<span class="hljs-string">&quot;/&quot;</span> <span class="hljs-attr">to</span>=<span class="hljs-string">{PAGES.HOME}</span> /&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">IonRouterOutlet</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">IonReactRouter</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">UserContext.Provider</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">IonApp</span>&gt;</span></span>
+  );
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">enum</span> <span class="hljs-variable constant_">PAGES</span> {
+  <span class="hljs-variable constant_">HOME</span> = <span class="hljs-string">&quot;/home&quot;</span>,
+  <span class="hljs-variable constant_">SESSION</span> = <span class="hljs-string">&quot;/session&quot;</span>,
+  <span class="hljs-variable constant_">TOPPLAYERS</span> = <span class="hljs-string">&quot;/topplayers&quot;</span>,
+  <span class="hljs-variable constant_">RULES</span> = <span class="hljs-string">&quot;/rules&quot;</span>,
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title class_">App</span>;
+</code></pre>
+<p>Explanations :</p>
+<ul>
+<li><code>import &quot;@ionic...&quot;</code> : Default standard Ionic imports</li>
+<li><code>import ... from &quot;@airgap/beacon-types&quot; ... from &quot;@taquito/beacon-wallet&quot; ... from &quot;@taquito/taquito&quot;</code> : Require libraries to interact with the Tezos node and the wallet</li>
+<li><code>export class Action implements ActionCisor, ActionPaper, ActionStone {...}</code> : Representation of the ligo variant <code>Action</code> in Typescript, we will need it when passing arguments on <code>Play</code> function</li>
+<li><code>export type Session = {...}</code> : Taqueria export the global Storage type but sadly not this sub-type from the Storage type, we will need it later, so we extract a copy</li>
+<li><code>export let UserContext = React.createContext&lt;UserContextType | null&gt;(null)</code>: Global React context that is passed along pages. More info on React context <a href="https://beta.reactjs.org/learn/passing-data-deeply-with-context">here</a></li>
+<li><code>const refreshStorage = async (event?: CustomEvent&lt;RefresherEventDetail&gt;): Promise&lt;void&gt; =&gt; {...</code> : useful fonction to force the smart contract Storage to refresh on React state changes (user balance, state of the game)</li>
+<li><code>useEffect(() =&gt; { ... Tezos.setStreamProvider(...) ... Tezos.stream.subscribeEvent({...</code> : During Application initialization, we configure the wallet, the websocket listening to smart contract events</li>
+<li><code>&lt;IonApp&gt;&lt;UserContext.Provider ... &gt;&lt;IonReactRouter&gt;&lt;IonRouterOutlet&gt;&lt;Route path={PAGES.HOME} component={HomeScreen} /&gt; ... </code> : We inject the React context to all pages. We declare the global routing of the application</li>
+<li><code>export enum PAGES {  HOME = &quot;/home&quot;, ...</code> : Declaration of the global routes</li>
+</ul>
+<p>To add the default theming (CSS, pictures, etc...), copy the content of this git repository named <code>assets</code> folder to your local project (considering you cloned the repo and assets folder is on root folder and your project folder is called <code>shifumi</code>)</p>
+<pre class="hljs language-bash"><code><span class="hljs-built_in">cp</span> -r ./assets/* ./shifumi/app/
+</code></pre>
+</section>
+<section>
+<h2>Step 3 : Connect / disconnect the wallet</h2>
+<p>We will declare 2 React Button components and fetch the user public hash key + balance</p>
+<p>Let's create the 2 missing src component files and put code in it.
+On <code>app</code> folder, create these files.</p>
+<pre class="hljs language-bash"><code><span class="hljs-built_in">touch</span> src/ConnectWallet.tsx
+<span class="hljs-built_in">touch</span> src/DisconnectWallet.tsx
+</code></pre>
+<p>ConnectWallet button will create an instance wallet, get user permissions via a popup and then retrieve account information</p>
+<p>Edit <code>ConnectWallet.tsx</code></p>
+<pre class="hljs language-typescript"><code><span class="hljs-keyword">import</span> { <span class="hljs-title class_">NetworkType</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@airgap/beacon-types&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">IonButton</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@ionic/react&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">BeaconWallet</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@taquito/beacon-wallet&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">TezosToolkit</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@taquito/taquito&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">Dispatch</span>, <span class="hljs-title class_">SetStateAction</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+
+<span class="hljs-keyword">type</span> <span class="hljs-title class_">ButtonProps</span> = {
+  <span class="hljs-title class_">Tezos</span>: <span class="hljs-title class_">TezosToolkit</span>;
+  <span class="hljs-attr">setUserAddress</span>: <span class="hljs-title class_">Dispatch</span>&lt;<span class="hljs-title class_">SetStateAction</span>&lt;<span class="hljs-built_in">string</span>&gt;&gt;;
+  <span class="hljs-attr">setUserBalance</span>: <span class="hljs-title class_">Dispatch</span>&lt;<span class="hljs-title class_">SetStateAction</span>&lt;<span class="hljs-built_in">number</span>&gt;&gt;;
+  <span class="hljs-attr">wallet</span>: <span class="hljs-title class_">BeaconWallet</span>;
+};
+
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">ConnectButton</span> = ({
+  <span class="hljs-title class_">Tezos</span>,
+  setUserAddress,
+  setUserBalance,
+  wallet,
+}: <span class="hljs-title class_">ButtonProps</span>): <span class="hljs-variable constant_">JSX</span>.<span class="hljs-property">Element</span> =&gt; {
+  <span class="hljs-keyword">const</span> connectWallet = <span class="hljs-keyword">async</span> (): <span class="hljs-title class_">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt; =&gt; {
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;before requestPermissions&quot;</span>);
+
+      <span class="hljs-keyword">await</span> wallet.<span class="hljs-title function_">requestPermissions</span>({
+        <span class="hljs-attr">network</span>: {
+          <span class="hljs-attr">type</span>: <span class="hljs-title class_">NetworkType</span>.<span class="hljs-property">GHOSTNET</span>,
+          <span class="hljs-attr">rpcUrl</span>: <span class="hljs-string">&quot;https://ghostnet.tezos.marigold.dev&quot;</span>,
+        },
+      });
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;after requestPermissions&quot;</span>);
+
+      <span class="hljs-comment">// gets user&#x27;s address</span>
+      <span class="hljs-keyword">const</span> userAddress = <span class="hljs-keyword">await</span> wallet.<span class="hljs-title function_">getPKH</span>();
+      <span class="hljs-keyword">const</span> balance = <span class="hljs-keyword">await</span> <span class="hljs-title class_">Tezos</span>.<span class="hljs-property">tz</span>.<span class="hljs-title function_">getBalance</span>(userAddress);
+      <span class="hljs-title function_">setUserBalance</span>(balance.<span class="hljs-title function_">toNumber</span>());
+      <span class="hljs-title function_">setUserAddress</span>(userAddress);
+    } <span class="hljs-keyword">catch</span> (error) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;error connectWallet&quot;</span>, error);
+    }
+  };
+
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">IonButton</span> <span class="hljs-attr">expand</span>=<span class="hljs-string">&quot;full&quot;</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{connectWallet}</span>&gt;</span>
+      Connect Wallet
+    <span class="hljs-tag">&lt;/<span class="hljs-name">IonButton</span>&gt;</span></span>
+  );
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title class_">ConnectButton</span>;
+</code></pre>
+<p>DisconnectWallet button will clean wallet instance and all linked objects</p>
+<pre class="hljs language-typescript"><code><span class="hljs-keyword">import</span> { <span class="hljs-title class_">IonFab</span>, <span class="hljs-title class_">IonFabButton</span>, <span class="hljs-title class_">IonIcon</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@ionic/react&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">BeaconWallet</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@taquito/beacon-wallet&quot;</span>;
+<span class="hljs-keyword">import</span> { power } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;ionicons/icons&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">Dispatch</span>, <span class="hljs-title class_">SetStateAction</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+
+<span class="hljs-keyword">interface</span> <span class="hljs-title class_">ButtonProps</span> {
+  <span class="hljs-attr">wallet</span>: <span class="hljs-title class_">BeaconWallet</span>;
+  <span class="hljs-attr">setUserAddress</span>: <span class="hljs-title class_">Dispatch</span>&lt;<span class="hljs-title class_">SetStateAction</span>&lt;<span class="hljs-built_in">string</span>&gt;&gt;;
+  <span class="hljs-attr">setUserBalance</span>: <span class="hljs-title class_">Dispatch</span>&lt;<span class="hljs-title class_">SetStateAction</span>&lt;<span class="hljs-built_in">number</span>&gt;&gt;;
+}
+
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">DisconnectButton</span> = ({
+  wallet,
+  setUserAddress,
+  setUserBalance,
+}: <span class="hljs-title class_">ButtonProps</span>): <span class="hljs-variable constant_">JSX</span>.<span class="hljs-property">Element</span> =&gt; {
+  <span class="hljs-keyword">const</span> disconnectWallet = <span class="hljs-keyword">async</span> (): <span class="hljs-title class_">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt; =&gt; {
+    <span class="hljs-title function_">setUserAddress</span>(<span class="hljs-string">&quot;&quot;</span>);
+    <span class="hljs-title function_">setUserBalance</span>(<span class="hljs-number">0</span>);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;disconnecting wallet&quot;</span>);
+    <span class="hljs-keyword">await</span> wallet.<span class="hljs-title function_">clearActiveAccount</span>();
+  };
+
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">IonFab</span> <span class="hljs-attr">slot</span>=<span class="hljs-string">&quot;fixed&quot;</span> <span class="hljs-attr">vertical</span>=<span class="hljs-string">&quot;top&quot;</span> <span class="hljs-attr">horizontal</span>=<span class="hljs-string">&quot;end&quot;</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">IonFabButton</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">IonIcon</span> <span class="hljs-attr">icon</span>=<span class="hljs-string">{power}</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{disconnectWallet}</span> /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">IonFabButton</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">IonFab</span>&gt;</span></span>
+  );
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title class_">DisconnectButton</span>;
+</code></pre>
+<p>Save both file, the dev server should refresh the page</p>
+</section>
+<section>
+<h2>Step 4 : Add missing pages and error utility class</h2>
+<p>Let's create the missing pages and the error utility class</p>
+<pre class="hljs language-bash"><code><span class="hljs-built_in">touch</span> src/pages/HomeScreen.tsx
+<span class="hljs-built_in">touch</span> src/pages/SessionScreen.tsx
+<span class="hljs-built_in">touch</span> src/pages/Rules.tsx
+<span class="hljs-built_in">touch</span> src/pages/TopPlayersScreen.tsx
+<span class="hljs-built_in">touch</span> src/TransactionInvalidBeaconError.ts
+</code></pre>
+<p><code>TransactionInvalidBeaconError.ts</code> utility class is used to display human readable message from Beacon errors</p>
+<p>Edit all files</p>
+<ul>
+<li>HomeScreen.tsx : the home page where you can access all other pages</li>
+</ul>
+<pre class="hljs language-typescript"><code><span class="hljs-keyword">import</span> {
+  <span class="hljs-title class_">IonButton</span>,
+  <span class="hljs-title class_">IonButtons</span>,
+  <span class="hljs-title class_">IonContent</span>,
+  <span class="hljs-title class_">IonFooter</span>,
+  <span class="hljs-title class_">IonHeader</span>,
+  <span class="hljs-title class_">IonIcon</span>,
+  <span class="hljs-title class_">IonImg</span>,
+  <span class="hljs-title class_">IonInput</span>,
+  <span class="hljs-title class_">IonItem</span>,
+  <span class="hljs-title class_">IonLabel</span>,
+  <span class="hljs-title class_">IonList</span>,
+  <span class="hljs-title class_">IonModal</span>,
+  <span class="hljs-title class_">IonPage</span>,
+  <span class="hljs-title class_">IonRefresher</span>,
+  <span class="hljs-title class_">IonRefresherContent</span>,
+  <span class="hljs-title class_">IonSpinner</span>,
+  <span class="hljs-title class_">IonTitle</span>,
+  <span class="hljs-title class_">IonToolbar</span>,
+  useIonAlert,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@ionic/react&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">BigNumber</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;bignumber.js&quot;</span>;
+<span class="hljs-keyword">import</span> { person } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;ionicons/icons&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span>, { useEffect, useRef, useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { useHistory } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-router-dom&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-variable constant_">PAGES</span>, <span class="hljs-title class_">Session</span>, <span class="hljs-title class_">UserContext</span>, <span class="hljs-title class_">UserContextType</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;../App&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">ConnectButton</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;../ConnectWallet&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">DisconnectButton</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;../DisconnectWallet&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">TransactionInvalidBeaconError</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;../TransactionInvalidBeaconError&quot;</span>;
+<span class="hljs-keyword">import</span> { address, nat } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;../type-aliases&quot;</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title class_">HomeScreen</span>: <span class="hljs-title class_">React</span>.<span class="hljs-property">FC</span> = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">const</span> [presentAlert] = <span class="hljs-title function_">useIonAlert</span>();
+  <span class="hljs-keyword">const</span> history = <span class="hljs-title function_">useHistory</span>();
+
+  <span class="hljs-keyword">const</span> createGameModal = useRef&lt;<span class="hljs-title class_">HTMLIonModalElement</span>&gt;(<span class="hljs-literal">null</span>);
+  <span class="hljs-keyword">const</span> selectGameModal = useRef&lt;<span class="hljs-title class_">HTMLIonModalElement</span>&gt;(<span class="hljs-literal">null</span>);
+  <span class="hljs-keyword">function</span> <span class="hljs-title function_">dismissCreateGameModal</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;dismissCreateGameModal&quot;</span>);
+    createGameModal.<span class="hljs-property">current</span>?.<span class="hljs-title function_">dismiss</span>();
+  }
+  <span class="hljs-keyword">function</span> <span class="hljs-title function_">dismissSelectGameModal</span>(<span class="hljs-params"></span>) {
+    selectGameModal.<span class="hljs-property">current</span>?.<span class="hljs-title function_">dismiss</span>();
+    <span class="hljs-keyword">const</span> element = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;home&quot;</span>);
+    <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> {
+      <span class="hljs-keyword">return</span> element &amp;&amp; element.<span class="hljs-title function_">remove</span>();
+    }, <span class="hljs-number">1000</span>); <span class="hljs-comment">// Give a little time to properly unmount your previous page before removing the old one</span>
+  }
+
+  <span class="hljs-keyword">const</span> {
+    <span class="hljs-title class_">Tezos</span>,
+    wallet,
+    userAddress,
+    userBalance,
+    storage,
+    mainWalletType,
+    setStorage,
+    setUserAddress,
+    setUserBalance,
+    setLoading,
+    loading,
+    refreshStorage,
+  } = <span class="hljs-title class_">React</span>.<span class="hljs-title function_">useContext</span>(<span class="hljs-title class_">UserContext</span>) <span class="hljs-keyword">as</span> <span class="hljs-title class_">UserContextType</span>;
+
+  <span class="hljs-keyword">const</span> [newPlayer, setNewPlayer] = useState&lt;address&gt;(<span class="hljs-string">&quot;&quot;</span> <span class="hljs-keyword">as</span> address);
+  <span class="hljs-keyword">const</span> [total_rounds, setTotal_rounds] = useState&lt;nat&gt;(
+    <span class="hljs-keyword">new</span> <span class="hljs-title class_">BigNumber</span>(<span class="hljs-number">1</span>) <span class="hljs-keyword">as</span> nat
+  );
+  <span class="hljs-keyword">const</span> [myGames, setMyGames] = useState&lt;<span class="hljs-title class_">Map</span>&lt;nat, <span class="hljs-title class_">Session</span>&gt;&gt;();
+
+  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> {
+    (<span class="hljs-keyword">async</span> () =&gt; {
+      <span class="hljs-keyword">if</span> (storage) {
+        <span class="hljs-keyword">const</span> myGames = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Map</span>(); <span class="hljs-comment">//filtering our games</span>
+        <span class="hljs-title class_">Array</span>.<span class="hljs-title function_">from</span>(storage.<span class="hljs-property">sessions</span>.<span class="hljs-title function_">keys</span>()).<span class="hljs-title function_">forEach</span>(<span class="hljs-function">(<span class="hljs-params">key</span>) =&gt;</span> {
+          <span class="hljs-keyword">const</span> session = storage.<span class="hljs-property">sessions</span>.<span class="hljs-title function_">get</span>(key);
+
+          <span class="hljs-keyword">if</span> (
+            session.<span class="hljs-property">players</span>.<span class="hljs-title function_">indexOf</span>(userAddress <span class="hljs-keyword">as</span> address) &gt;= <span class="hljs-number">0</span> &amp;&amp;
+            <span class="hljs-string">&quot;inplay&quot;</span> <span class="hljs-keyword">in</span> session.<span class="hljs-property">result</span>
+          ) {
+            myGames.<span class="hljs-title function_">set</span>(key, session);
+          }
+        });
+        <span class="hljs-title function_">setMyGames</span>(myGames);
+      } <span class="hljs-keyword">else</span> {
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;storage is not ready yet&quot;</span>);
+      }
+    })();
+  }, [storage]);
+
+  <span class="hljs-keyword">const</span> <span class="hljs-title function_">createSession</span> = <span class="hljs-keyword">async</span> (<span class="hljs-params">
+    e: React.MouseEvent&lt;HTMLIonButtonElement, MouseEvent&gt;
+  </span>) =&gt; {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;createSession&quot;</span>);
+    e.<span class="hljs-title function_">preventDefault</span>();
+    <span class="hljs-title function_">dismissCreateGameModal</span>();
+
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">true</span>);
+      <span class="hljs-keyword">const</span> op = <span class="hljs-keyword">await</span> mainWalletType!.<span class="hljs-property">methods</span>
+        .<span class="hljs-title function_">createSession</span>([userAddress <span class="hljs-keyword">as</span> address, newPlayer], total_rounds)
+        .<span class="hljs-title function_">send</span>();
+      <span class="hljs-keyword">await</span> op?.<span class="hljs-title function_">confirmation</span>();
+      <span class="hljs-keyword">const</span> newStorage = <span class="hljs-keyword">await</span> mainWalletType!.<span class="hljs-title function_">storage</span>();
+      <span class="hljs-title function_">setStorage</span>(newStorage);
+      <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">false</span>);
+      history.<span class="hljs-title function_">push</span>(<span class="hljs-variable constant_">PAGES</span>.<span class="hljs-property">SESSION</span> + <span class="hljs-string">&quot;/&quot;</span> + storage?.<span class="hljs-property">next_session</span>.<span class="hljs-title function_">toString</span>()); <span class="hljs-comment">//it was the id created</span>
+      <span class="hljs-title function_">dismissCreateGameModal</span>();
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;newStorage&quot;</span>, newStorage);
+    } <span class="hljs-keyword">catch</span> (error) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">table</span>(<span class="hljs-string">`Error: <span class="hljs-subst">${<span class="hljs-built_in">JSON</span>.stringify(error, <span class="hljs-literal">null</span>, <span class="hljs-number">2</span>)}</span>`</span>);
+      <span class="hljs-keyword">let</span> <span class="hljs-attr">tibe</span>: <span class="hljs-title class_">TransactionInvalidBeaconError</span> =
+        <span class="hljs-keyword">new</span> <span class="hljs-title class_">TransactionInvalidBeaconError</span>(error);
+      <span class="hljs-title function_">presentAlert</span>({
+        <span class="hljs-attr">header</span>: <span class="hljs-string">&quot;Error&quot;</span>,
+        <span class="hljs-attr">message</span>: tibe.<span class="hljs-property">data_message</span>,
+        <span class="hljs-attr">buttons</span>: [<span class="hljs-string">&quot;Close&quot;</span>],
+      });
+      <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">false</span>);
+    }
+    <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">false</span>);
+  };
+
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">IonPage</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;container&quot;</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">IonHeader</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">IonToolbar</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">IonTitle</span>&gt;</span>Shifumi<span class="hljs-tag">&lt;/<span class="hljs-name">IonTitle</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">IonToolbar</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">IonHeader</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">IonContent</span> <span class="hljs-attr">fullscreen</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">IonRefresher</span> <span class="hljs-attr">slot</span>=<span class="hljs-string">&quot;fixed&quot;</span> <span class="hljs-attr">onIonRefresh</span>=<span class="hljs-string">{refreshStorage}</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">IonRefresherContent</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">IonRefresherContent</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">IonRefresher</span>&gt;</span>
+
+        {loading ? (
+          <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;loading&quot;</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">IonItem</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">IonLabel</span>&gt;</span>Refreshing ...<span class="hljs-tag">&lt;/<span class="hljs-name">IonLabel</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">IonSpinner</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;spinner&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">IonSpinner</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">IonItem</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+        ) : (
+          <span class="hljs-tag">&lt;<span class="hljs-name">IonList</span> <span class="hljs-attr">inset</span>=<span class="hljs-string">{true}</span>&gt;</span>
+            {!userAddress ? (
+              <span class="hljs-tag">&lt;&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">div</span>
+                  <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+                    <span class="hljs-attr">display:</span> &quot;<span class="hljs-attr">flex</span>&quot;,
+                    <span class="hljs-attr">flexDirection:</span> &quot;<span class="hljs-attr">row</span>&quot;,
+                    <span class="hljs-attr">padding:</span> &quot;<span class="hljs-attr">4em</span>&quot;,
+                    <span class="hljs-attr">justifyContent:</span> &quot;<span class="hljs-attr">space-around</span>&quot;,
+                  }}
+                &gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">IonImg</span>
+                    <span class="hljs-attr">src</span>=<span class="hljs-string">{process.env.PUBLIC_URL</span> + &quot;/<span class="hljs-attr">assets</span>/<span class="hljs-attr">stone-logo.png</span>&quot;}
+                    <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;logo&quot;</span>
+                  /&gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">IonImg</span>
+                    <span class="hljs-attr">src</span>=<span class="hljs-string">{process.env.PUBLIC_URL</span> + &quot;/<span class="hljs-attr">assets</span>/<span class="hljs-attr">paper-logo.png</span>&quot;}
+                    <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;logo&quot;</span>
+                  /&gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">IonImg</span>
+                    <span class="hljs-attr">src</span>=<span class="hljs-string">{process.env.PUBLIC_URL</span> + &quot;/<span class="hljs-attr">assets</span>/<span class="hljs-attr">scissor-logo.png</span>&quot;}
+                    <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;logo&quot;</span>
+                  /&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">IonList</span> <span class="hljs-attr">inset</span>=<span class="hljs-string">{true}</span>&gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">ConnectButton</span>
+                    <span class="hljs-attr">Tezos</span>=<span class="hljs-string">{Tezos}</span>
+                    <span class="hljs-attr">setUserAddress</span>=<span class="hljs-string">{setUserAddress}</span>
+                    <span class="hljs-attr">setUserBalance</span>=<span class="hljs-string">{setUserBalance}</span>
+                    <span class="hljs-attr">wallet</span>=<span class="hljs-string">{wallet}</span>
+                  /&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">IonList</span>&gt;</span>
+              <span class="hljs-tag">&lt;/&gt;</span>
+            ) : (
+              <span class="hljs-tag">&lt;<span class="hljs-name">IonList</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">IonItem</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">padding:</span> <span class="hljs-attr">0</span>, <span class="hljs-attr">margin:</span> <span class="hljs-attr">0</span> }}&gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">IonIcon</span> <span class="hljs-attr">icon</span>=<span class="hljs-string">{person}</span> /&gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">IonLabel</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">fontSize:</span> &quot;<span class="hljs-attr">0.8em</span>&quot;, <span class="hljs-attr">direction:</span> &quot;<span class="hljs-attr">rtl</span>&quot; }}&gt;</span>
+                    {userAddress}
+                  <span class="hljs-tag">&lt;/<span class="hljs-name">IonLabel</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">IonItem</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">IonItem</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">padding:</span> <span class="hljs-attr">0</span>, <span class="hljs-attr">margin:</span> <span class="hljs-attr">0</span> }}&gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">IonImg</span>
+                    <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">height:</span> <span class="hljs-attr">24</span>, <span class="hljs-attr">width:</span> <span class="hljs-attr">24</span> }}
+                    <span class="hljs-attr">src</span>=<span class="hljs-string">{process.env.PUBLIC_URL</span> + &quot;/<span class="hljs-attr">assets</span>/<span class="hljs-attr">xtz.png</span>&quot;}
+                  /&gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">IonLabel</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">direction:</span> &quot;<span class="hljs-attr">rtl</span>&quot; }}&gt;</span>
+                    {userBalance / 1000000}
+                  <span class="hljs-tag">&lt;/<span class="hljs-name">IonLabel</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">IonItem</span>&gt;</span>
+
+                <span class="hljs-tag">&lt;<span class="hljs-name">div</span>
+                  <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+                    <span class="hljs-attr">display:</span> &quot;<span class="hljs-attr">flex</span>&quot;,
+                    <span class="hljs-attr">flexDirection:</span> &quot;<span class="hljs-attr">row</span>&quot;,
+                    <span class="hljs-attr">paddingTop:</span> &quot;<span class="hljs-attr">10vh</span>&quot;,
+                    <span class="hljs-attr">paddingBottom:</span> &quot;<span class="hljs-attr">10vh</span>&quot;,
+                    <span class="hljs-attr">justifyContent:</span> &quot;<span class="hljs-attr">space-around</span>&quot;,
+                    <span class="hljs-attr">width:</span> &quot;<span class="hljs-attr">100</span>%&quot;,
+                  }}
+                &gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">IonImg</span>
+                    <span class="hljs-attr">src</span>=<span class="hljs-string">{process.env.PUBLIC_URL</span> + &quot;/<span class="hljs-attr">assets</span>/<span class="hljs-attr">stone-logo.png</span>&quot;}
+                    <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;logo&quot;</span>
+                  /&gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">IonImg</span>
+                    <span class="hljs-attr">src</span>=<span class="hljs-string">{process.env.PUBLIC_URL</span> + &quot;/<span class="hljs-attr">assets</span>/<span class="hljs-attr">paper-logo.png</span>&quot;}
+                    <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;logo&quot;</span>
+                  /&gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">IonImg</span>
+                    <span class="hljs-attr">src</span>=<span class="hljs-string">{process.env.PUBLIC_URL</span> + &quot;/<span class="hljs-attr">assets</span>/<span class="hljs-attr">scissor-logo.png</span>&quot;}
+                    <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;logo&quot;</span>
+                  /&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+
+                <span class="hljs-tag">&lt;<span class="hljs-name">IonButton</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;createGameModalVisible&quot;</span> <span class="hljs-attr">expand</span>=<span class="hljs-string">&quot;full&quot;</span>&gt;</span>
+                  New game
+                <span class="hljs-tag">&lt;/<span class="hljs-name">IonButton</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">IonModal</span>
+                  <span class="hljs-attr">ref</span>=<span class="hljs-string">{createGameModal}</span>
+                  <span class="hljs-attr">trigger</span>=<span class="hljs-string">&quot;createGameModalVisible&quot;</span>
+                &gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">IonHeader</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">IonToolbar</span>&gt;</span>
+                      <span class="hljs-tag">&lt;<span class="hljs-name">IonButtons</span> <span class="hljs-attr">slot</span>=<span class="hljs-string">&quot;start&quot;</span>&gt;</span>
+                        <span class="hljs-tag">&lt;<span class="hljs-name">IonButton</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> dismissCreateGameModal()}&gt;
+                          Cancel
+                        <span class="hljs-tag">&lt;/<span class="hljs-name">IonButton</span>&gt;</span>
+                      <span class="hljs-tag">&lt;/<span class="hljs-name">IonButtons</span>&gt;</span>
+                      <span class="hljs-tag">&lt;<span class="hljs-name">IonTitle</span>&gt;</span>New Game<span class="hljs-tag">&lt;/<span class="hljs-name">IonTitle</span>&gt;</span>
+                      <span class="hljs-tag">&lt;<span class="hljs-name">IonButtons</span> <span class="hljs-attr">slot</span>=<span class="hljs-string">&quot;end&quot;</span>&gt;</span>
+                        <span class="hljs-tag">&lt;<span class="hljs-name">IonButton</span>
+                          <span class="hljs-attr">strong</span>=<span class="hljs-string">{true}</span>
+                          <span class="hljs-attr">onClick</span>=<span class="hljs-string">{(e)</span> =&gt;</span> createSession(e)}
+                          id=&quot;createGameModal&quot;
+                        &gt;
+                          Create
+                        <span class="hljs-tag">&lt;/<span class="hljs-name">IonButton</span>&gt;</span>
+                      <span class="hljs-tag">&lt;/<span class="hljs-name">IonButtons</span>&gt;</span>
+                    <span class="hljs-tag">&lt;/<span class="hljs-name">IonToolbar</span>&gt;</span>
+                  <span class="hljs-tag">&lt;/<span class="hljs-name">IonHeader</span>&gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">IonContent</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">IonItem</span> <span class="hljs-attr">key</span>=<span class="hljs-string">&quot;total_rounds&quot;</span>&gt;</span>
+                      <span class="hljs-tag">&lt;<span class="hljs-name">IonLabel</span> <span class="hljs-attr">position</span>=<span class="hljs-string">&quot;stacked&quot;</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;text&quot;</span>&gt;</span>
+                        total rounds
+                      <span class="hljs-tag">&lt;/<span class="hljs-name">IonLabel</span>&gt;</span>
+                      <span class="hljs-tag">&lt;<span class="hljs-name">IonInput</span>
+                        <span class="hljs-attr">onIonChange</span>=<span class="hljs-string">{(str)</span> =&gt;</span> {
+                          if (str.detail.value === undefined) return;
+                          setTotal_rounds(
+                            new BigNumber(str.target.value!) as nat
+                          );
+                        }}
+                        value={total_rounds.toString()}
+                        placeholder=&quot;total_rounds&quot;
+                        type=&quot;number&quot;
+                      /&gt;
+                    <span class="hljs-tag">&lt;/<span class="hljs-name">IonItem</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">IonItem</span> <span class="hljs-attr">key</span>=<span class="hljs-string">&quot;newPlayer&quot;</span>&gt;</span>
+                      <span class="hljs-tag">&lt;<span class="hljs-name">IonLabel</span> <span class="hljs-attr">position</span>=<span class="hljs-string">&quot;stacked&quot;</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;text&quot;</span>&gt;</span>
+                        Opponent player
+                      <span class="hljs-tag">&lt;/<span class="hljs-name">IonLabel</span>&gt;</span>
+                      <span class="hljs-tag">&lt;<span class="hljs-name">IonInput</span>
+                        <span class="hljs-attr">onIonChange</span>=<span class="hljs-string">{(str)</span> =&gt;</span> {
+                          if (str.detail.value === undefined) return;
+                          setNewPlayer(str.detail.value as address);
+                        }}
+                        value={newPlayer}
+                        placeholder=&quot;tz1...&quot;
+                        type=&quot;text&quot;
+                      /&gt;
+                    <span class="hljs-tag">&lt;/<span class="hljs-name">IonItem</span>&gt;</span>
+                  <span class="hljs-tag">&lt;/<span class="hljs-name">IonContent</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">IonModal</span>&gt;</span>
+
+                <span class="hljs-tag">&lt;<span class="hljs-name">IonButton</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;selectGameModalVisible&quot;</span> <span class="hljs-attr">expand</span>=<span class="hljs-string">&quot;full&quot;</span>&gt;</span>
+                  Join game
+                <span class="hljs-tag">&lt;/<span class="hljs-name">IonButton</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">IonModal</span>
+                  <span class="hljs-attr">ref</span>=<span class="hljs-string">{selectGameModal}</span>
+                  <span class="hljs-attr">trigger</span>=<span class="hljs-string">&quot;selectGameModalVisible&quot;</span>
+                &gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">IonHeader</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">IonToolbar</span>&gt;</span>
+                      <span class="hljs-tag">&lt;<span class="hljs-name">IonButtons</span> <span class="hljs-attr">slot</span>=<span class="hljs-string">&quot;start&quot;</span>&gt;</span>
+                        <span class="hljs-tag">&lt;<span class="hljs-name">IonButton</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> dismissSelectGameModal()}&gt;
+                          Cancel
+                        <span class="hljs-tag">&lt;/<span class="hljs-name">IonButton</span>&gt;</span>
+                      <span class="hljs-tag">&lt;/<span class="hljs-name">IonButtons</span>&gt;</span>
+                      <span class="hljs-tag">&lt;<span class="hljs-name">IonTitle</span>&gt;</span>Select Game<span class="hljs-tag">&lt;/<span class="hljs-name">IonTitle</span>&gt;</span>
+                    <span class="hljs-tag">&lt;/<span class="hljs-name">IonToolbar</span>&gt;</span>
+                  <span class="hljs-tag">&lt;/<span class="hljs-name">IonHeader</span>&gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">IonContent</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">IonList</span> <span class="hljs-attr">inset</span>=<span class="hljs-string">{true}</span>&gt;</span>
+                      {myGames
+                        ? Array.from(myGames.entries()).map(([key, Value]) =&gt; (
+                            <span class="hljs-tag">&lt;<span class="hljs-name">IonButton</span>
+                              <span class="hljs-attr">key</span>=<span class="hljs-string">{</span>&quot;<span class="hljs-attr">Game-</span>&quot; + <span class="hljs-attr">key.toString</span>()}
+                              <span class="hljs-attr">expand</span>=<span class="hljs-string">&quot;full&quot;</span>
+                              <span class="hljs-attr">routerLink</span>=<span class="hljs-string">{PAGES.SESSION</span> + &quot;/&quot; + <span class="hljs-attr">key.toString</span>()}
+                              <span class="hljs-attr">onClick</span>=<span class="hljs-string">{dismissSelectGameModal}</span>
+                            &gt;</span>
+                              {&quot;Game n°&quot; + key.toString()}
+                            <span class="hljs-tag">&lt;/<span class="hljs-name">IonButton</span>&gt;</span>
+                          ))
+                        : []}
+                    <span class="hljs-tag">&lt;/<span class="hljs-name">IonList</span>&gt;</span>
+                  <span class="hljs-tag">&lt;/<span class="hljs-name">IonContent</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">IonModal</span>&gt;</span>
+
+                <span class="hljs-tag">&lt;<span class="hljs-name">IonButton</span> <span class="hljs-attr">routerLink</span>=<span class="hljs-string">{PAGES.TOPPLAYERS}</span> <span class="hljs-attr">expand</span>=<span class="hljs-string">&quot;full&quot;</span>&gt;</span>
+                  Top Players
+                <span class="hljs-tag">&lt;/<span class="hljs-name">IonButton</span>&gt;</span>
+              <span class="hljs-tag">&lt;/<span class="hljs-name">IonList</span>&gt;</span>
+            )}
+          <span class="hljs-tag">&lt;/<span class="hljs-name">IonList</span>&gt;</span>
+        )}
+      <span class="hljs-tag">&lt;/<span class="hljs-name">IonContent</span>&gt;</span></span>
+      <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">IonFooter</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">IonToolbar</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">IonTitle</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">IonButton</span> <span class="hljs-attr">color</span>=<span class="hljs-string">&quot;primary&quot;</span> <span class="hljs-attr">routerLink</span>=<span class="hljs-string">{PAGES.RULES}</span> <span class="hljs-attr">expand</span>=<span class="hljs-string">&quot;full&quot;</span>&gt;</span>
+              Rules
+            <span class="hljs-tag">&lt;/<span class="hljs-name">IonButton</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">IonTitle</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">IonToolbar</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">IonFooter</span>&gt;</span></span>
+
+      {userAddress ? (
+        <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">DisconnectButton</span>
+          <span class="hljs-attr">wallet</span>=<span class="hljs-string">{wallet}</span>
+          <span class="hljs-attr">setUserAddress</span>=<span class="hljs-string">{setUserAddress}</span>
+          <span class="hljs-attr">setUserBalance</span>=<span class="hljs-string">{setUserBalance}</span>
+        /&gt;</span></span>
+      ) : (
+        <span class="language-xml"><span class="hljs-tag">&lt;&gt;</span><span class="hljs-tag">&lt;/&gt;</span></span>
+      )}
+    &lt;/<span class="hljs-title class_">IonPage</span>&gt;
+  );
+};
+</code></pre>
+<p>Explanation :</p>
+<ul>
+<li>
+<p><code>const createGameModal</code> : The popup to create a new game</p>
+</li>
+<li>
+<p><code>const selectGameModal</code> : The popup to select a game to join</p>
+</li>
+<li>
+<p><code>const [newPlayer, setNewPlayer] = useState&lt;address&gt;(&quot;&quot; as address)</code> : Used on <code>New Game</code> popup form to add an opponent</p>
+</li>
+<li>
+<p><code>const [total_rounds, setTotal_rounds] = useState&lt;nat&gt;(new BigNumber(1) as nat)</code> : Used on <code>New Game</code> popup form to set number of round for one game</p>
+</li>
+<li>
+<p><code>const [myGames, setMyGames] = useState&lt;Map&lt;nat, Session&gt;&gt;()</code> : Used on <code>Join Game</code> popup window to display the games we have created or we are invited to</p>
+</li>
+<li>
+<p><code>Array.from(storage.sessions.keys()).forEach((key) =&gt; { ... if (session.players.indexOf(userAddress as address) &gt;= 0 &amp;&amp; &quot;inplay&quot; in session.result ...</code> : On storage change event, we fetch and filter only games we can join and play (i.e with <code>inplay</code> status and where user appears on player list)</p>
+</li>
+<li>
+<p><code>const createSession = async (...) =&gt; { ...  const op = await mainWalletType!.methods.createSession([userAddress as address, newPlayer], total_rounds).send(); ... </code> : createSession function will call the Smart contract entrypoint passing on arguments : current user address,opponent address and total rounds, then it will redirect to the newly created game page</p>
+</li>
+<li>
+<p><code>{...&lt;IonButton ... routerLink={PAGES.SESSION + &quot;/&quot; + key.toString()}</code> : If you click on a game button from the list it will redirect you to the game to play</p>
+</li>
+<li>
+<p>SessionScreen.tsx : it is the game page where you can play on limited rounds and where the result of the game will be displayed at the end</p>
+</li>
+</ul>
+<pre class="hljs language-typescript"><code><span class="hljs-keyword">import</span> { <span class="hljs-title class_">IonPage</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@ionic/react&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title class_">SessionScreen</span>: <span class="hljs-title class_">React</span>.<span class="hljs-property">FC</span> = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">IonPage</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;container&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">IonPage</span>&gt;</span></span>;
+};
+</code></pre>
+<p>We leave it empty for now and we will edit it later and explain what to write</p>
+<ul>
+<li>TopPlayersScreen.tsx : it is the player ranking page</li>
+</ul>
+<pre class="hljs language-typescript"><code><span class="hljs-keyword">import</span> { <span class="hljs-title class_">IonPage</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@ionic/react&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title class_">TopPlayersScreen</span>: <span class="hljs-title class_">React</span>.<span class="hljs-property">FC</span> = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">IonPage</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;container&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">IonPage</span>&gt;</span></span>;
+};
+</code></pre>
+<p>We leave it empty for now and edit it later too</p>
+<ul>
+<li>Rules.tsx : just some information about game rules</li>
+</ul>
+<pre class="hljs language-typescript"><code><span class="hljs-keyword">import</span> {
+  <span class="hljs-title class_">IonButton</span>,
+  <span class="hljs-title class_">IonButtons</span>,
+  <span class="hljs-title class_">IonContent</span>,
+  <span class="hljs-title class_">IonHeader</span>,
+  <span class="hljs-title class_">IonImg</span>,
+  <span class="hljs-title class_">IonItem</span>,
+  <span class="hljs-title class_">IonList</span>,
+  <span class="hljs-title class_">IonPage</span>,
+  <span class="hljs-title class_">IonTitle</span>,
+  <span class="hljs-title class_">IonToolbar</span>,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@ionic/react&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { useHistory } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-router-dom&quot;</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title class_">RulesScreen</span>: <span class="hljs-title class_">React</span>.<span class="hljs-property">FC</span> = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">const</span> history = <span class="hljs-title function_">useHistory</span>();
+  <span class="hljs-comment">/* 2. Get the param */</span>
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">IonPage</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;container&quot;</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">IonHeader</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">IonToolbar</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">IonButtons</span> <span class="hljs-attr">slot</span>=<span class="hljs-string">&quot;start&quot;</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">IonButton</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> history.goBack()}&gt;Back<span class="hljs-tag">&lt;/<span class="hljs-name">IonButton</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">IonButtons</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">IonTitle</span>&gt;</span>Rules<span class="hljs-tag">&lt;/<span class="hljs-name">IonTitle</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">IonToolbar</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">IonHeader</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">IonContent</span> <span class="hljs-attr">fullscreen</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">textAlign:</span> &quot;<span class="hljs-attr">left</span>&quot; }}&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">IonList</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">IonItem</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;nopm&quot;</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">IonImg</span>
+                <span class="hljs-attr">src</span>=<span class="hljs-string">{process.env.PUBLIC_URL</span> + &quot;/<span class="hljs-attr">assets</span>/<span class="hljs-attr">stone-logo.png</span>&quot;}
+                <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;logo&quot;</span>
+              /&gt;</span>
+              Stone (Clenched Fist). Rock beats the scissors by hitting it
+            <span class="hljs-tag">&lt;/<span class="hljs-name">IonItem</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">IonItem</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;nopm&quot;</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">IonImg</span>
+                <span class="hljs-attr">src</span>=<span class="hljs-string">{process.env.PUBLIC_URL</span> + &quot;/<span class="hljs-attr">assets</span>/<span class="hljs-attr">paper-logo.png</span>&quot;}
+                <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;logo&quot;</span>
+              /&gt;</span>
+              Paper (open and extended hand) . Paper wins over stone by enveloping
+              it
+            <span class="hljs-tag">&lt;/<span class="hljs-name">IonItem</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">IonItem</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;nopm&quot;</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">IonImg</span>
+                <span class="hljs-attr">src</span>=<span class="hljs-string">{process.env.PUBLIC_URL</span> + &quot;/<span class="hljs-attr">assets</span>/<span class="hljs-attr">scissor-logo.png</span>&quot;}
+                <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;logo&quot;</span>
+              /&gt;</span>
+              Scissors (closed hand with the two fingers) . Scissors wins paper cutting
+              it
+            <span class="hljs-tag">&lt;/<span class="hljs-name">IonItem</span>&gt;</span>
+
+            <span class="hljs-tag">&lt;<span class="hljs-name">IonItem</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;nopm&quot;</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">IonImg</span>
+                <span class="hljs-attr">src</span>=<span class="hljs-string">{process.env.PUBLIC_URL</span> + &quot;/<span class="hljs-attr">assets</span>/<span class="hljs-attr">clock.png</span>&quot;}
+                <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;logo&quot;</span>
+              /&gt;</span>
+              If you are inactive for more than 10 minutes your opponent can claim
+              the victory
+            <span class="hljs-tag">&lt;/<span class="hljs-name">IonItem</span>&gt;</span>
+
+            <span class="hljs-tag">&lt;<span class="hljs-name">IonItem</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;nopm&quot;</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">IonImg</span>
+                <span class="hljs-attr">src</span>=<span class="hljs-string">{process.env.PUBLIC_URL</span> + &quot;/<span class="hljs-attr">assets</span>/<span class="hljs-attr">legend.png</span>&quot;}
+                <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;logo&quot;</span>
+              /&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">ul</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">listStyle:</span> &quot;<span class="hljs-attr">none</span>&quot; }}&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;win&quot;</span>&gt;</span>Won round<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;lose&quot;</span>&gt;</span>Lost round<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;draw&quot;</span>&gt;</span>Draw<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;current&quot;</span>&gt;</span>Current Round<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;missing&quot;</span>&gt;</span>Missing Rounds<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+              <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">IonItem</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">IonList</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">IonContent</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">IonPage</span>&gt;</span></span>
+  );
+};
+</code></pre>
+<ul>
+<li>TransactionInvalidBeaconError.ts the utility class that formats Beacon errors</li>
+</ul>
+<pre class="hljs language-typescript"><code><span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TransactionInvalidBeaconError</span> {
+  <span class="hljs-attr">name</span>: <span class="hljs-built_in">string</span>;
+  <span class="hljs-attr">title</span>: <span class="hljs-built_in">string</span>;
+  <span class="hljs-attr">message</span>: <span class="hljs-built_in">string</span>;
+  <span class="hljs-attr">description</span>: <span class="hljs-built_in">string</span>;
+  <span class="hljs-attr">data_contract_handle</span>: <span class="hljs-built_in">string</span>;
+  <span class="hljs-attr">data_expected_form</span>: <span class="hljs-built_in">string</span>;
+  <span class="hljs-attr">data_message</span>: <span class="hljs-built_in">string</span>;
+
+  <span class="hljs-comment">/**
+      * 
+      * <span class="hljs-doctag">@param</span> transactionInvalidBeaconError  {
+      &quot;name&quot;: &quot;UnknownBeaconError&quot;,
+      &quot;title&quot;: &quot;Aborted&quot;,
+      &quot;message&quot;: &quot;[ABORTED_ERROR]:The action was aborted by the user.&quot;,
+      &quot;description&quot;: &quot;The action was aborted by the user.&quot;
+  }
+  */</span>
+
+  <span class="hljs-title function_">constructor</span>(<span class="hljs-params">transactionInvalidBeaconError: <span class="hljs-built_in">any</span></span>) {
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span> = transactionInvalidBeaconError.<span class="hljs-property">name</span>;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">title</span> = transactionInvalidBeaconError.<span class="hljs-property">title</span>;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">message</span> = transactionInvalidBeaconError.<span class="hljs-property">message</span>;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">description</span> = transactionInvalidBeaconError.<span class="hljs-property">description</span>;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">data_contract_handle</span> = <span class="hljs-string">&quot;&quot;</span>;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">data_expected_form</span> = <span class="hljs-string">&quot;&quot;</span>;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">data_message</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">message</span>;
+    <span class="hljs-keyword">if</span> (transactionInvalidBeaconError.<span class="hljs-property">data</span> !== <span class="hljs-literal">undefined</span>) {
+      <span class="hljs-keyword">let</span> dataArray = <span class="hljs-title class_">Array</span>.<span class="hljs-property">from</span>&lt;<span class="hljs-built_in">any</span>&gt;(
+        <span class="hljs-keyword">new</span> <span class="hljs-title class_">Map</span>(
+          <span class="hljs-title class_">Object</span>.<span class="hljs-property">entries</span>&lt;<span class="hljs-built_in">any</span>&gt;(transactionInvalidBeaconError.<span class="hljs-property">data</span>)
+        ).<span class="hljs-title function_">values</span>()
+      );
+      <span class="hljs-keyword">let</span> contract_handle = dataArray.<span class="hljs-title function_">find</span>(
+        <span class="hljs-function">(<span class="hljs-params">obj</span>) =&gt;</span> obj.<span class="hljs-property">contract_handle</span> !== <span class="hljs-literal">undefined</span>
+      );
+      <span class="hljs-variable language_">this</span>.<span class="hljs-property">data_contract_handle</span> =
+        contract_handle !== <span class="hljs-literal">undefined</span> ? contract_handle.<span class="hljs-property">contract_handle</span> : <span class="hljs-string">&quot;&quot;</span>;
+      <span class="hljs-keyword">let</span> expected_form = dataArray.<span class="hljs-title function_">find</span>(
+        <span class="hljs-function">(<span class="hljs-params">obj</span>) =&gt;</span> obj.<span class="hljs-property">expected_form</span> !== <span class="hljs-literal">undefined</span>
+      );
+      <span class="hljs-variable language_">this</span>.<span class="hljs-property">data_expected_form</span> =
+        expected_form !== <span class="hljs-literal">undefined</span>
+          ? expected_form.<span class="hljs-property">expected_form</span> +
+            <span class="hljs-string">&quot;:&quot;</span> +
+            expected_form.<span class="hljs-property">wrong_expression</span>.<span class="hljs-property">string</span>
+          : <span class="hljs-string">&quot;&quot;</span>;
+      <span class="hljs-variable language_">this</span>.<span class="hljs-property">data_message</span> =
+        (<span class="hljs-variable language_">this</span>.<span class="hljs-property">data_contract_handle</span>
+          ? <span class="hljs-string">&quot;Error on contract : &quot;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">data_contract_handle</span> + <span class="hljs-string">&quot; &quot;</span>
+          : <span class="hljs-string">&quot;&quot;</span>) +
+        (<span class="hljs-variable language_">this</span>.<span class="hljs-property">data_expected_form</span>
+          ? <span class="hljs-string">&quot;error : &quot;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">data_expected_form</span> + <span class="hljs-string">&quot; &quot;</span>
+          : <span class="hljs-string">&quot;&quot;</span>);
+    }
+  }
+}
+</code></pre>
+</section>
+<section>
+<h2>Step 4 : Test it</h2>
+<p>We consider that you wallet is well configured and has some XTZ on Ghostnet, so click on Connect button
+(Note : If you don't have tokens, to get some free XTZ on Ghostnet, follow this link to the <a href="https://faucet.marigold.dev/">faucet</a>)</p>
+<p>On the popup, select your Wallet, then your account and connect.</p>
+<p>🎊 You are &quot;logged&quot;</p>
+<p>Click on the Disconnect button to logout</p>
+</section>
+<section>
+<h2>Step 5 : Play on a game session</h2>
+<p>Click on <code>New Game</code> button from Home page and then create a new game
+Confirm the operation with your wallet</p>
+<p>You are redirected the new game session page (that is blank page right now)</p>
+<p>Edit the file <code>./src/SessionScreen.tsx</code></p>
+<pre class="hljs language-typescript"><code><span class="hljs-keyword">import</span> {
+  <span class="hljs-title class_">IonButton</span>,
+  <span class="hljs-title class_">IonButtons</span>,
+  <span class="hljs-title class_">IonContent</span>,
+  <span class="hljs-title class_">IonFooter</span>,
+  <span class="hljs-title class_">IonHeader</span>,
+  <span class="hljs-title class_">IonIcon</span>,
+  <span class="hljs-title class_">IonImg</span>,
+  <span class="hljs-title class_">IonItem</span>,
+  <span class="hljs-title class_">IonLabel</span>,
+  <span class="hljs-title class_">IonList</span>,
+  <span class="hljs-title class_">IonPage</span>,
+  <span class="hljs-title class_">IonRefresher</span>,
+  <span class="hljs-title class_">IonRefresherContent</span>,
+  <span class="hljs-title class_">IonSpinner</span>,
+  <span class="hljs-title class_">IonTitle</span>,
+  <span class="hljs-title class_">IonToolbar</span>,
+  useIonAlert,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@ionic/react&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">PackDataParams</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@taquito/rpc&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">MichelCodecPacker</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@taquito/taquito&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">BigNumber</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;bignumber.js&quot;</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> crypto <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;crypto&quot;</span>;
+<span class="hljs-keyword">import</span> { eye, stopCircle } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;ionicons/icons&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span>, { useEffect, useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">RouteComponentProps</span>, useHistory } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-router-dom&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">Action</span>, <span class="hljs-variable constant_">PAGES</span>, <span class="hljs-title class_">UserContext</span>, <span class="hljs-title class_">UserContextType</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;../App&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">TransactionInvalidBeaconError</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;../TransactionInvalidBeaconError&quot;</span>;
+<span class="hljs-keyword">import</span> { bytes, nat, unit } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;../type-aliases&quot;</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">enum</span> <span class="hljs-variable constant_">STATUS</span> {
+  <span class="hljs-variable constant_">PLAY</span> = <span class="hljs-string">&quot;Play !&quot;</span>,
+  <span class="hljs-variable constant_">WAIT_YOUR_OPPONENT_PLAY</span> = <span class="hljs-string">&quot;Wait for your opponent move&quot;</span>,
+  <span class="hljs-variable constant_">REVEAL</span> = <span class="hljs-string">&quot;Reveal your choice now&quot;</span>,
+  <span class="hljs-variable constant_">WAIT_YOUR_OPPONENT_REVEAL</span> = <span class="hljs-string">&quot;Wait for your opponent to reveal his choice&quot;</span>,
+  <span class="hljs-variable constant_">FINISHED</span> = <span class="hljs-string">&quot;Game ended&quot;</span>,
+}
+
+<span class="hljs-keyword">interface</span> <span class="hljs-title class_">SessionScreenProps</span>
+  <span class="hljs-keyword">extends</span> <span class="hljs-title class_">RouteComponentProps</span>&lt;{
+    <span class="hljs-attr">id</span>: <span class="hljs-built_in">string</span>;
+  }&gt; {}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title class_">SessionScreen</span>: <span class="hljs-title class_">React</span>.<span class="hljs-property">FC</span>&lt;<span class="hljs-title class_">SessionScreenProps</span>&gt; = <span class="hljs-function">(<span class="hljs-params">{ match }</span>) =&gt;</span> {
+  <span class="hljs-keyword">const</span> [presentAlert] = <span class="hljs-title function_">useIonAlert</span>();
+  <span class="hljs-keyword">const</span> history = <span class="hljs-title function_">useHistory</span>();
+
+  <span class="hljs-keyword">const</span> <span class="hljs-attr">id</span>: <span class="hljs-built_in">string</span> = match.<span class="hljs-property">params</span>.<span class="hljs-property">id</span>;
+
+  <span class="hljs-keyword">const</span> {
+    <span class="hljs-title class_">Tezos</span>,
+    userAddress,
+    storage,
+    mainWalletType,
+    setStorage,
+    setLoading,
+    loading,
+    refreshStorage,
+  } = <span class="hljs-title class_">React</span>.<span class="hljs-title function_">useContext</span>(<span class="hljs-title class_">UserContext</span>) <span class="hljs-keyword">as</span> <span class="hljs-title class_">UserContextType</span>;
+
+  <span class="hljs-keyword">const</span> [status, setStatus] = useState&lt;<span class="hljs-variable constant_">STATUS</span>&gt;();
+  <span class="hljs-keyword">const</span> [remainingTime, setRemainingTime] = useState&lt;<span class="hljs-built_in">number</span>&gt;(<span class="hljs-number">10</span> * <span class="hljs-number">60</span>);
+
+  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-keyword">const</span> subReveal = <span class="hljs-title class_">Tezos</span>.<span class="hljs-property">stream</span>.<span class="hljs-title function_">subscribeEvent</span>({
+        <span class="hljs-attr">tag</span>: <span class="hljs-string">&quot;reveal&quot;</span>,
+        <span class="hljs-attr">address</span>: process.<span class="hljs-property">env</span>.<span class="hljs-property">REACT_APP_CONTRACT_ADDRESS</span>!,
+      });
+
+      <span class="hljs-keyword">const</span> subNewRound = <span class="hljs-title class_">Tezos</span>.<span class="hljs-property">stream</span>.<span class="hljs-title function_">subscribeEvent</span>({
+        <span class="hljs-attr">tag</span>: <span class="hljs-string">&quot;newRound&quot;</span>,
+        <span class="hljs-attr">address</span>: process.<span class="hljs-property">env</span>.<span class="hljs-property">REACT_APP_CONTRACT_ADDRESS</span>!,
+      });
+
+      subReveal.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;data&quot;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;on reveal event :&quot;</span>, e);
+        <span class="hljs-keyword">if</span> (!e.<span class="hljs-property">result</span>.<span class="hljs-property">errors</span> || e.<span class="hljs-property">result</span>.<span class="hljs-property">errors</span>.<span class="hljs-property">length</span> === <span class="hljs-number">0</span>) <span class="hljs-title function_">revealPlay</span>();
+        <span class="hljs-keyword">else</span>
+          <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Warning : here we ignore a failing transaction event&quot;</span>);
+      });
+
+      subNewRound.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;data&quot;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;on new round event :&quot;</span>, e);
+        <span class="hljs-title function_">refreshStorage</span>();
+      });
+    } <span class="hljs-keyword">catch</span> (e) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Error with Smart contract event pooling&quot;</span>, e);
+    }
+  }, []);
+
+  <span class="hljs-keyword">const</span> buildSessionStorageKey = (
+    <span class="hljs-attr">userAddress</span>: <span class="hljs-built_in">string</span>,
+    <span class="hljs-attr">sessionNumber</span>: <span class="hljs-built_in">number</span>,
+    <span class="hljs-attr">roundNumber</span>: <span class="hljs-built_in">number</span>
+  ): <span class="hljs-function"><span class="hljs-params">string</span> =&gt;</span> {
+    <span class="hljs-keyword">return</span> userAddress + <span class="hljs-string">&quot;-&quot;</span> + sessionNumber + <span class="hljs-string">&quot;-&quot;</span> + roundNumber;
+  };
+
+  <span class="hljs-keyword">const</span> buildSessionStorageValue = (<span class="hljs-attr">secret</span>: <span class="hljs-built_in">number</span>, <span class="hljs-attr">action</span>: <span class="hljs-title class_">Action</span>): <span class="hljs-function"><span class="hljs-params">string</span> =&gt;</span> {
+    <span class="hljs-keyword">return</span> (
+      secret + <span class="hljs-string">&quot;-&quot;</span> + (action.<span class="hljs-property">cisor</span> ? <span class="hljs-string">&quot;cisor&quot;</span> : action.<span class="hljs-property">paper</span> ? <span class="hljs-string">&quot;paper&quot;</span> : <span class="hljs-string">&quot;stone&quot;</span>)
+    );
+  };
+
+  <span class="hljs-keyword">const</span> extractSessionStorageValue = (
+    <span class="hljs-attr">value</span>: <span class="hljs-built_in">string</span>
+  ): { <span class="hljs-attr">secret</span>: <span class="hljs-built_in">number</span>; <span class="hljs-attr">action</span>: <span class="hljs-title class_">Action</span> } =&gt; {
+    <span class="hljs-keyword">const</span> actionStr = value.<span class="hljs-title function_">split</span>(<span class="hljs-string">&quot;-&quot;</span>)[<span class="hljs-number">1</span>];
+    <span class="hljs-keyword">return</span> {
+      <span class="hljs-attr">secret</span>: <span class="hljs-title class_">Number</span>(value.<span class="hljs-title function_">split</span>(<span class="hljs-string">&quot;-&quot;</span>)[<span class="hljs-number">0</span>]),
+      <span class="hljs-attr">action</span>:
+        actionStr === <span class="hljs-string">&quot;cisor&quot;</span>
+          ? <span class="hljs-keyword">new</span> <span class="hljs-title class_">Action</span>(<span class="hljs-literal">true</span> <span class="hljs-keyword">as</span> unit, <span class="hljs-literal">undefined</span>, <span class="hljs-literal">undefined</span>)
+          : actionStr === <span class="hljs-string">&quot;paper&quot;</span>
+          ? <span class="hljs-keyword">new</span> <span class="hljs-title class_">Action</span>(<span class="hljs-literal">undefined</span>, <span class="hljs-literal">true</span> <span class="hljs-keyword">as</span> unit, <span class="hljs-literal">undefined</span>)
+          : <span class="hljs-keyword">new</span> <span class="hljs-title class_">Action</span>(<span class="hljs-literal">undefined</span>, <span class="hljs-literal">undefined</span>, <span class="hljs-literal">true</span> <span class="hljs-keyword">as</span> unit),
+    };
+  };
+
+  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-keyword">if</span> (storage) {
+      <span class="hljs-keyword">const</span> session = storage?.<span class="hljs-property">sessions</span>.<span class="hljs-title function_">get</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">BigNumber</span>(id) <span class="hljs-keyword">as</span> nat);
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(
+        <span class="hljs-string">&quot;Session has changed&quot;</span>,
+        session,
+        <span class="hljs-string">&quot;round&quot;</span>,
+        session!.<span class="hljs-property">current_round</span>.<span class="hljs-title function_">toNumber</span>(),
+        <span class="hljs-string">&quot;session.decoded_rounds.get(session.current_round)&quot;</span>,
+        session!.<span class="hljs-property">decoded_rounds</span>.<span class="hljs-title function_">get</span>(session!.<span class="hljs-property">current_round</span>)
+      );
+      <span class="hljs-keyword">if</span> (session &amp;&amp; (<span class="hljs-string">&quot;winner&quot;</span> <span class="hljs-keyword">in</span> session.<span class="hljs-property">result</span> || <span class="hljs-string">&quot;draw&quot;</span> <span class="hljs-keyword">in</span> session.<span class="hljs-property">result</span>)) {
+        <span class="hljs-title function_">setStatus</span>(<span class="hljs-variable constant_">STATUS</span>.<span class="hljs-property">FINISHED</span>);
+      } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (session) {
+        <span class="hljs-keyword">if</span> (
+          session.<span class="hljs-property">decoded_rounds</span> &amp;&amp;
+          session.<span class="hljs-property">decoded_rounds</span>.<span class="hljs-title function_">get</span>(session.<span class="hljs-property">current_round</span>) &amp;&amp;
+          session.<span class="hljs-property">decoded_rounds</span>.<span class="hljs-title function_">get</span>(session.<span class="hljs-property">current_round</span>).<span class="hljs-property">length</span> === <span class="hljs-number">1</span> &amp;&amp;
+          session.<span class="hljs-property">decoded_rounds</span>.<span class="hljs-title function_">get</span>(session.<span class="hljs-property">current_round</span>)[<span class="hljs-number">0</span>].<span class="hljs-property">player</span> ===
+            userAddress
+        ) {
+          <span class="hljs-title function_">setStatus</span>(<span class="hljs-variable constant_">STATUS</span>.<span class="hljs-property">WAIT_YOUR_OPPONENT_REVEAL</span>);
+        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (
+          session.<span class="hljs-property">rounds</span> &amp;&amp;
+          session.<span class="hljs-property">rounds</span>.<span class="hljs-title function_">get</span>(session.<span class="hljs-property">current_round</span>) &amp;&amp;
+          session.<span class="hljs-property">rounds</span>.<span class="hljs-title function_">get</span>(session.<span class="hljs-property">current_round</span>).<span class="hljs-property">length</span> === <span class="hljs-number">2</span>
+        ) {
+          <span class="hljs-title function_">setStatus</span>(<span class="hljs-variable constant_">STATUS</span>.<span class="hljs-property">REVEAL</span>);
+        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (
+          session.<span class="hljs-property">rounds</span> &amp;&amp;
+          session.<span class="hljs-property">rounds</span>.<span class="hljs-title function_">get</span>(session.<span class="hljs-property">current_round</span>) &amp;&amp;
+          session.<span class="hljs-property">rounds</span>.<span class="hljs-title function_">get</span>(session.<span class="hljs-property">current_round</span>).<span class="hljs-property">length</span> === <span class="hljs-number">1</span> &amp;&amp;
+          session.<span class="hljs-property">rounds</span>.<span class="hljs-title function_">get</span>(session.<span class="hljs-property">current_round</span>)[<span class="hljs-number">0</span>].<span class="hljs-property">player</span> === userAddress
+        ) {
+          <span class="hljs-title function_">setStatus</span>(<span class="hljs-variable constant_">STATUS</span>.<span class="hljs-property">WAIT_YOUR_OPPONENT_PLAY</span>);
+        } <span class="hljs-keyword">else</span> {
+          <span class="hljs-title function_">setStatus</span>(<span class="hljs-variable constant_">STATUS</span>.<span class="hljs-property">PLAY</span>);
+        }
+      }
+    } <span class="hljs-keyword">else</span> {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Wait parent to init storage ...&quot;</span>);
+    }
+  }, [storage?.<span class="hljs-property">sessions</span>.<span class="hljs-title function_">get</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">BigNumber</span>(id) <span class="hljs-keyword">as</span> nat)]);
+
+  <span class="hljs-comment">//setRemainingTime</span>
+  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-keyword">const</span> interval = <span class="hljs-built_in">setInterval</span>(<span class="hljs-function">() =&gt;</span> {
+      <span class="hljs-keyword">const</span> diff = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">round</span>(
+        (<span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>(
+          storage?.<span class="hljs-property">sessions</span>.<span class="hljs-title function_">get</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">BigNumber</span>(id) <span class="hljs-keyword">as</span> nat).<span class="hljs-property">asleep</span>!
+        ).<span class="hljs-title function_">getTime</span>() -
+          <span class="hljs-title class_">Date</span>.<span class="hljs-title function_">now</span>()) /
+          <span class="hljs-number">1000</span>
+      );
+
+      <span class="hljs-keyword">if</span> (diff &lt;= <span class="hljs-number">0</span>) {
+        <span class="hljs-title function_">setRemainingTime</span>(<span class="hljs-number">0</span>);
+      } <span class="hljs-keyword">else</span> {
+        <span class="hljs-title function_">setRemainingTime</span>(diff);
+      }
+    }, <span class="hljs-number">1000</span>);
+
+    <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> <span class="hljs-built_in">clearInterval</span>(interval);
+  }, [storage?.<span class="hljs-property">sessions</span>.<span class="hljs-title function_">get</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">BigNumber</span>(id) <span class="hljs-keyword">as</span> nat)]);
+
+  <span class="hljs-keyword">const</span> <span class="hljs-title function_">play</span> = <span class="hljs-keyword">async</span> (<span class="hljs-params">action: Action</span>) =&gt; {
+    <span class="hljs-keyword">const</span> session_id = <span class="hljs-keyword">new</span> <span class="hljs-title class_">BigNumber</span>(id) <span class="hljs-keyword">as</span> nat;
+    <span class="hljs-keyword">const</span> current_session = storage?.<span class="hljs-property">sessions</span>.<span class="hljs-title function_">get</span>(session_id);
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">true</span>);
+      <span class="hljs-keyword">const</span> secret = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">round</span>(<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">random</span>() * <span class="hljs-number">63</span>); <span class="hljs-comment">//FIXME it should be 654843, but we limit the size of the output hexa because expo-crypto is buggy</span>
+      <span class="hljs-comment">// see https://forums.expo.dev/t/how-to-hash-buffer-with-expo-for-an-array-reopen/64587 or https://github.com/expo/expo/issues/20706 );</span>
+      <span class="hljs-variable language_">localStorage</span>.<span class="hljs-title function_">setItem</span>(
+        <span class="hljs-title function_">buildSessionStorageKey</span>(
+          userAddress,
+          <span class="hljs-title class_">Number</span>(id),
+          storage!.<span class="hljs-property">sessions</span>
+            .<span class="hljs-title function_">get</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">BigNumber</span>(id) <span class="hljs-keyword">as</span> nat)
+            .<span class="hljs-property">current_round</span>.<span class="hljs-title function_">toNumber</span>()
+        ),
+        <span class="hljs-title function_">buildSessionStorageValue</span>(secret, action)
+      );
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;PLAY - pushing to session storage &quot;</span>, secret, action);
+      <span class="hljs-keyword">const</span> encryptedAction = <span class="hljs-keyword">await</span> <span class="hljs-title function_">create_bytes</span>(action, secret);
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(
+        <span class="hljs-string">&quot;encryptedAction&quot;</span>,
+        encryptedAction,
+        <span class="hljs-string">&quot;session_id&quot;</span>,
+        session_id,
+        <span class="hljs-string">&quot;current_round&quot;</span>,
+        current_session!.<span class="hljs-property">current_round</span>
+      );
+
+      <span class="hljs-keyword">const</span> preparedCall = mainWalletType!.<span class="hljs-property">methods</span>.<span class="hljs-title function_">play</span>(
+        encryptedAction,
+        current_session!.<span class="hljs-property">current_round</span>,
+        session_id
+      );
+
+      <span class="hljs-keyword">const</span> { gasLimit, storageLimit, suggestedFeeMutez } =
+        <span class="hljs-keyword">await</span> <span class="hljs-title class_">Tezos</span>.<span class="hljs-property">estimate</span>.<span class="hljs-title function_">transfer</span>({
+          ...preparedCall.<span class="hljs-title function_">toTransferParams</span>(),
+          <span class="hljs-attr">amount</span>: <span class="hljs-number">1</span>,
+          <span class="hljs-attr">mutez</span>: <span class="hljs-literal">false</span>,
+        });
+
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>({ gasLimit, storageLimit, suggestedFeeMutez });
+      <span class="hljs-keyword">const</span> op = <span class="hljs-keyword">await</span> preparedCall.<span class="hljs-title function_">send</span>({
+        <span class="hljs-attr">gasLimit</span>: gasLimit + <span class="hljs-number">1000</span>, <span class="hljs-comment">//we take a margin +100 for an eventual event in case of paralell execution</span>
+        <span class="hljs-attr">fee</span>: suggestedFeeMutez,
+        <span class="hljs-attr">storageLimit</span>: storageLimit,
+        <span class="hljs-attr">amount</span>: <span class="hljs-number">1</span>,
+        <span class="hljs-attr">mutez</span>: <span class="hljs-literal">false</span>,
+      });
+
+      <span class="hljs-keyword">await</span> op?.<span class="hljs-title function_">confirmation</span>();
+      <span class="hljs-keyword">const</span> newStorage = <span class="hljs-keyword">await</span> mainWalletType!.<span class="hljs-title function_">storage</span>();
+      <span class="hljs-title function_">setStorage</span>(newStorage);
+      <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">false</span>);
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;newStorage&quot;</span>, newStorage);
+    } <span class="hljs-keyword">catch</span> (error) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">table</span>(<span class="hljs-string">`Error: <span class="hljs-subst">${<span class="hljs-built_in">JSON</span>.stringify(error, <span class="hljs-literal">null</span>, <span class="hljs-number">2</span>)}</span>`</span>);
+      <span class="hljs-keyword">let</span> <span class="hljs-attr">tibe</span>: <span class="hljs-title class_">TransactionInvalidBeaconError</span> =
+        <span class="hljs-keyword">new</span> <span class="hljs-title class_">TransactionInvalidBeaconError</span>(error);
+      <span class="hljs-title function_">presentAlert</span>({
+        <span class="hljs-attr">header</span>: <span class="hljs-string">&quot;Error&quot;</span>,
+        <span class="hljs-attr">message</span>: tibe.<span class="hljs-property">data_message</span>,
+        <span class="hljs-attr">buttons</span>: [<span class="hljs-string">&quot;Close&quot;</span>],
+      });
+      <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">false</span>);
+    }
+    <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">false</span>);
+  };
+
+  <span class="hljs-keyword">const</span> <span class="hljs-title function_">revealPlay</span> = <span class="hljs-keyword">async</span> (<span class="hljs-params"></span>) =&gt; {
+    <span class="hljs-keyword">const</span> session_id = <span class="hljs-keyword">new</span> <span class="hljs-title class_">BigNumber</span>(id) <span class="hljs-keyword">as</span> nat;
+    <span class="hljs-keyword">const</span> current_session = storage?.<span class="hljs-property">sessions</span>.<span class="hljs-title function_">get</span>(session_id);
+
+    <span class="hljs-comment">//fecth from session storage</span>
+    <span class="hljs-keyword">const</span> secretActionStr = <span class="hljs-variable language_">localStorage</span>.<span class="hljs-title function_">getItem</span>(
+      <span class="hljs-title function_">buildSessionStorageKey</span>(
+        userAddress,
+        session_id.<span class="hljs-title function_">toNumber</span>(),
+        current_session!.<span class="hljs-property">current_round</span>.<span class="hljs-title function_">toNumber</span>()
+      )
+    );
+
+    <span class="hljs-keyword">if</span> (!secretActionStr) {
+      <span class="hljs-title function_">presentAlert</span>({
+        <span class="hljs-attr">header</span>: <span class="hljs-string">&quot;Internal error&quot;</span>,
+        <span class="hljs-attr">message</span>:
+          <span class="hljs-string">&quot;You lose the session storage, no more possible to retrieve secrets, stop Session please&quot;</span>,
+        <span class="hljs-attr">buttons</span>: [<span class="hljs-string">&quot;Close&quot;</span>],
+      });
+      <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">false</span>);
+      <span class="hljs-keyword">return</span>;
+    }
+
+    <span class="hljs-keyword">const</span> secretAction = <span class="hljs-title function_">extractSessionStorageValue</span>(secretActionStr);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;REVEAL - Fetch from session storage&quot;</span>, secretAction);
+
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">true</span>);
+      <span class="hljs-keyword">const</span> encryptedAction = <span class="hljs-keyword">await</span> <span class="hljs-title function_">packAction</span>(secretAction.<span class="hljs-property">action</span>);
+
+      <span class="hljs-keyword">const</span> preparedCall = <span class="hljs-keyword">await</span> mainWalletType!.<span class="hljs-property">methods</span>.<span class="hljs-title function_">revealPlay</span>(
+        encryptedAction <span class="hljs-keyword">as</span> bytes,
+        <span class="hljs-keyword">new</span> <span class="hljs-title class_">BigNumber</span>(secretAction.<span class="hljs-property">secret</span>) <span class="hljs-keyword">as</span> nat,
+        current_session!.<span class="hljs-property">current_round</span>,
+        session_id
+      );
+
+      <span class="hljs-keyword">const</span> { gasLimit, storageLimit, suggestedFeeMutez } =
+        <span class="hljs-keyword">await</span> <span class="hljs-title class_">Tezos</span>.<span class="hljs-property">estimate</span>.<span class="hljs-title function_">transfer</span>(preparedCall.<span class="hljs-title function_">toTransferParams</span>());
+
+      <span class="hljs-comment">//console.log({ gasLimit, storageLimit, suggestedFeeMutez });</span>
+      <span class="hljs-keyword">const</span> op = <span class="hljs-keyword">await</span> preparedCall.<span class="hljs-title function_">send</span>({
+        <span class="hljs-attr">gasLimit</span>: gasLimit * <span class="hljs-number">3</span>,
+        <span class="hljs-attr">fee</span>: suggestedFeeMutez,
+        <span class="hljs-attr">storageLimit</span>: storageLimit * <span class="hljs-number">3</span>, <span class="hljs-comment">//we take a margin in case of paralell execution</span>
+      });
+      <span class="hljs-keyword">await</span> op?.<span class="hljs-title function_">confirmation</span>();
+      <span class="hljs-keyword">const</span> newStorage = <span class="hljs-keyword">await</span> mainWalletType!.<span class="hljs-title function_">storage</span>();
+      <span class="hljs-title function_">setStorage</span>(newStorage);
+      <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">false</span>);
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;newStorage&quot;</span>, newStorage);
+    } <span class="hljs-keyword">catch</span> (error) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">table</span>(<span class="hljs-string">`Error: <span class="hljs-subst">${<span class="hljs-built_in">JSON</span>.stringify(error, <span class="hljs-literal">null</span>, <span class="hljs-number">2</span>)}</span>`</span>);
+      <span class="hljs-keyword">let</span> <span class="hljs-attr">tibe</span>: <span class="hljs-title class_">TransactionInvalidBeaconError</span> =
+        <span class="hljs-keyword">new</span> <span class="hljs-title class_">TransactionInvalidBeaconError</span>(error);
+      <span class="hljs-title function_">presentAlert</span>({
+        <span class="hljs-attr">header</span>: <span class="hljs-string">&quot;Error&quot;</span>,
+        <span class="hljs-attr">message</span>: tibe.<span class="hljs-property">data_message</span>,
+        <span class="hljs-attr">buttons</span>: [<span class="hljs-string">&quot;Close&quot;</span>],
+      });
+      <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">false</span>);
+    }
+    <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">false</span>);
+  };
+
+  <span class="hljs-comment">/** Pack an action variant to bytes. Same is Pack.bytes()  */</span>
+  <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">packAction</span>(<span class="hljs-params">action: Action</span>): <span class="hljs-title class_">Promise</span>&lt;<span class="hljs-built_in">string</span>&gt; {
+    <span class="hljs-keyword">const</span> p = <span class="hljs-keyword">new</span> <span class="hljs-title class_">MichelCodecPacker</span>();
+    <span class="hljs-keyword">let</span> <span class="hljs-attr">actionbytes</span>: <span class="hljs-title class_">PackDataParams</span> = {
+      <span class="hljs-attr">data</span>: action.<span class="hljs-property">stone</span>
+        ? { <span class="hljs-attr">prim</span>: <span class="hljs-string">&quot;Right&quot;</span>, <span class="hljs-attr">args</span>: [{ <span class="hljs-attr">prim</span>: <span class="hljs-string">&quot;Unit&quot;</span> }] }
+        : action.<span class="hljs-property">cisor</span>
+        ? { <span class="hljs-attr">prim</span>: <span class="hljs-string">&quot;Left&quot;</span>, <span class="hljs-attr">args</span>: [{ <span class="hljs-attr">prim</span>: <span class="hljs-string">&quot;Left&quot;</span>, <span class="hljs-attr">args</span>: [{ <span class="hljs-attr">prim</span>: <span class="hljs-string">&quot;Unit&quot;</span> }] }] }
+        : { <span class="hljs-attr">prim</span>: <span class="hljs-string">&quot;Left&quot;</span>, <span class="hljs-attr">args</span>: [{ <span class="hljs-attr">prim</span>: <span class="hljs-string">&quot;Right&quot;</span>, <span class="hljs-attr">args</span>: [{ <span class="hljs-attr">prim</span>: <span class="hljs-string">&quot;Unit&quot;</span> }] }] },
+      <span class="hljs-attr">type</span>: {
+        <span class="hljs-attr">prim</span>: <span class="hljs-string">&quot;Or&quot;</span>,
+        <span class="hljs-attr">annots</span>: [<span class="hljs-string">&quot;%action&quot;</span>],
+        <span class="hljs-attr">args</span>: [
+          {
+            <span class="hljs-attr">prim</span>: <span class="hljs-string">&quot;Or&quot;</span>,
+            <span class="hljs-attr">args</span>: [
+              { <span class="hljs-attr">prim</span>: <span class="hljs-string">&quot;Unit&quot;</span>, <span class="hljs-attr">annots</span>: [<span class="hljs-string">&quot;%cisor&quot;</span>] },
+              { <span class="hljs-attr">prim</span>: <span class="hljs-string">&quot;Unit&quot;</span>, <span class="hljs-attr">annots</span>: [<span class="hljs-string">&quot;%paper&quot;</span>] },
+            ],
+          },
+          { <span class="hljs-attr">prim</span>: <span class="hljs-string">&quot;Unit&quot;</span>, <span class="hljs-attr">annots</span>: [<span class="hljs-string">&quot;%stone&quot;</span>] },
+        ],
+      },
+    };
+    <span class="hljs-keyword">return</span> (<span class="hljs-keyword">await</span> p.<span class="hljs-title function_">packData</span>(actionbytes)).<span class="hljs-property">packed</span>;
+  }
+
+  <span class="hljs-comment">/** Pack an pair [actionBytes,secret] to bytes. Same is Pack.bytes()  */</span>
+  <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">packActionBytesSecret</span>(<span class="hljs-params">
+    actionBytes: bytes,
+    secret: <span class="hljs-built_in">number</span>
+  </span>): <span class="hljs-title class_">Promise</span>&lt;<span class="hljs-built_in">string</span>&gt; {
+    <span class="hljs-keyword">const</span> p = <span class="hljs-keyword">new</span> <span class="hljs-title class_">MichelCodecPacker</span>();
+    <span class="hljs-keyword">let</span> <span class="hljs-attr">actionBytesSecretbytes</span>: <span class="hljs-title class_">PackDataParams</span> = {
+      <span class="hljs-attr">data</span>: {
+        <span class="hljs-attr">prim</span>: <span class="hljs-string">&quot;Pair&quot;</span>,
+        <span class="hljs-attr">args</span>: [{ <span class="hljs-attr">bytes</span>: actionBytes }, { <span class="hljs-attr">int</span>: secret.<span class="hljs-title function_">toString</span>() }],
+      },
+      <span class="hljs-attr">type</span>: {
+        <span class="hljs-attr">prim</span>: <span class="hljs-string">&quot;pair&quot;</span>,
+        <span class="hljs-attr">args</span>: [
+          {
+            <span class="hljs-attr">prim</span>: <span class="hljs-string">&quot;bytes&quot;</span>,
+          },
+          { <span class="hljs-attr">prim</span>: <span class="hljs-string">&quot;nat&quot;</span> },
+        ],
+      },
+    };
+    <span class="hljs-keyword">return</span> (<span class="hljs-keyword">await</span> p.<span class="hljs-title function_">packData</span>(actionBytesSecretbytes)).<span class="hljs-property">packed</span>;
+  }
+
+  <span class="hljs-keyword">const</span> <span class="hljs-title function_">stopSession</span> = <span class="hljs-keyword">async</span> (<span class="hljs-params"></span>) =&gt; {
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">true</span>);
+      <span class="hljs-keyword">const</span> op = <span class="hljs-keyword">await</span> mainWalletType!.<span class="hljs-property">methods</span>
+        .<span class="hljs-title function_">stopSession</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">BigNumber</span>(id) <span class="hljs-keyword">as</span> nat)
+        .<span class="hljs-title function_">send</span>();
+      <span class="hljs-keyword">await</span> op?.<span class="hljs-title function_">confirmation</span>(<span class="hljs-number">2</span>);
+      <span class="hljs-keyword">const</span> newStorage = <span class="hljs-keyword">await</span> mainWalletType!.<span class="hljs-title function_">storage</span>();
+      <span class="hljs-title function_">setStorage</span>(newStorage);
+      <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">false</span>);
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;newStorage&quot;</span>, newStorage);
+    } <span class="hljs-keyword">catch</span> (error) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">table</span>(<span class="hljs-string">`Error: <span class="hljs-subst">${<span class="hljs-built_in">JSON</span>.stringify(error, <span class="hljs-literal">null</span>, <span class="hljs-number">2</span>)}</span>`</span>);
+      <span class="hljs-keyword">let</span> <span class="hljs-attr">tibe</span>: <span class="hljs-title class_">TransactionInvalidBeaconError</span> =
+        <span class="hljs-keyword">new</span> <span class="hljs-title class_">TransactionInvalidBeaconError</span>(error);
+      <span class="hljs-title function_">presentAlert</span>({
+        <span class="hljs-attr">header</span>: <span class="hljs-string">&quot;Error&quot;</span>,
+        <span class="hljs-attr">message</span>: tibe.<span class="hljs-property">data_message</span>,
+        <span class="hljs-attr">buttons</span>: [<span class="hljs-string">&quot;Close&quot;</span>],
+      });
+      <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">false</span>);
+    }
+    <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">false</span>);
+  };
+
+  <span class="hljs-keyword">const</span> create_bytes = <span class="hljs-keyword">async</span> (
+    <span class="hljs-attr">action</span>: <span class="hljs-title class_">Action</span>,
+    <span class="hljs-attr">secret</span>: <span class="hljs-built_in">number</span>
+  ): <span class="hljs-title class_">Promise</span>&lt;bytes&gt; =&gt; {
+    <span class="hljs-keyword">const</span> actionBytes = (<span class="hljs-keyword">await</span> <span class="hljs-title function_">packAction</span>(action)) <span class="hljs-keyword">as</span> bytes;
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;actionBytes&quot;</span>, actionBytes);
+    <span class="hljs-keyword">const</span> bytes = (<span class="hljs-keyword">await</span> <span class="hljs-title function_">packActionBytesSecret</span>(actionBytes, secret)) <span class="hljs-keyword">as</span> bytes;
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;bytes&quot;</span>, bytes);
+
+    <span class="hljs-comment">/* correct implemetation with a REAL library */</span>
+    <span class="hljs-keyword">const</span> encryptedActionSecret = crypto
+      .<span class="hljs-title function_">createHash</span>(<span class="hljs-string">&quot;sha512&quot;</span>)
+      .<span class="hljs-title function_">update</span>(<span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">from</span>(bytes, <span class="hljs-string">&quot;hex&quot;</span>))
+      .<span class="hljs-title function_">digest</span>(<span class="hljs-string">&quot;hex&quot;</span>) <span class="hljs-keyword">as</span> bytes;
+
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;encryptedActionSecret&quot;</span>, encryptedActionSecret);
+    <span class="hljs-keyword">return</span> encryptedActionSecret;
+  };
+
+  <span class="hljs-keyword">const</span> getFinalResult = (): <span class="hljs-built_in">string</span> | <span class="hljs-function"><span class="hljs-params">undefined</span> =&gt;</span> {
+    <span class="hljs-keyword">if</span> (storage) {
+      <span class="hljs-keyword">const</span> result = storage.<span class="hljs-property">sessions</span>.<span class="hljs-title function_">get</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">BigNumber</span>(id) <span class="hljs-keyword">as</span> nat).<span class="hljs-property">result</span>;
+      <span class="hljs-keyword">if</span> (<span class="hljs-string">&quot;winner&quot;</span> <span class="hljs-keyword">in</span> result &amp;&amp; result.<span class="hljs-property">winner</span> === userAddress) <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;win&quot;</span>;
+      <span class="hljs-keyword">if</span> (<span class="hljs-string">&quot;winner&quot;</span> <span class="hljs-keyword">in</span> result &amp;&amp; result.<span class="hljs-property">winner</span> !== userAddress) <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;lose&quot;</span>;
+      <span class="hljs-keyword">if</span> (<span class="hljs-string">&quot;draw&quot;</span> <span class="hljs-keyword">in</span> result) <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;draw&quot;</span>;
+    }
+  };
+
+  <span class="hljs-keyword">const</span> <span class="hljs-title function_">isDesktop</span> = (<span class="hljs-params"></span>) =&gt; {
+    <span class="hljs-keyword">const</span> { innerWidth } = <span class="hljs-variable language_">window</span>;
+    <span class="hljs-keyword">if</span> (innerWidth &gt; <span class="hljs-number">800</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+  };
+
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">IonPage</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;container&quot;</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">IonHeader</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">IonToolbar</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">IonButtons</span> <span class="hljs-attr">slot</span>=<span class="hljs-string">&quot;start&quot;</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">IonButton</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> history.goBack()}&gt;Back<span class="hljs-tag">&lt;/<span class="hljs-name">IonButton</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">IonButtons</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">IonTitle</span>&gt;</span>Game n°{id}<span class="hljs-tag">&lt;/<span class="hljs-name">IonTitle</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">IonToolbar</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">IonHeader</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">IonContent</span> <span class="hljs-attr">fullscreen</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">IonRefresher</span> <span class="hljs-attr">slot</span>=<span class="hljs-string">&quot;fixed&quot;</span> <span class="hljs-attr">onIonRefresh</span>=<span class="hljs-string">{refreshStorage}</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">IonRefresherContent</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">IonRefresherContent</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">IonRefresher</span>&gt;</span>
+        {loading ? (
+          <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;loading&quot;</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">IonItem</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">IonLabel</span>&gt;</span>Refreshing ...<span class="hljs-tag">&lt;/<span class="hljs-name">IonLabel</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">IonSpinner</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;spinner&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">IonSpinner</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">IonItem</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+        ) : (
+          <span class="hljs-tag">&lt;&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">IonList</span> <span class="hljs-attr">inset</span>=<span class="hljs-string">{true}</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">textAlign:</span> &quot;<span class="hljs-attr">left</span>&quot; }}&gt;</span>
+              {status !== STATUS.FINISHED ? (
+                <span class="hljs-tag">&lt;<span class="hljs-name">IonItem</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;nopm&quot;</span>&gt;</span>Status : {status}<span class="hljs-tag">&lt;/<span class="hljs-name">IonItem</span>&gt;</span>
+              ) : (
+                &quot;&quot;
+              )}
+              <span class="hljs-tag">&lt;<span class="hljs-name">IonItem</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;nopm&quot;</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>
+                  Opponent :{&quot; &quot;}
+                  {storage?.sessions
+                    .get(new BigNumber(id) as nat)
+                    .players.find((userItem) =&gt; userItem !== userAddress)}
+                <span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>
+              <span class="hljs-tag">&lt;/<span class="hljs-name">IonItem</span>&gt;</span>
+
+              {status !== STATUS.FINISHED ? (
+                <span class="hljs-tag">&lt;<span class="hljs-name">IonItem</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;nopm&quot;</span>&gt;</span>
+                  Round :
+                  {Array.from(
+                    Array(
+                      storage?.sessions
+                        .get(new BigNumber(id) as nat)
+                        .total_rounds.toNumber()
+                    ).keys()
+                  ).map((roundId) =&gt; {
+                    const currentRound: number = storage
+                      ? storage?.sessions
+                          .get(new BigNumber(id) as nat)!
+                          .current_round!.toNumber() - 1
+                      : 0;
+                    const roundwinner = storage?.sessions
+                      .get(new BigNumber(id) as nat)
+                      .board.get(new BigNumber(roundId + 1) as nat);
+
+                    return (
+                      <span class="hljs-tag">&lt;<span class="hljs-name">div</span>
+                        <span class="hljs-attr">key</span>=<span class="hljs-string">{roundId</span> + &quot;<span class="hljs-attr">-</span>&quot; + <span class="hljs-attr">roundwinner</span>}
+                        <span class="hljs-attr">className</span>=<span class="hljs-string">{</span>
+                          !<span class="hljs-attr">roundwinner</span> &amp;&amp; <span class="hljs-attr">roundId</span> &gt;</span> currentRound
+                            ? &quot;missing&quot;
+                            : !roundwinner &amp;&amp; roundId === currentRound
+                            ? &quot;current&quot;
+                            : !roundwinner
+                            ? &quot;draw&quot;
+                            : roundwinner === userAddress
+                            ? &quot;win&quot;
+                            : &quot;lose&quot;
+                        }
+                      &gt;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+                    );
+                  })}
+                <span class="hljs-tag">&lt;/<span class="hljs-name">IonItem</span>&gt;</span>
+              ) : (
+                &quot;&quot;
+              )}
+
+              {status !== STATUS.FINISHED ? (
+                <span class="hljs-tag">&lt;<span class="hljs-name">IonItem</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;nopm&quot;</span>&gt;</span>
+                  {&quot;Remaining time :&quot; + remainingTime + &quot; s&quot;}
+                <span class="hljs-tag">&lt;/<span class="hljs-name">IonItem</span>&gt;</span>
+              ) : (
+                &quot;&quot;
+              )}
+            <span class="hljs-tag">&lt;/<span class="hljs-name">IonList</span>&gt;</span>
+
+            {status === STATUS.FINISHED ? (
+              <span class="hljs-tag">&lt;<span class="hljs-name">IonImg</span>
+                <span class="hljs-attr">className</span>=<span class="hljs-string">{</span>&quot;<span class="hljs-attr">logo-XXL</span>&quot; + (<span class="hljs-attr">isDesktop</span>() ? &quot;&quot; <span class="hljs-attr">:</span> &quot; <span class="hljs-attr">mobile</span>&quot;)}
+                <span class="hljs-attr">src</span>=<span class="hljs-string">{</span>
+                  <span class="hljs-attr">process.env.PUBLIC_URL</span> +
+                  &quot;/<span class="hljs-attr">assets</span>/&quot; +
+                  <span class="hljs-attr">getFinalResult</span>() +
+                  &quot;<span class="hljs-attr">.png</span>&quot;
+                }
+              /&gt;</span>
+            ) : (
+              &quot;&quot;
+            )}
+
+            {status === STATUS.PLAY ? (
+              <span class="hljs-tag">&lt;<span class="hljs-name">IonList</span> <span class="hljs-attr">lines</span>=<span class="hljs-string">&quot;none&quot;</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">marginLeft:</span> &quot;<span class="hljs-attr">calc</span>(<span class="hljs-attr">50vw</span> <span class="hljs-attr">-</span> <span class="hljs-attr">70px</span>)&quot; }}&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">IonItem</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">margin:</span> <span class="hljs-attr">0</span>, <span class="hljs-attr">padding:</span> <span class="hljs-attr">0</span> }}&gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">IonButton</span>
+                    <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">height:</span> &quot;<span class="hljs-attr">auto</span>&quot; }}
+                    <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span>
+                      play(new Action(true as unit, undefined, undefined))
+                    }
+                  &gt;
+                    <span class="hljs-tag">&lt;<span class="hljs-name">IonImg</span>
+                      <span class="hljs-attr">src</span>=<span class="hljs-string">{process.env.PUBLIC_URL</span> + &quot;/<span class="hljs-attr">assets</span>/<span class="hljs-attr">scissor-logo.png</span>&quot;}
+                      <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;logo&quot;</span>
+                    /&gt;</span>
+                  <span class="hljs-tag">&lt;/<span class="hljs-name">IonButton</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">IonItem</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">IonItem</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">margin:</span> <span class="hljs-attr">0</span>, <span class="hljs-attr">padding:</span> <span class="hljs-attr">0</span> }}&gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">IonButton</span>
+                    <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">height:</span> &quot;<span class="hljs-attr">auto</span>&quot; }}
+                    <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span>
+                      play(new Action(undefined, true as unit, undefined))
+                    }
+                  &gt;
+                    <span class="hljs-tag">&lt;<span class="hljs-name">IonImg</span>
+                      <span class="hljs-attr">src</span>=<span class="hljs-string">{process.env.PUBLIC_URL</span> + &quot;/<span class="hljs-attr">assets</span>/<span class="hljs-attr">paper-logo.png</span>&quot;}
+                      <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;logo&quot;</span>
+                    /&gt;</span>
+                  <span class="hljs-tag">&lt;/<span class="hljs-name">IonButton</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">IonItem</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">IonItem</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">margin:</span> <span class="hljs-attr">0</span>, <span class="hljs-attr">padding:</span> <span class="hljs-attr">0</span> }}&gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">IonButton</span>
+                    <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">height:</span> &quot;<span class="hljs-attr">auto</span>&quot; }}
+                    <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span>
+                      play(new Action(undefined, undefined, true as unit))
+                    }
+                  &gt;
+                    <span class="hljs-tag">&lt;<span class="hljs-name">IonImg</span>
+                      <span class="hljs-attr">src</span>=<span class="hljs-string">{process.env.PUBLIC_URL</span> + &quot;/<span class="hljs-attr">assets</span>/<span class="hljs-attr">stone-logo.png</span>&quot;}
+                      <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;logo&quot;</span>
+                    /&gt;</span>
+                  <span class="hljs-tag">&lt;/<span class="hljs-name">IonButton</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">IonItem</span>&gt;</span>
+              <span class="hljs-tag">&lt;/<span class="hljs-name">IonList</span>&gt;</span>
+            ) : (
+              &quot;&quot;
+            )}
+
+            {status === STATUS.REVEAL ? (
+              <span class="hljs-tag">&lt;<span class="hljs-name">IonButton</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> revealPlay()}&gt;
+                <span class="hljs-tag">&lt;<span class="hljs-name">IonIcon</span> <span class="hljs-attr">icon</span>=<span class="hljs-string">{eye}</span> /&gt;</span>
+                Reveal
+              <span class="hljs-tag">&lt;/<span class="hljs-name">IonButton</span>&gt;</span>
+            ) : (
+              &quot;&quot;
+            )}
+            {remainingTime === 0 &amp;&amp; status !== STATUS.FINISHED ? (
+              <span class="hljs-tag">&lt;<span class="hljs-name">IonButton</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> stopSession()}&gt;
+                <span class="hljs-tag">&lt;<span class="hljs-name">IonIcon</span> <span class="hljs-attr">icon</span>=<span class="hljs-string">{stopCircle}</span> /&gt;</span>
+                Claim victory
+              <span class="hljs-tag">&lt;/<span class="hljs-name">IonButton</span>&gt;</span>
+            ) : (
+              &quot;&quot;
+            )}
+          <span class="hljs-tag">&lt;/&gt;</span>
+        )}
+      <span class="hljs-tag">&lt;/<span class="hljs-name">IonContent</span>&gt;</span></span>
+      <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">IonFooter</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">IonToolbar</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">IonTitle</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">IonButton</span> <span class="hljs-attr">routerLink</span>=<span class="hljs-string">{PAGES.RULES}</span> <span class="hljs-attr">expand</span>=<span class="hljs-string">&quot;full&quot;</span>&gt;</span>
+              Rules
+            <span class="hljs-tag">&lt;/<span class="hljs-name">IonButton</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">IonTitle</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">IonToolbar</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">IonFooter</span>&gt;</span></span>
+    &lt;/<span class="hljs-title class_">IonPage</span>&gt;
+  );
+};
+</code></pre>
+<p>Explanations :</p>
+<ul>
+<li><code>export enum STATUS {...</code> : This enum is used to guess what is the actual status of the game based on different field values. It gives for connected user the next action to do, and so control the display of the buttons</li>
+<li><code>const subReveal = Tezos.stream.subscribeEvent({tag: &quot;reveal&quot;,...</code> : websocket subscription to smartcontract <code>reveal</code> event. When is time to reveal, we can trigger the action from the mobile without asking the user to click on the button</li>
+<li><code>const subNewRound = Tezos.stream.subscribeEvent({tag: &quot;newRound&quot;,...</code> : websocket subscription to smartcontract <code>newround</code> event. when a new round is ready, this event notifies the mobile to refresh the current game so the player can play on next round</li>
+<li><code>const buildSessionStorageKey ...</code> : this function is an helper to store on browser storage a unique secret key of the player. This secret is a salt that is added to encrypt the Play action and then to decrypt the Reveal action</li>
+<li><code>const buildSessionStorageValue ...</code> : same as above but for the value stored as a string</li>
+<li><code>const play = async (action: Action) =&gt; { ... </code> : Play action. We create a player secret for this Play action randomly <code>Math.round(Math.random() * 63)</code> and store it on the browser storage <code>localStorage.setItem(buildSessionStorageKey(...</code>. Then we pack and ecrypt the Play action calling <code>create_bytes(action, secret)</code>, we estimate the cost of the transaction and we add an extra for the event cost <code>mainWalletType!.methods.play(encryptedAction,current_session!.current_round,session_id) ... Tezos.estimate.transfer(...) ... preparedCall.send({gasLimit: gasLimit + 1000, ...</code>. We ask 1 XTZ for each player doing a Play action. This money is stacked on the contract and free/dispatched when game is ended. Shifumi game does not take any extra fee by default. Only players win or lose money</li>
+<li><code>const revealPlay = async () =&gt; {...</code> : Reveal action. We fetch the secret from <code>localStorage.getItem(...</code>, then we pack the secret action and we reveal what was the secret <code>mainWalletType!.methods.revealPlay(encryptedAction as bytes,new BigNumber(secretAction.secret) as nat,current_session!.current_round,session_id);</code>. We add again some extra gas limit <code>gasLimit: gasLimit * 3</code>. Note on why to increase the gas limit : the reason is because if two players reveal actions are on the same block, the primary estimation of gas made by the wallet will not be enough. The reason is that the execution of the second reveal play action will execute another business logic because the first action will modify the initial state, so the estimation at this time (i.e with this previous state) is no more valid</li>
+<li><code>const getFinalResult</code> : based on some fields, it will give the final Status of the game once is ended. when game is ended the winner will get the money stacked by the loser. In case of draw, stacked money is sent back to the players.</li>
+<li><code>const stopSession = async () =&gt; {...</code>: There is a countdown of 10min while inaction. If no player wants to play anymore and the game is unfinished, someone can claim the victory and close the game calling <code>mainWalletType!.methods.stopSession(</code>. The smart contract will look at different configuration to guess if there is someone guilty or it is just a draw because no one want to play anymore. Gains will be sent to the winner or in a case of draw, will be sent back to players</li>
+</ul>
+<p>When page refreshed, then you can see the game session :bowtie:</p>
+</section>
+<section>
+<h2>Step 6 : Top player score page</h2>
+<p>Last step is to see the score of all players</p>
+<p>Edit <code>TopPlayersScreen.tsx</code></p>
+<pre class="hljs language-typescript"><code><span class="hljs-keyword">import</span> {
+  <span class="hljs-title class_">IonButton</span>,
+  <span class="hljs-title class_">IonButtons</span>,
+  <span class="hljs-title class_">IonCol</span>,
+  <span class="hljs-title class_">IonContent</span>,
+  <span class="hljs-title class_">IonGrid</span>,
+  <span class="hljs-title class_">IonHeader</span>,
+  <span class="hljs-title class_">IonImg</span>,
+  <span class="hljs-title class_">IonPage</span>,
+  <span class="hljs-title class_">IonRefresher</span>,
+  <span class="hljs-title class_">IonRefresherContent</span>,
+  <span class="hljs-title class_">IonRow</span>,
+  <span class="hljs-title class_">IonTitle</span>,
+  <span class="hljs-title class_">IonToolbar</span>,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@ionic/react&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span>, { useEffect, useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { useHistory } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-router-dom&quot;</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">UserContext</span>, <span class="hljs-title class_">UserContextType</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;../App&quot;</span>;
+<span class="hljs-keyword">import</span> { nat } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;../type-aliases&quot;</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title class_">TopPlayersScreen</span>: <span class="hljs-title class_">React</span>.<span class="hljs-property">FC</span> = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">const</span> history = <span class="hljs-title function_">useHistory</span>();
+  <span class="hljs-keyword">const</span> { storage, refreshStorage } = <span class="hljs-title class_">React</span>.<span class="hljs-title function_">useContext</span>(
+    <span class="hljs-title class_">UserContext</span>
+  ) <span class="hljs-keyword">as</span> <span class="hljs-title class_">UserContextType</span>;
+
+  <span class="hljs-keyword">const</span> [ranking, setRanking] = useState&lt;<span class="hljs-title class_">Map</span>&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">number</span>&gt;&gt;(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Map</span>());
+
+  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> {
+    (<span class="hljs-keyword">async</span> () =&gt; {
+      <span class="hljs-keyword">if</span> (storage) {
+        <span class="hljs-keyword">let</span> ranking = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Map</span>(); <span class="hljs-comment">//force refresh</span>
+        <span class="hljs-title class_">Array</span>.<span class="hljs-title function_">from</span>(storage.<span class="hljs-property">sessions</span>.<span class="hljs-title function_">keys</span>()).<span class="hljs-title function_">forEach</span>(<span class="hljs-function">(<span class="hljs-params">key: nat</span>) =&gt;</span> {
+          <span class="hljs-keyword">let</span> result = storage.<span class="hljs-property">sessions</span>.<span class="hljs-title function_">get</span>(key).<span class="hljs-property">result</span>;
+          <span class="hljs-keyword">if</span> (<span class="hljs-string">&quot;winner&quot;</span> <span class="hljs-keyword">in</span> result) {
+            <span class="hljs-keyword">const</span> winner = result.<span class="hljs-property">winner</span>;
+            <span class="hljs-keyword">let</span> score = ranking.<span class="hljs-title function_">get</span>(winner);
+            <span class="hljs-keyword">if</span> (score) score++;
+            <span class="hljs-keyword">else</span> score = <span class="hljs-number">1</span>;
+            ranking.<span class="hljs-title function_">set</span>(winner, score);
+          }
+        });
+
+        <span class="hljs-title function_">setRanking</span>(ranking);
+      } <span class="hljs-keyword">else</span> {
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;storage is not ready yet&quot;</span>);
+      }
+    })();
+  }, [storage]);
+
+  <span class="hljs-comment">/* 2. Get the param */</span>
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">IonPage</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;container&quot;</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">IonHeader</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">IonToolbar</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">IonButtons</span> <span class="hljs-attr">slot</span>=<span class="hljs-string">&quot;start&quot;</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">IonButton</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> history.goBack()}&gt;Back<span class="hljs-tag">&lt;/<span class="hljs-name">IonButton</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">IonButtons</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">IonTitle</span>&gt;</span>Top Players<span class="hljs-tag">&lt;/<span class="hljs-name">IonTitle</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">IonToolbar</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">IonHeader</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">IonContent</span> <span class="hljs-attr">fullscreen</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">IonRefresher</span> <span class="hljs-attr">slot</span>=<span class="hljs-string">&quot;fixed&quot;</span> <span class="hljs-attr">onIonRefresh</span>=<span class="hljs-string">{refreshStorage}</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">IonRefresherContent</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">IonRefresherContent</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">IonRefresher</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">marginLeft:</span> &quot;<span class="hljs-attr">40vw</span>&quot; }}&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">IonImg</span>
+            <span class="hljs-attr">src</span>=<span class="hljs-string">{process.env.PUBLIC_URL</span> + &quot;/<span class="hljs-attr">assets</span>/<span class="hljs-attr">ranking.png</span>&quot;}
+            <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;ranking&quot;</span>
+            <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">height:</span> &quot;<span class="hljs-attr">10em</span>&quot;, <span class="hljs-attr">width:</span> &quot;<span class="hljs-attr">5em</span>&quot; }}
+          /&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+
+        <span class="hljs-tag">&lt;<span class="hljs-name">IonGrid</span> <span class="hljs-attr">fixed</span>=<span class="hljs-string">{true}</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">color:</span> &quot;<span class="hljs-attr">white</span>&quot;, <span class="hljs-attr">padding:</span> &quot;<span class="hljs-attr">2vh</span>&quot; }}&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">IonRow</span>
+            <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+              <span class="hljs-attr">backgroundColor:</span> &quot;<span class="hljs-attr">var</span>(<span class="hljs-attr">--ion-color-primary</span>)&quot;,
+            }}
+          &gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">IonCol</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;col&quot;</span>&gt;</span>Address<span class="hljs-tag">&lt;/<span class="hljs-name">IonCol</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">IonCol</span> <span class="hljs-attr">size</span>=<span class="hljs-string">&quot;2&quot;</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;col&quot;</span>&gt;</span>
+              Won
+            <span class="hljs-tag">&lt;/<span class="hljs-name">IonCol</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">IonRow</span>&gt;</span>
+
+          {ranking &amp;&amp; ranking.size &gt; 0
+            ? Array.from(ranking).map(([address, count]) =&gt; (
+                <span class="hljs-tag">&lt;<span class="hljs-name">IonRow</span>
+                  <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+                    <span class="hljs-attr">backgroundColor:</span> &quot;<span class="hljs-attr">var</span>(<span class="hljs-attr">--ion-color-secondary</span>)&quot;,
+                  }}
+                &gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">IonCol</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;col tiny&quot;</span>&gt;</span>{address}<span class="hljs-tag">&lt;/<span class="hljs-name">IonCol</span>&gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">IonCol</span> <span class="hljs-attr">size</span>=<span class="hljs-string">&quot;2&quot;</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;col&quot;</span>&gt;</span>
+                    {count}
+                  <span class="hljs-tag">&lt;/<span class="hljs-name">IonCol</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">IonRow</span>&gt;</span>
+              ))
+            : []}
+        <span class="hljs-tag">&lt;/<span class="hljs-name">IonGrid</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">IonContent</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">IonPage</span>&gt;</span></span>
+  );
+};
+</code></pre>
+<p>Explanations :</p>
+<ul>
+<li><code>let ranking = new Map()</code> : we prepare a map to count the score for each winner. Looping of all sessions <code>storage.sessions.keys()).forEach</code> we take only where there is a winner <code>if (&quot;winner&quot; in result)</code>then we increment score <code>if (score) score++;else score = 1</code> and push it to the map <code>ranking.set(winner, score);</code></li>
+</ul>
+<p>Ok, so we have all pages now. The Game dapp is done ! 😎</p>
+</section>
+<section>
+<h2>Step 7 : Bundle for Android</h2>
+<p>If you want the Android version of the game, follow below instructions</p>
+<blockquote>
+<p>Note : you need to install <a href="https://developer.android.com/about/versions/13/setup-sdk">Android SDK</a> or <a href="https://developer.apple.com/documentation/xcode">iOS</a> stack. Recommendation : Easier to start with Android</p>
+</blockquote>
+<p>Stay on the app folder, and prepare Android release</p>
+<pre class="hljs language-bash"><code>ionic capacitor add android
+</code></pre>
+<p>To modify the name of your app, open the <code>capacitor.config.json</code> file and change <code>appId</code> and <code>appName</code> properties</p>
+<blockquote>
+<p>Hack : To be sure that the symlink is done and ionic capacitor will not have issue with crypto library, in case you can re-run : <code>npm run postinstall</code></p>
+</blockquote>
+<p>Then these lines will copy all to android folder + the images ressources used by the store</p>
+<pre class="hljs language-bash"><code>ionic capacitor copy android
+npm install -g cordova-res
+cordova-res android --skip-config --copy
+ionic capacitor <span class="hljs-built_in">sync</span> android
+ionic capacitor update
+</code></pre>
+<p>Open Android Studio and do a <code>Build</code> or <code>Make Project</code> action</p>
+<blockquote>
+<p>Note 1 : in case of broken gradle : ionic capacitor sync android and click on sync on Android studio &gt; build</p>
+<p>Note : If you have <code>WSL2</code> and difficulties to run an emulator on it, I advice you to install Android studio on Windows and build, test and package all on this OS. Push your files on your git repo, and check on .gitignore for <code>android</code> folder that there is no filters on assets.
+Comment end lines on file app/android/.gitignore</p>
+<pre class="hljs"><code># Cordova plugins for Capacitor
+#capacitor-cordova-android-plugins
+
+# Copied web assets
+#app/src/main/assets/public
+
+# Generated Config files
+#app/src/main/assets/capacitor.config.json
+#app/src/main/assets/capacitor.plugins.json
+#app/src/main/res/xml/config.xml
+</code></pre>
+<p>and comment also the <code>node_modules</code> at your root project because it will require files from @capacitor and you need to install this libraries</p>
+<pre class="hljs"><code>#node_modules/
+</code></pre>
+<p>Force it to be included on committed files : <code>git add android/app/src/main/assets/  ; git add android/capacitor-cordova-android-plugins/</code> and push to git
+Then try again <code>Build</code> or <code>Make Project</code> action on Android Studio</p>
+</blockquote>
+<p><img src="./doc/build.png" alt="build.png"></p>
+<p>Start the emulator of your choice (or a physical device) and click on <code>Run app</code></p>
+<p><img src="./doc/run.png" alt="run.png"></p>
+<p>I recommend to connect with a web wallet like Kukai (because some mobile wallet does not work on the emulator)</p>
+<p><img src="./doc/kukai.png" alt="kukai.png"></p>
+<p>Once connected, you can start a new game</p>
+<p><img src="./doc/home.png" alt="home.png"></p>
+<p>Invite Alice to play, click on the address of the opponent player and enter this on your Android Studio terminal</p>
+<pre class="hljs language-bash"><code>adb shell input text <span class="hljs-string">&quot;tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb&quot;</span>
+</code></pre>
+<p><img src="./doc/alice.png" alt="alice.png"></p>
+<p>then click on Create on top right button
+Confirm the transaction in Kukai and come back to the app</p>
+<p>Perfect, the round is starting !</p>
+<p>Now you can run the web version on VScode, connect with alice and play the party with your 2 players</p>
+<p>Watch the video here to see how to play a party</p>
+<p><img src="https://www.youtube.com/watch?v=SHg8VPmF_NY" alt="youtube"></p>
+</section>
+<section>
+<h2>Step 8 : Publish your app to Google Play store</h2>
+<p>To publish your app to Android store, read the Google documentation.
+You will need a developer account : https://developer.android.com/distribute/console/</p>
+<p>It costs 25$ for life (for information : Apple developer account costs 99$/ year ...)</p>
+<p>Go to Build &gt; Generate Signed bundle / APK...</p>
+<p><img src="./doc/sign.png" alt="sign.png"></p>
+<p>Follow the Google instruction to set your keystore, and click next.
+Watch where your binary is stored and upload it to your Google Play console app</p>
+<p>After passing a (long) configuration of your application on Google Play Store and passed all Google validations, your app will be published and everyone can download it on Earth</p>
+</section>
+</section>
+<section>
+<h1>🌴 Conclusion 🌞</h1>
+<p>Play with your friends and follow other Marigold trainings <a href="https://www.marigold.dev/learn">here</a></p>
+</section>
+
+    <script>
+      const toggleSwitch = document.querySelector(".toggle-button");
+
+      function switchTheme(e) {
+        if (e.target.checked) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        } else {
+          document.documentElement.setAttribute("data-theme", "light");
+        }
+      }
+
+      toggleSwitch.addEventListener("change", switchTheme, false);
+    </script>
+  </body>
+</html>
