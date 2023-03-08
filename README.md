@@ -6,7 +6,9 @@
 
 ![home](./solution/app/public/assets/picHOME.png)
 
-Rock paper scissors (also known by other orderings of the three items, with "rock" sometimes being called "stone," or as Rochambeau, roshambo, or ro-sham-bo) is a hand game originating from China, usually played between two people, in which each player simultaneously forms one of three shapes with an outstretched hand. These shapes are "rock" (a closed fist), "paper" (a flat hand), and "scissors" (a fist with the index finger and middle finger extended, forming a V). "Scissors" is identical to the two-fingered V sign (also indicating "victory" or "peace") except that it is pointed horizontally instead of being held upright in the air.
+Rock paper scissors (also known by other orderings of the three items, with "rock" sometimes being called "stone," or as Rochambeau, roshambo, or ro-sham-bo) is a hand game originating from China, usually played between two people, in which each player simultaneously forms one of three shapes with an outstretched hand.
+
+These shapes are "rock" (a closed fist), "paper" (a flat hand), and "scissors" (a fist with the index finger and middle finger extended, forming a V). "Scissors" is identical to the two-fingered V sign (also indicating "victory" or "peace") except that it is pointed horizontally instead of being held upright in the air.
 
 [Wikipedia link](https://en.wikipedia.org/wiki/Rock_paper_scissors)
 
@@ -17,10 +19,10 @@ Please install this software first on your machine or use online alternative :
 - [ ] [VS Code](https://code.visualstudio.com/download) : as text editor
 - [ ] [npm](https://nodejs.org/en/download/) : we will use a typescript React client app
 - [ ] [yarn](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable) : because yet another package manager (https://www.geeksforgeeks.org/difference-between-npm-and-yarn/)
-- [ ] [taqueria v0.28.0](https://github.com/ecadlabs/taqueria) : Tezos Dapp project tooling
+- [ ] [taqueria v0.28.3](https://github.com/ecadlabs/taqueria) : Tezos Dapp project tooling
 - [ ] [taqueria VS Code extension](https://marketplace.visualstudio.com/items?itemName=ecadlabs.taqueria-vscode) : visualize your project and execute tasks
 - [ ] [ligo VS Code extension](https://marketplace.visualstudio.com/items?itemName=ligolang-publish.ligo-vscode) : for smart contract highlighting, completion, etc ..
-- [ ] [Temple wallet](https://templewallet.com/) : an easy to use Tezos wallet in your browser
+- [ ] [Temple wallet](https://templewallet.com/) : an easy to use Tezos wallet in your browser (but any other should work, as we will see Kukai is a good option for the Android emulator)
 - [ ] [Docker](https://docs.docker.com/engine/install/) you cannot do anything without containers today ...
 
 > :warning: :whale: About Taqueria : taqueria is using software images from Docker to run Ligo, etc ... Docker should be running on your machine :whale2:
@@ -130,9 +132,13 @@ HOORAY :confetti_ball: your smart contract is ready on the Ghostnet !
 
 # Mobile app
 
+We will use Ionic React to be able to reuse the beaconSDK (Typescript) on a webview
+
+> Note : I do not recommend right know to develop a dapp in Flutter or React Native because you will need to use native beacon library without wallet popup mechanism to conffirm transactions
+
 ## Step 1 : Install IONIC
 
-install
+Install [Ionic](https://ionicframework.com/docs/react)
 
 ```
 npm install -g @ionic/cli
@@ -146,7 +152,7 @@ taq install @taqueria/plugin-contract-types
 taq generate types ./app/src
 ```
 
-install deps
+Install require tezos web3 dependencies
 
 ```
 cd app
@@ -196,9 +202,9 @@ npm i --save-dev @types/react
 
 This was painful :/, but it was the worst so far
 
-Modify the default package.json default scripts (to fix an issue between ionic and react-rewired, during postinstall stepn we do some symbolic linking)
+Modify the default `package.json` default scripts (to fix an issue between ionic and react-rewired, during postinstall step, we do some symbolic linking, the we extract the last deployed smart contract address from Taqueria configuration file)
 
-```
+```json
   "scripts": {
     "postinstall": "cd ./node_modules && ln -s crypto-browserify crypto && cd .bin && mv react-scripts react-scripts-real && ln -s ../react-app-rewired/bin/index.js react-scripts",
     "start": "jq -r '\"REACT_APP_CONTRACT_ADDRESS=\" + last(.tasks[]).output[0].address' ../.taq/testing-state.json > .env && react-scripts start",
@@ -210,14 +216,14 @@ Modify the default package.json default scripts (to fix an issue between ionic a
 
 Run web version for development
 
-```
+```bash
 npm run postinstall
 npm run start
 ```
 
-## Step 2 : Edit the default Application file to configure page routing and add style
+## Step 2 : Edit the default Application file to configure page routing and add the style
 
-Edit src/App.tsx file
+Edit `src/App.tsx` file
 
 ```typescript
 import {
@@ -431,17 +437,17 @@ export default App;
 
 Explanations :
 
-- `import "@ionic..."` : Default Ionic imports, nothing special here
+- `import "@ionic..."` : Default standard Ionic imports
 - `import ... from "@airgap/beacon-types" ... from "@taquito/beacon-wallet" ... from "@taquito/taquito"` : Require libraries to interact with the Tezos node and the wallet
 - `export class Action implements ActionCisor, ActionPaper, ActionStone {...}` : Representation of the ligo variant `Action` in Typescript, we will need it when passing arguments on `Play` function
-- `export type Session = {...}` : Taqueria export the global Storage type but sadly not this sub-type from the Storage type, we will need it later
-- `export let UserContext = React.createContext<UserContextType | null>(null)`: Global React context that is passed along pages. More info [here](https://beta.reactjs.org/learn/passing-data-deeply-with-context)
-- `const refreshStorage = async (event?: CustomEvent<RefresherEventDetail>): Promise<void> => {...` : useful fonction to force the smart contract Storage to refresh on React state (user balance, state of the game)
+- `export type Session = {...}` : Taqueria export the global Storage type but sadly not this sub-type from the Storage type, we will need it later, so we extract a copy
+- `export let UserContext = React.createContext<UserContextType | null>(null)`: Global React context that is passed along pages. More info on React context [here](https://beta.reactjs.org/learn/passing-data-deeply-with-context)
+- `const refreshStorage = async (event?: CustomEvent<RefresherEventDetail>): Promise<void> => {...` : useful fonction to force the smart contract Storage to refresh on React state changes (user balance, state of the game)
 - `useEffect(() => { ... Tezos.setStreamProvider(...) ... Tezos.stream.subscribeEvent({...` : During Application initialization, we configure the wallet, the websocket listening to smart contract events
 - `<IonApp><UserContext.Provider ... ><IonReactRouter><IonRouterOutlet><Route path={PAGES.HOME} component={HomeScreen} /> ... ` : We inject the React context to all pages. We declare the global routing of the application
 - `export enum PAGES {  HOME = "/home", ...` : Declaration of the global routes
 
-To add the default theming (CSS,pictures,etc...), copy content of the git repo `assets` folder to your local setup (considering you cloned the repo and assets folder is on root folder and your project folder is called `shifumi`)
+To add the default theming (CSS, pictures, etc...), copy the content of this git repository named `assets` folder to your local project (considering you cloned the repo and assets folder is on root folder and your project folder is called `shifumi`)
 
 ```bash
 cp -r ./assets/* ./shifumi/app/
@@ -452,7 +458,7 @@ cp -r ./assets/* ./shifumi/app/
 We will declare 2 React Button components and fetch the user public hash key + balance
 
 Let's create the 2 missing src component files and put code in it.
-On src folder, create these files.
+On `app` folder, create these files.
 
 ```bash
 touch src/ConnectWallet.tsx
@@ -461,7 +467,7 @@ touch src/DisconnectWallet.tsx
 
 ConnectWallet button will create an instance wallet, get user permissions via a popup and then retrieve account information
 
-Edit ConnectWallet.tsx
+Edit `ConnectWallet.tsx`
 
 ```typescript
 import { NetworkType } from "@airgap/beacon-types";
@@ -567,11 +573,11 @@ touch src/pages/TopPlayersScreen.tsx
 touch src/TransactionInvalidBeaconError.ts
 ```
 
-Error utility class is used to display human readable message from Beacon errors
+`TransactionInvalidBeaconError.ts` utility class is used to display human readable message from Beacon errors
 
 Edit all files
 
-- HomeScreen.tsx
+- HomeScreen.tsx : the home page where you can access all other pages
 
 ```typescript
 import {
@@ -924,14 +930,14 @@ Explanation :
 
 - `const createGameModal` : The popup to create a new game
 - `const selectGameModal` : The popup to select a game to join
-- `const [newPlayer, setNewPlayer] = useState<address>("" as address)` : Used on `New Game` form to add on opponent
-- `const [total_rounds, setTotal_rounds] = useState<nat>(new BigNumber(1) as nat)` : Used on `New Game` form to set number of round for one game
-- `const [myGames, setMyGames] = useState<Map<nat, Session>>()` : Used on `Join Game` popup to display game we have created or we are invited to
-- `Array.from(storage.sessions.keys()).forEach((key) => { ... if (session.players.indexOf(userAddress as address) >= 0 && "inplay" in session.result ...` : On storage change event, we fetch and filter only games we can join and play (i.e with `inplay` status and where user appear on list of players)
-- `const createSession = async (...) => { ...  const op = await mainWalletType!.methods.createSession([userAddress as address, newPlayer], total_rounds).send(); ... ` : createSession function will call the Smart contract entrypoint passing on arguments : current user address,opponent address and total rounds, then it will redirect to the game page
+- `const [newPlayer, setNewPlayer] = useState<address>("" as address)` : Used on `New Game` popup form to add an opponent
+- `const [total_rounds, setTotal_rounds] = useState<nat>(new BigNumber(1) as nat)` : Used on `New Game` popup form to set number of round for one game
+- `const [myGames, setMyGames] = useState<Map<nat, Session>>()` : Used on `Join Game` popup window to display the games we have created or we are invited to
+- `Array.from(storage.sessions.keys()).forEach((key) => { ... if (session.players.indexOf(userAddress as address) >= 0 && "inplay" in session.result ...` : On storage change event, we fetch and filter only games we can join and play (i.e with `inplay` status and where user appears on player list)
+- `const createSession = async (...) => { ...  const op = await mainWalletType!.methods.createSession([userAddress as address, newPlayer], total_rounds).send(); ... ` : createSession function will call the Smart contract entrypoint passing on arguments : current user address,opponent address and total rounds, then it will redirect to the newly created game page
 - `{...<IonButton ... routerLink={PAGES.SESSION + "/" + key.toString()}` : If you click on a game button from the list it will redirect you to the game to play
 
-- SessionScreen.tsx
+- SessionScreen.tsx : it is the game page where you can play on limited rounds and where the result of the game will be displayed at the end
 
 ```typescript
 import { IonPage } from "@ionic/react";
@@ -942,9 +948,9 @@ export const SessionScreen: React.FC = () => {
 };
 ```
 
-We leave it empty for now and edit it later
+We leave it empty for now and we will edit it later and explain what to write
 
-- TopPlayersScreen.tsx
+- TopPlayersScreen.tsx : it is the player ranking page
 
 ```typescript
 import { IonPage } from "@ionic/react";
@@ -955,9 +961,9 @@ export const TopPlayersScreen: React.FC = () => {
 };
 ```
 
-We leave it empty for now and edit it later
+We leave it empty for now and edit it later too
 
-- Rules.tsx
+- Rules.tsx : just some information about game rules
 
 ```typescript
 import {
@@ -1045,9 +1051,7 @@ export const RulesScreen: React.FC = () => {
 };
 ```
 
-No need to comment this, it is just static page to display the rules
-
-- TransactionInvalidBeaconError.ts
+- TransactionInvalidBeaconError.ts the utility class that formats Beacon errors
 
 ```typescript
 export class TransactionInvalidBeaconError {
