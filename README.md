@@ -1973,7 +1973,7 @@ Now you can run the web version on VScode, connect with alice and play the party
 
 Watch the video here to see how to play a party
 
-![youtube](https://www.youtube.com/watch?v=SHg8VPmF_NY)
+[![Shifumi](https://img.youtube.com/vi/SHg8VPmF_NY/0.jpg)](https://www.youtube.com/watch?v=SHg8VPmF_NY)
 
 ## Step 8 : Publish your app to Google Play store
 
