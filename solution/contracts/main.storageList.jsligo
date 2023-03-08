@@ -23,7 +23,7 @@ const default_storage = {
     ]
     }
     `]
-    ]))   as big_map<string, bytes>,    
+    ]))   as big_map<string, bytes>,
     next_session: 0 as nat,
     sessions: Map.empty as  map<nat, Session.t>,
   }

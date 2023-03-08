@@ -54,16 +54,14 @@
                    { DROP ; NONE address ; RIGHT (pair (lambda address bool) (list address)) } } ;
              COMPARE ;
              NEQ ;
-             IF { DROP } { FAILWITH } ;
-             UNIT } ;
+             IF { DROP ; UNIT } { FAILWITH } } ;
          LAMBDA
            (pair (or (or unit unit) address) (or (or unit unit) address))
            unit
            { UNPAIR ;
              COMPARE ;
              EQ ;
-             IF {} { PUSH string "this session is finished" ; FAILWITH } ;
-             UNIT } ;
+             IF { UNIT } { PUSH string "this session is finished" ; FAILWITH } } ;
          LAMBDA
            (pair (pair (pair (pair (big_map string bytes) nat)
                              (map nat
@@ -1291,13 +1289,12 @@
                            CDR ;
                            CAR ;
                            PAIR ;
-                           DIG 3 ;
+                           DUP 4 ;
                            CAR ;
                            CAR ;
                            PAIR ;
                            PAIR ;
-                           DUP ;
-                           DIG 2 ;
+                           SWAP ;
                            DIG 3 ;
                            PAIR ;
                            PAIR ;

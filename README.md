@@ -223,7 +223,16 @@ npm run start
 
 ## Step 2 : Edit the default Application file to configure page routing and add the style
 
-Edit `src/App.tsx` file
+First, remove React strict mode and enable dark mode on `app/index.tsx` with these lines edit :
+
+```typescript
+// Add or remove the "dark" class based on if the media query matches
+document.body.classList.add("dark");
+
+root.render(<App />);
+```
+
+Then edit `src/App.tsx` main file
 
 ```typescript
 import {

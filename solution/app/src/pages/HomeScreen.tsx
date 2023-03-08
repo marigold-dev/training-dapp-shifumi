@@ -19,7 +19,6 @@ import {
   IonToolbar,
   useIonAlert,
 } from "@ionic/react";
-import { bytes2Char } from "@taquito/utils";
 import { BigNumber } from "bignumber.js";
 import { person } from "ionicons/icons";
 import React, { useEffect, useRef, useState } from "react";
@@ -63,8 +62,6 @@ export const HomeScreen: React.FC = () => {
     refreshStorage,
   } = React.useContext(UserContext) as UserContextType;
 
-  const [description, setDescription] = useState<string>("");
-
   const [newPlayer, setNewPlayer] = useState<address>("" as address);
   const [total_rounds, setTotal_rounds] = useState<nat>(
     new BigNumber(1) as nat
@@ -74,7 +71,6 @@ export const HomeScreen: React.FC = () => {
   useEffect(() => {
     (async () => {
       if (storage) {
-        const metadata: any = await storage.metadata.get("contents");
         const myGames = new Map(); //filtering our games
         Array.from(storage.sessions.keys()).forEach((key) => {
           const session = storage.sessions.get(key);
@@ -87,7 +83,6 @@ export const HomeScreen: React.FC = () => {
           }
         });
         setMyGames(myGames);
-        setDescription(JSON.parse(bytes2Char(metadata)).description);
       } else {
         console.log("storage is not ready yet");
       }
