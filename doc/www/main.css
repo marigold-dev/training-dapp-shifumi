@@ -58,10 +58,7 @@ section.pro {
   margin: 30px 10px 0px 10px;
   border-radius: 5px;
 }
-section img {
-  width: 80vw;
-  object-fit: contain;
-}
+
 ul {
   padding-left: 1em;
 }
