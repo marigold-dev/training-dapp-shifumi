@@ -59,7 +59,7 @@ cp -r shifumiTemplate/src/* contracts/
 Compile the contract once, in order to create the default required file `main.storageList.jsligo` used at deployment step later
 
 ```bash
-taq compile main.jsligo
+TAQ_LIGO_IMAGE=ligolang/ligo:0.62.0 taq compile main.jsligo
 ```
 
 Edit `main.storageList.jsligo`
@@ -99,7 +99,7 @@ const default_storage = {
 Compile again
 
 ```bash
-taq compile main.jsligo
+TAQ_LIGO_IMAGE=ligolang/ligo:0.62.0 taq compile main.jsligo
 ```
 
 ## Step 3 : Deploy to Ghostnet
