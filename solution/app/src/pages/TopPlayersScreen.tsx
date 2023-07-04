@@ -87,6 +87,7 @@ export const TopPlayersScreen: React.FC = () => {
           {ranking && ranking.size > 0
             ? Array.from(ranking).map(([address, count]) => (
                 <IonRow
+                  key={address}
                   style={{
                     backgroundColor: "var(--ion-color-secondary)",
                   }}

@@ -39,10 +39,9 @@ export enum STATUS {
   FINISHED = "Game ended",
 }
 
-interface SessionScreenProps
-  extends RouteComponentProps<{
-    id: string;
-  }> {}
+type SessionScreenProps = RouteComponentProps<{
+  id: string;
+}>;
 
 export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
   const [presentAlert] = useIonAlert();
@@ -68,12 +67,12 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
     try {
       const subReveal = Tezos.stream.subscribeEvent({
         tag: "reveal",
-        address: import.meta.env.VITE_CONTRACT_ADDRESS!,
+        address: import.meta.env.VITE_CONTRACT_ADDRESS,
       });
 
       const subNewRound = Tezos.stream.subscribeEvent({
         tag: "newRound",
-        address: import.meta.env.VITE_CONTRACT_ADDRESS!,
+        address: import.meta.env.VITE_CONTRACT_ADDRESS,
       });
 
       subReveal.on("data", (e) => {
@@ -128,9 +127,9 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
         "Session has changed",
         session,
         "round",
-        session!.current_round.toNumber(),
+        session?.current_round.toNumber(),
         "session.decoded_rounds.get(session.current_round)",
-        session!.decoded_rounds.get(session!.current_round)
+        session?.decoded_rounds.get(session?.current_round)
       );
       if (session && ("winner" in session.result || "draw" in session.result)) {
         setStatus(STATUS.FINISHED);
@@ -170,7 +169,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
     const interval = setInterval(() => {
       const diff = Math.round(
         (new Date(
-          storage?.sessions.get(new BigNumber(id) as nat).asleep!
+          storage?.sessions.get(new BigNumber(id) as nat).asleep
         ).getTime() -
           Date.now()) /
           1000
@@ -211,10 +210,10 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
         "session_id",
         session_id,
         "current_round",
-        current_session!.current_round
+        current_session?.current_round
       );
 
-      const preparedCall = mainWalletType!.methods.play(
+      const preparedCall = mainWalletType?.methods.play(
         encryptedAction,
         current_session!.current_round,
         session_id
@@ -237,13 +236,13 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       });
 
       await op?.confirmation();
-      const newStorage = await mainWalletType!.storage();
+      const newStorage = await mainWalletType?.storage();
       setStorage(newStorage);
       setLoading(false);
       console.log("newStorage", newStorage);
     } catch (error) {
       console.table(`Error: ${JSON.stringify(error, null, 2)}`);
-      let tibe: TransactionInvalidBeaconError =
+      const tibe: TransactionInvalidBeaconError =
         new TransactionInvalidBeaconError(error);
       presentAlert({
         header: "Error",
@@ -286,10 +285,10 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       setLoading(true);
       const encryptedAction = await packAction(secretAction.action);
 
-      const preparedCall = await mainWalletType!.methods.revealPlay(
+      const preparedCall = mainWalletType?.methods.revealPlay(
         encryptedAction as bytes,
         new BigNumber(secretAction.secret) as nat,
-        current_session!.current_round,
+        current_session?.current_round,
         session_id
       );
 
@@ -303,13 +302,13 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
         storageLimit: storageLimit * 3, //we take a margin in case of paralell execution
       });
       await op?.confirmation();
-      const newStorage = await mainWalletType!.storage();
+      const newStorage = await mainWalletType?.storage();
       setStorage(newStorage);
       setLoading(false);
       console.log("newStorage", newStorage);
     } catch (error) {
       console.table(`Error: ${JSON.stringify(error, null, 2)}`);
-      let tibe: TransactionInvalidBeaconError =
+      const tibe: TransactionInvalidBeaconError =
         new TransactionInvalidBeaconError(error);
       presentAlert({
         header: "Error",
@@ -324,7 +323,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
   /** Pack an action variant to bytes. Same is Pack.bytes()  */
   async function packAction(action: Action): Promise<string> {
     const p = new MichelCodecPacker();
-    let actionbytes: PackDataParams = {
+    const actionbytes: PackDataParams = {
       data: action.stone
         ? { prim: "Right", args: [{ prim: "Unit" }] }
         : action.cisor
@@ -354,7 +353,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
     secret: number
   ): Promise<string> {
     const p = new MichelCodecPacker();
-    let actionBytesSecretbytes: PackDataParams = {
+    const actionBytesSecretbytes: PackDataParams = {
       data: {
         prim: "Pair",
         args: [{ bytes: actionBytes }, { int: secret.toString() }],
@@ -375,17 +374,17 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
   const stopSession = async () => {
     try {
       setLoading(true);
-      const op = await mainWalletType!.methods
+      const op = await mainWalletType?.methods
         .stopSession(new BigNumber(id) as nat)
         .send();
       await op?.confirmation(2);
-      const newStorage = await mainWalletType!.storage();
+      const newStorage = await mainWalletType?.storage();
       setStorage(newStorage);
       setLoading(false);
       console.log("newStorage", newStorage);
     } catch (error) {
       console.table(`Error: ${JSON.stringify(error, null, 2)}`);
-      let tibe: TransactionInvalidBeaconError =
+      const tibe: TransactionInvalidBeaconError =
         new TransactionInvalidBeaconError(error);
       presentAlert({
         header: "Error",
@@ -481,8 +480,8 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
                   ).map((roundId) => {
                     const currentRound: number = storage
                       ? storage?.sessions
-                          .get(new BigNumber(id) as nat)!
-                          .current_round!.toNumber() - 1
+                          .get(new BigNumber(id) as nat)
+                          .current_round?.toNumber() - 1
                       : 0;
                     const roundwinner = storage?.sessions
                       .get(new BigNumber(id) as nat)

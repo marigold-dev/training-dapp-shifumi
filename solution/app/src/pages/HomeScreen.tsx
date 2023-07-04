@@ -37,8 +37,8 @@ export const HomeScreen: React.FC = () => {
   const [presentAlert] = useIonAlert();
   const history = useHistory();
 
-  const createGameModal = useRef<HTMLIonModalElement>(null);
-  const selectGameModal = useRef<HTMLIonModalElement>(null);
+  const createGameModal = useRef<HTMLModElement>(null);
+  const selectGameModal = useRef<HTMLModElement>(null);
   function dismissCreateGameModal() {
     console.log("dismissCreateGameModal");
     createGameModal.current?.dismiss();
@@ -94,7 +94,7 @@ export const HomeScreen: React.FC = () => {
   }, [storage]);
 
   const createSession = async (
-    e: React.MouseEvent<HTMLIonButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     console.log("createSession");
     e.preventDefault();
@@ -102,11 +102,11 @@ export const HomeScreen: React.FC = () => {
 
     try {
       setLoading(true);
-      const op = await mainWalletType!.methods
+      const op = await mainWalletType?.methods
         .createSession([userAddress as address, newPlayer], total_rounds)
         .send();
       await op?.confirmation();
-      const newStorage = await mainWalletType!.storage();
+      const newStorage = await mainWalletType?.storage();
       setStorage(newStorage);
       setLoading(false);
       history.push(PAGES.SESSION + "/" + storage?.next_session.toString()); //it was the id created
@@ -114,7 +114,7 @@ export const HomeScreen: React.FC = () => {
       console.log("newStorage", newStorage);
     } catch (error) {
       console.table(`Error: ${JSON.stringify(error, null, 2)}`);
-      let tibe: TransactionInvalidBeaconError =
+      const tibe: TransactionInvalidBeaconError =
         new TransactionInvalidBeaconError(error);
       presentAlert({
         header: "Error",
@@ -232,15 +232,16 @@ export const HomeScreen: React.FC = () => {
                         total rounds
                       </IonLabel>
                       <IonInput
-                        onIonChange={(str) => {
+                        onIonChange={(str: any) => {
                           if (str.detail.value === undefined) return;
                           setTotal_rounds(
-                            new BigNumber(str.target.value!) as nat
+                            new BigNumber(str.target.value) as nat
                           );
                         }}
                         value={total_rounds.toString()}
                         placeholder="total_rounds"
                         type="number"
+                        label="Total Rounds"
                       />
                     </IonItem>
                     <IonItem key="newPlayer">
@@ -248,13 +249,14 @@ export const HomeScreen: React.FC = () => {
                         Opponent player
                       </IonLabel>
                       <IonInput
-                        onIonChange={(str) => {
+                        onIonChange={(str: any) => {
                           if (str.detail.value === undefined) return;
                           setNewPlayer(str.detail.value as address);
                         }}
                         value={newPlayer}
                         placeholder="tz1..."
                         type="text"
+                        label="Tezos Address"
                       />
                     </IonItem>
                   </IonContent>
