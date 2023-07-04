@@ -26,17 +26,17 @@ export class TransactionInvalidBeaconError {
     this.data_expected_form = "";
     this.data_message = this.message;
     if (transactionInvalidBeaconError.data !== undefined) {
-      let dataArray = Array.from<any>(
+      const dataArray = Array.from<any>(
         new Map(
           Object.entries<any>(transactionInvalidBeaconError.data)
         ).values()
       );
-      let contract_handle = dataArray.find(
+      const contract_handle = dataArray.find(
         (obj) => obj.contract_handle !== undefined
       );
       this.data_contract_handle =
         contract_handle !== undefined ? contract_handle.contract_handle : "";
-      let expected_form = dataArray.find(
+      const expected_form = dataArray.find(
         (obj) => obj.expected_form !== undefined
       );
       this.data_expected_form =

@@ -30,9 +30,9 @@ export const TopPlayersScreen: React.FC = () => {
   useEffect(() => {
     (async () => {
       if (storage) {
-        let ranking = new Map(); //force refresh
+        const ranking = new Map(); //force refresh
         Array.from(storage.sessions.keys()).forEach((key: nat) => {
-          let result = storage.sessions.get(key).result;
+          const result = storage.sessions.get(key).result;
           if ("winner" in result) {
             const winner = result.winner;
             let score = ranking.get(winner);

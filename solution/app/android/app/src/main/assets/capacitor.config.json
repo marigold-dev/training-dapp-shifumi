@@ -1,6 +1,0 @@
-{
-  "appId": "dev.marigold.shifumi",
-  "appName": "Tezos Shifumi",
-  "webDir": "build",
-  "bundledWebRuntime": false
-}

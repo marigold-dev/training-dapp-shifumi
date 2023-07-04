@@ -90,7 +90,7 @@ export type UserContextType = {
   setLoading: Dispatch<SetStateAction<boolean>>;
   refreshStorage: (event?: CustomEvent<RefresherEventDetail>) => Promise<void>;
 };
-export let UserContext = React.createContext<UserContextType | null>(null);
+export const UserContext = React.createContext<UserContextType | null>(null);
 
 const App: React.FC = () => {
   const [Tezos, setTezos] = useState<TezosToolkit>(
@@ -115,7 +115,7 @@ const App: React.FC = () => {
   ): Promise<void> => {
     if (wallet) {
       const activeAccount = await wallet.client.getActiveAccount();
-      var userAddress: string;
+      let userAddress: string;
       if (activeAccount) {
         userAddress = activeAccount.address;
         setUserAddress(userAddress);
