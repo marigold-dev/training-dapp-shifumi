@@ -125,11 +125,11 @@ const App: React.FC = () => {
 
       console.log(
         "REACT_APP_CONTRACT_ADDRESS:",
-        process.env.REACT_APP_CONTRACT_ADDRESS!
+        import.meta.env.VITE_CONTRACT_ADDRESS!
       );
       const mainWalletType: MainWalletType =
         await Tezos.wallet.at<MainWalletType>(
-          process.env.REACT_APP_CONTRACT_ADDRESS!
+          import.meta.env.VITE_CONTRACT_ADDRESS!
         );
       const storage: Storage = await mainWalletType.storage();
       setMainWalletType(mainWalletType);
@@ -152,7 +152,7 @@ const App: React.FC = () => {
     try {
       const sub = Tezos.stream.subscribeEvent({
         tag: "gameStatus",
-        address: process.env.REACT_APP_CONTRACT_ADDRESS!,
+        address: import.meta.env.VITE_CONTRACT_ADDRESS!,
       });
 
       sub.on("data", (e) => {

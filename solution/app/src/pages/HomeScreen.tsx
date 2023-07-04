@@ -28,6 +28,10 @@ import ConnectButton from "../ConnectWallet";
 import DisconnectButton from "../DisconnectWallet";
 import { TransactionInvalidBeaconError } from "../TransactionInvalidBeaconError";
 import { address, nat } from "../type-aliases";
+import Scissor from "../assets/scissor-logo.webp";
+import Stone from "../assets/stone-logo.webp";
+import Paper from "../assets/paper-logo.webp";
+import XTZLogo from "../assets/xtz.webp";
 
 export const HomeScreen: React.FC = () => {
   const [presentAlert] = useIonAlert();
@@ -153,18 +157,9 @@ export const HomeScreen: React.FC = () => {
                     justifyContent: "space-around",
                   }}
                 >
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
-                    className="logo"
-                  />
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
-                    className="logo"
-                  />
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
-                    className="logo"
-                  />
+                  <IonImg src={Stone} className="logo" />
+                  <IonImg src={Paper} className="logo" />
+                  <IonImg src={Scissor} className="logo" />
                 </div>
                 <IonList inset={true}>
                   <ConnectButton
@@ -184,10 +179,7 @@ export const HomeScreen: React.FC = () => {
                   </IonLabel>
                 </IonItem>
                 <IonItem style={{ padding: 0, margin: 0 }}>
-                  <IonImg
-                    style={{ height: 24, width: 24 }}
-                    src={process.env.PUBLIC_URL + "/assets/xtz.png"}
-                  />
+                  <IonImg style={{ height: 24, width: 24 }} src={XTZLogo} />
                   <IonLabel style={{ direction: "rtl" }}>
                     {userBalance / 1000000}
                   </IonLabel>
@@ -203,18 +195,9 @@ export const HomeScreen: React.FC = () => {
                     width: "100%",
                   }}
                 >
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
-                    className="logo"
-                  />
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
-                    className="logo"
-                  />
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
-                    className="logo"
-                  />
+                  <IonImg src={Stone} className="logo" />
+                  <IonImg src={Paper} className="logo" />
+                  <IonImg src={Scissor} className="logo" />
                 </div>
 
                 <IonButton id="createGameModalVisible" expand="full">

@@ -17,6 +17,7 @@ import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { UserContext, UserContextType } from "../App";
 import { nat } from "../type-aliases";
+import Ranking from "../assets/ranking.webp";
 
 export const TopPlayersScreen: React.FC = () => {
   const history = useHistory();
@@ -65,7 +66,7 @@ export const TopPlayersScreen: React.FC = () => {
         </IonRefresher>
         <div style={{ marginLeft: "40vw" }}>
           <IonImg
-            src={process.env.PUBLIC_URL + "/assets/ranking.png"}
+            src={Ranking}
             className="ranking"
             style={{ height: "10em", width: "5em" }}
           />

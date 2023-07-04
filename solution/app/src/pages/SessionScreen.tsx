@@ -27,6 +27,9 @@ import { RouteComponentProps, useHistory } from "react-router-dom";
 import { Action, PAGES, UserContext, UserContextType } from "../App";
 import { TransactionInvalidBeaconError } from "../TransactionInvalidBeaconError";
 import { bytes, nat, unit } from "../type-aliases";
+import Scissor from "../assets/scissor-logo.webp";
+import Stone from "../assets/stone-logo.webp";
+import Paper from "../assets/paper-logo.webp";
 
 export enum STATUS {
   PLAY = "Play !",
@@ -65,12 +68,12 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
     try {
       const subReveal = Tezos.stream.subscribeEvent({
         tag: "reveal",
-        address: process.env.REACT_APP_CONTRACT_ADDRESS!,
+        address: import.meta.env.VITE_CONTRACT_ADDRESS!,
       });
 
       const subNewRound = Tezos.stream.subscribeEvent({
         tag: "newRound",
-        address: process.env.REACT_APP_CONTRACT_ADDRESS!,
+        address: import.meta.env.VITE_CONTRACT_ADDRESS!,
       });
 
       subReveal.on("data", (e) => {
@@ -520,7 +523,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
               <IonImg
                 className={"logo-XXL" + (isDesktop() ? "" : " mobile")}
                 src={
-                  process.env.PUBLIC_URL +
+                  import.meta.env.VITE_PUBLIC_URL +
                   "/assets/" +
                   getFinalResult() +
                   ".png"
@@ -539,10 +542,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
                       play(new Action(true as unit, undefined, undefined))
                     }
                   >
-                    <IonImg
-                      src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
-                      className="logo"
-                    />
+                    <IonImg src={Scissor} className="logo" />
                   </IonButton>
                 </IonItem>
                 <IonItem style={{ margin: 0, padding: 0 }}>
@@ -552,10 +552,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
                       play(new Action(undefined, true as unit, undefined))
                     }
                   >
-                    <IonImg
-                      src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
-                      className="logo"
-                    />
+                    <IonImg src={Paper} className="logo" />
                   </IonButton>
                 </IonItem>
                 <IonItem style={{ margin: 0, padding: 0 }}>
@@ -565,10 +562,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
                       play(new Action(undefined, undefined, true as unit))
                     }
                   >
-                    <IonImg
-                      src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
-                      className="logo"
-                    />
+                    <IonImg src={Stone} className="logo" />
                   </IonButton>
                 </IonItem>
               </IonList>
