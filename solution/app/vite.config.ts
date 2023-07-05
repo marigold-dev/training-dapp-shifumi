@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react-swc";
 // https://vitejs.dev/config/
 export default defineConfig({
   define: {
+    "process.env": process.env,
     global: {},
   },
   build: {
@@ -19,6 +20,12 @@ export default defineConfig({
       util: "util",
       process: "process/browser",
       buffer: "buffer",
+      crypto: "crypto-browserify",
+      assert: "assert",
+      http: "stream-http",
+      https: "https-browserify",
+      url: "url",
+      path: "path-browserify",
     },
   },
 });

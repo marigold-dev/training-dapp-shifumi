@@ -41,7 +41,16 @@
     "workbox-range-requests": "^7.0.0",
     "workbox-routing": "^7.0.0",
     "workbox-strategies": "^7.0.0",
-    "workbox-streams": "^7.0.0"
+    "workbox-streams": "^7.0.0",
+    "assert": "^2.0.0",
+    "crypto-browserify": "^3.12.0",
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
+    "process": "^0.11.10",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "url": "^0.11.1"
   },
   "devDependencies": {
     "@airgap/beacon-types": "^4.0.4",
@@ -54,19 +63,10 @@
     "@typescript-eslint/eslint-plugin": "^5.61.0",
     "@typescript-eslint/parser": "^5.61.0",
     "@vitejs/plugin-react-swc": "^3.3.2",
-    "assert": "^2.0.0",
-    "crypto-browserify": "^3.12.0",
     "eslint": "^8.44.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.1",
-    "https-browserify": "^1.0.0",
-    "os-browserify": "^0.3.0",
-    "path-browserify": "^1.0.1",
-    "process": "^0.11.10",
-    "stream-browserify": "^3.0.0",
-    "stream-http": "^3.2.0",
     "typescript": "^5.1.6",
-    "url": "^0.11.1",
     "vite": "^4.3.9"
   },
   "browserslist": {
