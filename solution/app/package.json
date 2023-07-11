@@ -10,16 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@airgap/beacon-sdk": "^4.0.4",
-    "@capacitor/android": "^5.1.0",
+    "@airgap/beacon-sdk": "^4.0.5",
+    "@capacitor/android": "^5.1.1",
     "@capacitor/app": "5.0.5",
-    "@capacitor/core": "5.1.0",
+    "@capacitor/core": "5.1.1",
     "@capacitor/haptics": "5.0.5",
     "@capacitor/keyboard": "5.0.5",
     "@capacitor/status-bar": "5.0.5",
     "@dipdup/tzkt-api": "^0.0.1",
-    "@ionic/react": "^7.1.1",
-    "@ionic/react-router": "^7.1.1",
+    "@ionic/react": "^7.1.2",
+    "@ionic/react-router": "^7.1.2",
     "@taquito/beacon-wallet": "^17.0.0",
     "@taquito/taquito": "^17.0.0",
     "add": "^2.0.6",
@@ -53,21 +53,21 @@
     "url": "^0.11.1"
   },
   "devDependencies": {
-    "@airgap/beacon-types": "^4.0.4",
-    "@capacitor/cli": "5.1.0",
-    "@types/node": "^20.3.3",
+    "@airgap/beacon-types": "^4.0.5",
+    "@capacitor/cli": "5.1.1",
+    "@types/node": "^20.4.1",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
     "@types/react-router": "^5.1.20",
     "@types/react-router-dom": "^5.3.3",
-    "@typescript-eslint/eslint-plugin": "^5.61.0",
-    "@typescript-eslint/parser": "^5.61.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
     "@vitejs/plugin-react-swc": "^3.3.2",
     "eslint": "^8.44.0",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.1",
+    "eslint-plugin-react-refresh": "^0.4.3",
     "typescript": "^5.1.6",
-    "vite": "^4.3.9"
+    "vite": "^4.4.2"
   },
   "browserslist": {
     "production": [

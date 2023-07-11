@@ -125,11 +125,11 @@ const App: React.FC = () => {
 
       console.log(
         "REACT_APP_CONTRACT_ADDRESS:",
-        import.meta.env.VITE_CONTRACT_ADDRESS!
+        import.meta.env.VITE_CONTRACT_ADDRESS
       );
       const mainWalletType: MainWalletType =
         await Tezos.wallet.at<MainWalletType>(
-          import.meta.env.VITE_CONTRACT_ADDRESS!
+          import.meta.env.VITE_CONTRACT_ADDRESS
         );
       const storage: Storage = await mainWalletType.storage();
       setMainWalletType(mainWalletType);
