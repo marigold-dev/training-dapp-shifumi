@@ -163,56 +163,73 @@ npm install -S -D @airgap/beacon-types
 npm i --save-dev @types/react
 ```
 
-> :warning: :warning: :warning: Last React version uses `react-script 5.x` , follow these steps to rewire webpack for all encountered missing libraries : https://github.com/ChainSafe/web3.js#troubleshooting-and-known-issues
+> :warning: :warning: :warning: Before we start we need to add the following dependencies in order to not get polyfill issues. The reason for this step is that certain required dependencies are Node APIs, thus not included in Browsers. But still needed for communication and interaction with Wallets and Smart Contracts.
 
 > For example, in my case, I installed this :
 >
 > ```bash
-> yarn add --dev react-app-rewired process crypto-browserify stream-browserify assert stream-http https-browserify os-browserify url path-browserify
+> yarn add --dev process buffer crypto-browserify stream-browserify assert stream-http https-browserify os-browserify url path-browserify
 > ```
 >
-> and my `config-overrides.js` file was :
+> then create a new file `nodeSpecific.ts` in the src folder of your project and edit with this content :
 >
 > ```js
-> const webpack = require("webpack");
+>import { Buffer } from 'buffer'
 >
-> module.exports = function override(config) {
->   const fallback = config.resolve.fallback || {};
->   Object.assign(fallback, {
->     crypto: require.resolve("crypto-browserify"),
->     stream: require.resolve("stream-browserify"),
->     assert: require.resolve("assert"),
->     http: require.resolve("stream-http"),
->     https: require.resolve("https-browserify"),
->     os: require.resolve("os-browserify"),
->     url: require.resolve("url"),
->     path: require.resolve("path-browserify"),
->   });
->   config.ignoreWarnings = [/Failed to parse source map/];
->   config.resolve.fallback = fallback;
->   config.plugins = (config.plugins || []).concat([
->     new webpack.ProvidePlugin({
->       process: "process/browser",
->       Buffer: ["buffer", "Buffer"],
->     }),
->   ]);
->   return config;
-> };
+> globalThis.Buffer = Buffer
 > ```
 >
-> :warning:
+> then open the `index.html` file and add the following script in the body. It should look like this :
+>
+> ```js
+> <body>
+>   <div id="root"></div>
+>   <script type="module" src="/src/nodeSpecific.ts"></script> //add this line
+>   <script type="module" src="/src/main.tsx"></script>
+> </body>
+> ```
+>
+> Finally open the `vite.config.ts` file and edit it with this content :
+>
+> ```js
+> import { defineConfig } from 'vite'
+> import react from '@vitejs/plugin-react-swc'
+>
+> // https://vitejs.dev/config/
+> export default defineConfig({
+>   define: {
+>     global: {},
+>   },
+>   plugins: [react()],
+>   resolve: {
+>     alias: {
+>      stream: "stream-browserify",
+>      os: "os-browserify/browser",
+>      util: "util",
+>      process: "process/browser",
+>      buffer: "buffer",
+>      crypto: "crypto-browserify",
+>      assert: "assert",
+>      http: "stream-http",
+>      https: "https-browserify",
+>      url: "url",
+>      path: "path-browserify",
+>     },
+>   },
+> })
+> ```
 
-This was painful :/, but it was the worst so far
+Now you can run the app.
 
 Modify the default `package.json` default scripts (to fix an issue between ionic and react-rewired, during postinstall step, we do some symbolic linking, the we extract the last deployed smart contract address from Taqueria configuration file)
 
 ```json
   "scripts": {
     "postinstall": "cd ./node_modules && ln -s crypto-browserify crypto && cd .bin && mv react-scripts react-scripts-real && ln -s ../react-app-rewired/bin/index.js react-scripts",
-    "start": "jq -r '\"REACT_APP_CONTRACT_ADDRESS=\" + last(.tasks[]).output[0].address' ../.taq/testing-state.json > .env && react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons)/)'",
-    "eject": "react-scripts eject"
+    "dev": "jq -r '\"VITE_CONTRACT_ADDRESS=\" + last(.tasks[]).output[0].address' ../.taq/testing-state.json > .env && vite",
+    "build": "tsc && vite build",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
   },
 ```
 
