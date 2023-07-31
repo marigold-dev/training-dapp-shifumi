@@ -19,7 +19,7 @@ Please install this software first on your machine or use online alternative :
 - [ ] [VS Code](https://code.visualstudio.com/download) : as text editor
 - [ ] [npm](https://nodejs.org/en/download/) : we will use a typescript React client app
 - [ ] [yarn](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable) : because yet another package manager (https://www.geeksforgeeks.org/difference-between-npm-and-yarn/)
-- [ ] [taqueria v0.28.4](https://github.com/ecadlabs/taqueria) : Tezos Dapp project tooling
+- [ ] [taqueria v0.37.0](https://github.com/ecadlabs/taqueria) : Tezos Dapp project tooling
 - [ ] [taqueria VS Code extension](https://marketplace.visualstudio.com/items?itemName=ecadlabs.taqueria-vscode) : visualize your project and execute tasks
 - [ ] [ligo VS Code extension](https://marketplace.visualstudio.com/items?itemName=ligolang-publish.ligo-vscode) : for smart contract highlighting, completion, etc ..
 - [ ] [Temple wallet](https://templewallet.com/) : an easy to use Tezos wallet in your browser (but any other should work, as we will see Kukai is a good option for the Android emulator)
@@ -39,8 +39,6 @@ cd shifumi
 taq install @taqueria/plugin-ligo
 ```
 
-> Bug fix : there is an issue with last Taqueria versions, to fix this just run : `npm i @taqueria/plugin-ligo@0.28.4-1852.e20decfd --registry https://npm.ecadinfra.com/`
-
 > :warning: HACK note : create a dummy esy.json file with `{}` content on it. I will be used by the ligo package installer to not override the default package.json file of taqueria
 
 ```bash
@@ -59,7 +57,7 @@ cp -r shifumiTemplate/src/* contracts/
 Compile the contract once, in order to create the default required file `main.storageList.jsligo` used at deployment step later
 
 ```bash
-TAQ_LIGO_IMAGE=ligolang/ligo:0.62.0 taq compile main.jsligo
+TAQ_LIGO_IMAGE=ligolang/ligo:0.70.1 taq compile main.jsligo
 ```
 
 Edit `main.storageList.jsligo`
@@ -99,7 +97,7 @@ const default_storage = {
 Compile again
 
 ```bash
-TAQ_LIGO_IMAGE=ligolang/ligo:0.62.0 taq compile main.jsligo
+TAQ_LIGO_IMAGE=ligolang/ligo:0.70.1 taq compile main.jsligo
 ```
 
 ## Step 3 : Deploy to Ghostnet
@@ -125,11 +123,11 @@ taq deploy main.tz -e "testing"
 HOORAY :confetti_ball: your smart contract is ready on the Ghostnet !
 
 ```logs
-┌──────────┬──────────────────────────────────────┬───────┬──────────────────┬────────────────────────────────┐
-│ Contract │ Address                              │ Alias │ Balance In Mutez │ Destination                    │
-├──────────┼──────────────────────────────────────┼───────┼──────────────────┼────────────────────────────────┤
-│ main.tz  │ KT1B72K7dwo9m4qVYtfBofNHQVGak5h7Nemp │ main  │ 0                │ https://ghostnet.ecadinfra.com │
-└──────────┴──────────────────────────────────────┴───────┴──────────────────┴────────────────────────────────┘
+┌──────────┬──────────────────────────────────────┬───────┬──────────────────┬─────────────────────────────────────┐
+│ Contract │ Address                              │ Alias │ Balance In Mutez │ Destination                         │
+├──────────┼──────────────────────────────────────┼───────┼──────────────────┼─────────────────────────────────────┤
+│ main.tz  │ KT1WAXBta6pNh8fmyZMto6vE243VjsCXJ448 │ main  │ 1000000          │ https://ghostnet.tezos.marigold.dev │
+└──────────┴──────────────────────────────────────┴───────┴──────────────────┴─────────────────────────────────────┘
 ```
 
 # Mobile app
@@ -174,9 +172,9 @@ npm i --save-dev @types/react
 > then create a new file `nodeSpecific.ts` in the src folder of your project and edit with this content :
 >
 > ```js
->import { Buffer } from 'buffer'
+> import { Buffer } from "buffer";
 >
-> globalThis.Buffer = Buffer
+> globalThis.Buffer = Buffer;
 > ```
 >
 > then open the `index.html` file and add the following script in the body. It should look like this :
@@ -192,8 +190,8 @@ npm i --save-dev @types/react
 > Finally open the `vite.config.ts` file and edit it with this content :
 >
 > ```js
-> import { defineConfig } from 'vite'
-> import react from '@vitejs/plugin-react-swc'
+> import { defineConfig } from "vite";
+> import react from "@vitejs/plugin-react-swc";
 >
 > // https://vitejs.dev/config/
 > export default defineConfig({
@@ -203,20 +201,20 @@ npm i --save-dev @types/react
 >   plugins: [react()],
 >   resolve: {
 >     alias: {
->      stream: "stream-browserify",
->      os: "os-browserify/browser",
->      util: "util",
->      process: "process/browser",
->      buffer: "buffer",
->      crypto: "crypto-browserify",
->      assert: "assert",
->      http: "stream-http",
->      https: "https-browserify",
->      url: "url",
->      path: "path-browserify",
+>       stream: "stream-browserify",
+>       os: "os-browserify/browser",
+>       util: "util",
+>       process: "process/browser",
+>       buffer: "buffer",
+>       crypto: "crypto-browserify",
+>       assert: "assert",
+>       http: "stream-http",
+>       https: "https-browserify",
+>       url: "url",
+>       path: "path-browserify",
 >     },
 >   },
-> })
+> });
 > ```
 
 Now you can run the app.
@@ -237,7 +235,7 @@ Run web version as it is easier to develop/test/debug first (Note : Remember pos
 
 ```bash
 npm run postinstall
-npm run start
+npm run dev
 ```
 
 ## Step 2 : Edit the default Application file to configure page routing and add the style
@@ -641,7 +639,7 @@ import { address, nat } from "../type-aliases";
 
 export const HomeScreen: React.FC = () => {
   const [presentAlert] = useIonAlert();
-  const history = useHistory();
+  const { go, back, forward, push } = useHistory();
 
   const createGameModal = useRef<HTMLIonModalElement>(null);
   const selectGameModal = useRef<HTMLIonModalElement>(null);
@@ -715,7 +713,7 @@ export const HomeScreen: React.FC = () => {
       const newStorage = await mainWalletType!.storage();
       setStorage(newStorage);
       setLoading(false);
-      history.push(PAGES.SESSION + "/" + storage?.next_session.toString()); //it was the id created
+      push(PAGES.SESSION + "/" + storage?.next_session.toString()); //it was the id created
       dismissCreateGameModal();
       console.log("newStorage", newStorage);
     } catch (error) {
@@ -763,10 +761,7 @@ export const HomeScreen: React.FC = () => {
                     justifyContent: "space-around",
                   }}
                 >
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
-                    className="logo"
-                  />
+                  <IonImg src={"assets/stone-logo.png"} className="logo" />
                   <IonImg
                     src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
                     className="logo"
@@ -1010,14 +1005,14 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 
 export const RulesScreen: React.FC = () => {
-  const history = useHistory();
+  const { go, back, forward, push } = useHistory();
   /* 2. Get the param */
   return (
     <IonPage className="container">
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={() => history.goBack()}>Back</IonButton>
+            <IonButton onClick={back}>Back</IonButton>
           </IonButtons>
           <IonTitle>Rules</IonTitle>
         </IonToolbar>
@@ -1207,7 +1202,7 @@ interface SessionScreenProps
 
 export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
   const [presentAlert] = useIonAlert();
-  const history = useHistory();
+  const { go, back, forward, push } = useHistory();
 
   const id: string = match.params.id;
 
@@ -1597,7 +1592,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={() => history.goBack()}>Back</IonButton>
+            <IonButton onClick={back}>Back</IonButton>
           </IonButtons>
           <IonTitle>Game n°{id}</IonTitle>
         </IonToolbar>
@@ -1683,12 +1678,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
             {status === STATUS.FINISHED ? (
               <IonImg
                 className={"logo-XXL" + (isDesktop() ? "" : " mobile")}
-                src={
-                  process.env.PUBLIC_URL +
-                  "/assets/" +
-                  getFinalResult() +
-                  ".png"
-                }
+                src={"/assets/" + getFinalResult() + ".png"}
               />
             ) : (
               ""
@@ -1815,7 +1805,7 @@ import { UserContext, UserContextType } from "../App";
 import { nat } from "../type-aliases";
 
 export const TopPlayersScreen: React.FC = () => {
-  const history = useHistory();
+  const { go, back, forward, push } = useHistory();
   const { storage, refreshStorage } = React.useContext(
     UserContext
   ) as UserContextType;
@@ -1850,7 +1840,7 @@ export const TopPlayersScreen: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={() => history.goBack()}>Back</IonButton>
+            <IonButton onClick={back}>Back</IonButton>
           </IonButtons>
           <IonTitle>Top Players</IonTitle>
         </IonToolbar>

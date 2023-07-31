@@ -26,10 +26,10 @@ import React, { useEffect, useState } from "react";
 import { RouteComponentProps, useHistory } from "react-router-dom";
 import { Action, PAGES, UserContext, UserContextType } from "../App";
 import { TransactionInvalidBeaconError } from "../TransactionInvalidBeaconError";
-import { bytes, nat, unit } from "../type-aliases";
+import Paper from "../assets/paper-logo.webp";
 import Scissor from "../assets/scissor-logo.webp";
 import Stone from "../assets/stone-logo.webp";
-import Paper from "../assets/paper-logo.webp";
+import { bytes, nat, unit } from "../type-aliases";
 
 export enum STATUS {
   PLAY = "Play !",
@@ -45,7 +45,7 @@ type SessionScreenProps = RouteComponentProps<{
 
 export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
   const [presentAlert] = useIonAlert();
-  const history = useHistory();
+  const { go, back, forward, push } = useHistory();
 
   const id: string = match.params.id;
 
@@ -435,7 +435,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={() => history.goBack()}>Back</IonButton>
+            <IonButton onClick={back}>Back</IonButton>
           </IonButtons>
           <IonTitle>Game n°{id}</IonTitle>
         </IonToolbar>
@@ -521,12 +521,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
             {status === STATUS.FINISHED ? (
               <IonImg
                 className={"logo-XXL" + (isDesktop() ? "" : " mobile")}
-                src={
-                  import.meta.env.VITE_PUBLIC_URL +
-                  "/assets/" +
-                  getFinalResult() +
-                  ".png"
-                }
+                src={"assets/" + getFinalResult() + ".png"}
               />
             ) : (
               ""

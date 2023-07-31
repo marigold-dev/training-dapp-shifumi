@@ -11,7 +11,7 @@ export type parameter = Parameter.t;
 export type return_ = [list<operation>, storage];
 
 // Anyone can create a session (must specify players and number of rounds)
-const createSession = ([param, store] : [Parameter.createsession_param, Storage.t]) : return_ => { 
+const createSession = (param : Parameter.createsession_param, store : Storage.t) : return_ => { 
     let new_session : Session.t = Session.new(param.total_rounds, param.players);
     let new_storage : Storage.t = { ...store,  
         next_session: store.next_session + (1 as nat), 
@@ -22,7 +22,7 @@ const createSession = ([param, store] : [Parameter.createsession_param, Storage.
 
 
 // search for a non troller in the session
-const find_me_a_name = ([sessionId, missing_players, current_session, store] : [nat, list<Session.player>, Session.t, Storage.t]) : return_ => { 
+const find_me_a_name = (sessionId : nat, missing_players : list<Session.player>, current_session : Session.t, store : Storage.t) : return_ => { 
     
     assert_with_error( List.size(missing_players) == (1 as nat), Errors.no_winner);
     
@@ -44,14 +44,14 @@ const declare_a_draw = (sessionId : nat, current_session : Session.t, store: Sto
     return [list([player1ToRedeemOp,player2ToRedeemOp,Tezos.emit("%gameStatus","draw")]) as list<operation>, new_storage];
 };
 
-const is_none : <T>((x : option<T>) => bool) = (x : option<T>) : bool =>
+const is_none = <T>(x : option<T>) : bool =>
    match(x, {
      Some: _ => false,
      None: () => true}
      );
 
 // allow players to claim victory if opponent is a troller (refuse to play)
-const stopSession = ([param, store] : [Parameter.stopsession_param, Storage.t]) : return_ => {
+const stopSession = (param : Parameter.stopsession_param, store : Storage.t) : return_ => {
     let current_session : Session.t = Storage.getSession(param.sessionId, store);
     let _check_players : unit = Conditions.check_player_authorized((Tezos.get_sender ()), current_session.players, Errors.user_not_allowed_to_stop_session);
     let _check_session_end : unit = Conditions.check_session_end(current_session.result, Inplay());
@@ -84,7 +84,7 @@ const stopSession = ([param, store] : [Parameter.stopsession_param, Storage.t]) 
 
 // the player create a bytes with the chosen action (Stone | Paper | Cisor) in backend
 // once the bytes is created, the player send its bytes to the smart contract
-const play = ([param, store] : [Parameter.play_param, Storage.t]) : return_ => {
+const play = (param : Parameter.play_param, store : Storage.t) : return_ => {
     let current_session : Session.t = Storage.getSession(param.sessionId, store);
     let _check_players : unit = Conditions.check_player_authorized((Tezos.get_sender ()), current_session.players, Errors.user_not_allowed_to_play_in_session);
     let _check_session_end : unit = Conditions.check_session_end(current_session.result, Inplay());
@@ -101,7 +101,7 @@ const play = ([param, store] : [Parameter.play_param, Storage.t]) : return_ => {
     
     return match (Map.find_opt(new_session.current_round,new_session.rounds), {
         None : () => [list([]) as list<operation>, new_storage],
-        Some : (current_round : Session.rounds) => {
+        Some : (current_round : Session.player_actions) => {
             if( List.size( current_round  ) != (2 as nat) ){ return [list([]) as list<operation>, new_storage]}
             else { return  [list([ Tezos.emit("%reveal","")  ]) as list<operation>, new_storage]}
         }
@@ -109,7 +109,7 @@ const play = ([param, store] : [Parameter.play_param, Storage.t]) : return_ => {
 };
 
 // Once all players have committed their bytes, they must reveal the content of their bytes
-const reveal = ([param, store] : [Parameter.reveal_param, Storage.t]) : return_ => {
+const reveal = (param : Parameter.reveal_param, store : Storage.t) : return_ => {
     // players can reveal only if all players have sent their bytes
     let current_session : Session.t = Storage.getSession(param.sessionId, store);
     let _check_players : unit = Conditions.check_player_authorized((Tezos.get_sender ()), current_session.players, Errors.user_not_allowed_to_reveal_in_session);
@@ -148,7 +148,7 @@ const reveal = ([param, store] : [Parameter.reveal_param, Storage.t]) : return_ 
     });
 };
 
-export const main = ([ep, store] : [parameter, storage]) : return_ => {
+export const main = (ep : parameter, store : storage) : return_ => {
     return match (ep, { 
         CreateSession: (p: Parameter.createsession_param) => createSession(p, store),
         Play: (p: Parameter.play_param) => play(p, store),

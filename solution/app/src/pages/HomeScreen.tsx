@@ -27,15 +27,15 @@ import { PAGES, Session, UserContext, UserContextType } from "../App";
 import ConnectButton from "../ConnectWallet";
 import DisconnectButton from "../DisconnectWallet";
 import { TransactionInvalidBeaconError } from "../TransactionInvalidBeaconError";
-import { address, nat } from "../type-aliases";
+import Paper from "../assets/paper-logo.webp";
 import Scissor from "../assets/scissor-logo.webp";
 import Stone from "../assets/stone-logo.webp";
-import Paper from "../assets/paper-logo.webp";
 import XTZLogo from "../assets/xtz.webp";
+import { address, nat } from "../type-aliases";
 
 export const HomeScreen: React.FC = () => {
   const [presentAlert] = useIonAlert();
-  const history = useHistory();
+  const { go, back, forward, push } = useHistory();
 
   const createGameModal = useRef<HTMLModElement>(null);
   const selectGameModal = useRef<HTMLModElement>(null);
@@ -109,7 +109,7 @@ export const HomeScreen: React.FC = () => {
       const newStorage = await mainWalletType?.storage();
       setStorage(newStorage);
       setLoading(false);
-      history.push(PAGES.SESSION + "/" + storage?.next_session.toString()); //it was the id created
+      push(PAGES.SESSION + "/" + storage?.next_session.toString()); //it was the id created
       dismissCreateGameModal();
       console.log("newStorage", newStorage);
     } catch (error) {

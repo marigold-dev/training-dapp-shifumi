@@ -16,11 +16,11 @@ import {
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { UserContext, UserContextType } from "../App";
-import { nat } from "../type-aliases";
 import Ranking from "../assets/ranking.webp";
+import { nat } from "../type-aliases";
 
 export const TopPlayersScreen: React.FC = () => {
-  const history = useHistory();
+  const { go, back, forward, push } = useHistory();
   const { storage, refreshStorage } = React.useContext(
     UserContext
   ) as UserContextType;
@@ -55,7 +55,7 @@ export const TopPlayersScreen: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={() => history.goBack()}>Back</IonButton>
+            <IonButton onClick={back}>Back</IonButton>
           </IonButtons>
           <IonTitle>Top Players</IonTitle>
         </IonToolbar>

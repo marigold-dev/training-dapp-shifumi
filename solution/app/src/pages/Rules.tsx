@@ -12,21 +12,22 @@ import {
 } from "@ionic/react";
 import React from "react";
 import { useHistory } from "react-router-dom";
-import Scissor from "../assets/scissor-logo.webp";
-import Stone from "../assets/stone-logo.webp";
-import Paper from "../assets/paper-logo.webp";
 import Clock from "../assets/clock.webp";
 import Legend from "../assets/legend.webp";
+import Paper from "../assets/paper-logo.webp";
+import Scissor from "../assets/scissor-logo.webp";
+import Stone from "../assets/stone-logo.webp";
 
 export const RulesScreen: React.FC = () => {
-  const history = useHistory();
+  const { go, back, forward, push } = useHistory();
+
   /* 2. Get the param */
   return (
     <IonPage className="container">
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={() => history.goBack()}>Back</IonButton>
+            <IonButton onClick={back}>Back</IonButton>
           </IonButtons>
           <IonTitle>Rules</IonTitle>
         </IonToolbar>
