@@ -1138,6 +1138,12 @@ export class TransactionInvalidBeaconError {
 
 ## Step 4 : Test it
 
+To test in web
+
+```bash
+npm run dev
+```
+
 We consider that you wallet is well configured and has some XTZ on Ghostnet, so click on Connect button
 (Note : If you don't have tokens, to get some free XTZ on Ghostnet, follow this link to the [faucet](https://faucet.marigold.dev/))
 
@@ -1912,12 +1918,19 @@ To modify the name of your app, open the `capacitor.config.json` file and change
 
 > Hack : To be sure that the symlink is done and ionic capacitor will not have issue with crypto library, in case you can re-run : `npm run postinstall`
 
+> Hack : to build on android, change vite config to remove global field here
+
+```javascript
+export default defineConfig({
+  define: {
+    "process.env": process.env,
+    global: {},
+  },
+```
+
 Then these lines will copy all to android folder + the images ressources used by the store
 
 ```bash
-npm run dev
-npm remove react-scripts
-
 ionic capacitor copy android
 npm install -g cordova-res
 cordova-res android --skip-config --copy
@@ -1951,7 +1964,7 @@ Open Android Studio and do a `Build` or `Make Project` action
 > #node_modules/
 > ```
 >
-> Force it to be included on committed files : `git add android/app/src/main/assets/  ; git add android/capacitor-cordova-android-plugins/` and push to git
+> Force it to be included on committed files : `git add -f android/app/src/main/assets/  ; git add android/capacitor-cordova-android-plugins/` and push to git
 > Then try again `Build` or `Make Project` action on Android Studio
 
 ![build.png](./doc/build.png)
