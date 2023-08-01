@@ -1964,7 +1964,7 @@ Open Android Studio and do a `Build` or `Make Project` action
 > #node_modules/
 > ```
 >
-> Force it to be included on committed files : `git add -f android/app/src/main/assets/  ; git add android/capacitor-cordova-android-plugins/` and push to git
+> Force it to be included on committed files : `git add -f android/app/src/main/assets/  ; git add -f android/capacitor-cordova-android-plugins/ ;  git add -f node_modules` and push to git
 > Then try again `Build` or `Make Project` action on Android Studio
 
 ![build.png](./doc/build.png)
