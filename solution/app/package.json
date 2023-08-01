@@ -5,10 +5,13 @@
   "type": "module",
   "scripts": {
     "postinstall": "cd ./node_modules && ln -s crypto-browserify crypto && cd .bin && mv react-scripts react-scripts-real && ln -s ../react-app-rewired/bin/index.js react-scripts",
-    "dev": "jq -r '\"VITE_CONTRACT_ADDRESS=\" + last(.tasks[]).output[0].address' ../.taq/testing-state.json > .env && vite",
+    "dev": "jq -r '\"VITE_CONTRACT_ADDRESS=\" + last(.tasks[]).output[0].address' ../.taq/testing-state.json > .env && vite --host",
+    "ionic:build": "tsc && vite build",
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "ionic:serve": "vite dev --host",
+    "sync": "npm run build && ionic cap sync --no-build"
   },
   "dependencies": {
     "@airgap/beacon-sdk": "^4.0.6",
@@ -62,8 +65,8 @@
     "@types/react-dom": "^18.2.6",
     "@types/react-router": "^5.1.20",
     "@types/react-router-dom": "^5.3.3",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.2.1",
+    "@typescript-eslint/parser": "^6.2.1",
     "@vitejs/plugin-react-swc": "^3.3.2",
     "eslint": "^8.44.0",
     "eslint-plugin-react-hooks": "^4.6.0",

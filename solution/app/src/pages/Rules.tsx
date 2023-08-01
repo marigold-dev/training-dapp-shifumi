@@ -19,7 +19,7 @@ import Scissor from "../assets/scissor-logo.webp";
 import Stone from "../assets/stone-logo.webp";
 
 export const RulesScreen: React.FC = () => {
-  const { go, back, forward, push } = useHistory();
+  const { back } = useHistory();
 
   /* 2. Get the param */
   return (

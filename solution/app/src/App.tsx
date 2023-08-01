@@ -35,7 +35,7 @@ import { HomeScreen } from "./pages/HomeScreen";
 import { RulesScreen } from "./pages/Rules";
 import { SessionScreen } from "./pages/SessionScreen";
 import { TopPlayersScreen } from "./pages/TopPlayersScreen";
-import { address, bytes, MMap, nat, timestamp, unit } from "./type-aliases";
+import { MMap, address, bytes, nat, timestamp, unit } from "./type-aliases";
 
 setupIonicReact();
 
@@ -93,15 +93,13 @@ export type UserContextType = {
 export const UserContext = React.createContext<UserContextType | null>(null);
 
 const App: React.FC = () => {
-  const [Tezos, setTezos] = useState<TezosToolkit>(
-    new TezosToolkit("https://ghostnet.tezos.marigold.dev")
-  );
-  const [wallet, setWallet] = useState<BeaconWallet>(
-    new BeaconWallet({
-      name: "Training",
-      preferredNetwork: NetworkType.GHOSTNET,
-    })
-  );
+  const Tezos = new TezosToolkit("https://ghostnet.tezos.marigold.dev");
+
+  const wallet = new BeaconWallet({
+    name: "Training",
+    preferredNetwork: NetworkType.GHOSTNET,
+  });
+
   const [userAddress, setUserAddress] = useState<string>("");
   const [userBalance, setUserBalance] = useState<number>(0);
   const [storage, setStorage] = useState<Storage | null>(null);

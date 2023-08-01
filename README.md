@@ -1915,6 +1915,9 @@ To modify the name of your app, open the `capacitor.config.json` file and change
 Then these lines will copy all to android folder + the images ressources used by the store
 
 ```bash
+npm run dev
+npm remove react-scripts
+
 ionic capacitor copy android
 npm install -g cordova-res
 cordova-res android --skip-config --copy

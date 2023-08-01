@@ -20,7 +20,7 @@ import Ranking from "../assets/ranking.webp";
 import { nat } from "../type-aliases";
 
 export const TopPlayersScreen: React.FC = () => {
-  const { go, back, forward, push } = useHistory();
+  const { back } = useHistory();
   const { storage, refreshStorage } = React.useContext(
     UserContext
   ) as UserContextType;

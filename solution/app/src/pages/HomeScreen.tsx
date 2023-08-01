@@ -35,10 +35,10 @@ import { address, nat } from "../type-aliases";
 
 export const HomeScreen: React.FC = () => {
   const [presentAlert] = useIonAlert();
-  const { go, back, forward, push } = useHistory();
+  const { push } = useHistory();
 
-  const createGameModal = useRef<HTMLModElement>(null);
-  const selectGameModal = useRef<HTMLModElement>(null);
+  const createGameModal = useRef<HTMLIonModalElement>(null);
+  const selectGameModal = useRef<HTMLIonModalElement>(null);
   function dismissCreateGameModal() {
     console.log("dismissCreateGameModal");
     createGameModal.current?.dismiss();
@@ -94,7 +94,7 @@ export const HomeScreen: React.FC = () => {
   }, [storage]);
 
   const createSession = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLIonButtonElement, MouseEvent>
   ) => {
     console.log("createSession");
     e.preventDefault();
@@ -107,7 +107,7 @@ export const HomeScreen: React.FC = () => {
         .send();
       await op?.confirmation();
       const newStorage = await mainWalletType?.storage();
-      setStorage(newStorage);
+      setStorage(newStorage!);
       setLoading(false);
       push(PAGES.SESSION + "/" + storage?.next_session.toString()); //it was the id created
       dismissCreateGameModal();
@@ -282,7 +282,7 @@ export const HomeScreen: React.FC = () => {
                   <IonContent>
                     <IonList inset={true}>
                       {myGames
-                        ? Array.from(myGames.entries()).map(([key, Value]) => (
+                        ? Array.from(myGames.entries()).map(([key, _]) => (
                             <IonButton
                               key={"Game-" + key.toString()}
                               expand="full"

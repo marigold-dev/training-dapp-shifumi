@@ -45,7 +45,7 @@ type SessionScreenProps = RouteComponentProps<{
 
 export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
   const [presentAlert] = useIonAlert();
-  const { go, back, forward, push } = useHistory();
+  const { back } = useHistory();
 
   const id: string = match.params.id;
 
@@ -169,7 +169,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
     const interval = setInterval(() => {
       const diff = Math.round(
         (new Date(
-          storage?.sessions.get(new BigNumber(id) as nat).asleep
+          storage?.sessions.get(new BigNumber(id) as nat).asleep!
         ).getTime() -
           Date.now()) /
           1000
@@ -221,13 +221,13 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
 
       const { gasLimit, storageLimit, suggestedFeeMutez } =
         await Tezos.estimate.transfer({
-          ...preparedCall.toTransferParams(),
+          ...preparedCall!.toTransferParams(),
           amount: 1,
           mutez: false,
         });
 
       console.log({ gasLimit, storageLimit, suggestedFeeMutez });
-      const op = await preparedCall.send({
+      const op = await preparedCall!.send({
         gasLimit: gasLimit + 1000, //we take a margin +100 for an eventual event in case of paralell execution
         fee: suggestedFeeMutez,
         storageLimit: storageLimit,
@@ -237,7 +237,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
 
       await op?.confirmation();
       const newStorage = await mainWalletType?.storage();
-      setStorage(newStorage);
+      setStorage(newStorage!);
       setLoading(false);
       console.log("newStorage", newStorage);
     } catch (error) {
@@ -288,22 +288,22 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       const preparedCall = mainWalletType?.methods.revealPlay(
         encryptedAction as bytes,
         new BigNumber(secretAction.secret) as nat,
-        current_session?.current_round,
+        current_session?.current_round!,
         session_id
       );
 
       const { gasLimit, storageLimit, suggestedFeeMutez } =
-        await Tezos.estimate.transfer(preparedCall.toTransferParams());
+        await Tezos.estimate.transfer(preparedCall!.toTransferParams());
 
       //console.log({ gasLimit, storageLimit, suggestedFeeMutez });
-      const op = await preparedCall.send({
+      const op = await preparedCall!.send({
         gasLimit: gasLimit * 3,
         fee: suggestedFeeMutez,
         storageLimit: storageLimit * 3, //we take a margin in case of paralell execution
       });
       await op?.confirmation();
       const newStorage = await mainWalletType?.storage();
-      setStorage(newStorage);
+      setStorage(newStorage!);
       setLoading(false);
       console.log("newStorage", newStorage);
     } catch (error) {
@@ -379,7 +379,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
         .send();
       await op?.confirmation(2);
       const newStorage = await mainWalletType?.storage();
-      setStorage(newStorage);
+      setStorage(newStorage!);
       setLoading(false);
       console.log("newStorage", newStorage);
     } catch (error) {
