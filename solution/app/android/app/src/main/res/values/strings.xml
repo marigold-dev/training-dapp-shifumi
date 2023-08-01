@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Tezos Shifumi</string>
+    <string name="title_activity_main">Tezos Shifumi</string>
+    <string name="package_name">dev.marigold.shifumi</string>
+    <string name="custom_url_scheme">dev.marigold.shifumi</string>
+</resources>

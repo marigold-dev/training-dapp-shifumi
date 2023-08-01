@@ -7,7 +7,6 @@
 dist
 dist-ssr
 *.local
-/android
 
 # testing
 /coverage
