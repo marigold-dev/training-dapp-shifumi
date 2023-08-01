@@ -1,0 +1,10 @@
+{
+  "overrides": [
+    {
+      "files": ["*.jsligo"],
+      "options": {
+        "parser": "typescript"
+      }
+    }
+  ]
+}
