@@ -4,9 +4,9 @@ const config: CapacitorConfig = {
   appId: "dev.marigold.shifumi",
   appName: "Tezos Shifumi",
   webDir: "dist",
-  //server: {
-  //  androidScheme: "https",
-  //},
+  server: {
+    androidScheme: "https",
+  },
 };
 
 export default config;

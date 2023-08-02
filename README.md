@@ -1958,12 +1958,6 @@ If you want the Android version of the game, follow below instructions
 
 To modify the name of your app, open the `capacitor.config.json` file and change `appId` and `appName` properties
 
-Stay on the app folder, and prepare Android release
-
-```bash
-ionic capacitor add android
-```
-
 > Hack : to build on android, change vite config to remove global field here
 
 ```javascript
@@ -1974,9 +1968,11 @@ export default defineConfig({
   },
 ```
 
+Stay on the app folder, and prepare Android release
 Then these lines will copy all to android folder + the images ressources used by the store
 
 ```bash
+ionic capacitor add android
 ionic capacitor copy android
 npm install -g cordova-res
 cordova-res android --skip-config --copy
@@ -1988,7 +1984,7 @@ Open Android Studio and do a `Build` or `Make Project` action
 
 > Note 1 : in case of broken gradle : `ionic capacitor sync android` and click on sync on Android studio > build
 >
-> Note : If you have `WSL2` and difficulties to run an emulator on it, I advice you to install Android studio on Windows and build, test and package all on this OS. Push your files on your git repo, and check on .gitignore for `android` folder that there is no filters on assets.
+> Note 2 : If you have `WSL2` and difficulties to run an emulator on it, I advice you to install Android studio on Windows and build, test and package all on this OS. Push your files on your git repo, and check on .gitignore for `android` folder that there is no filters on assets.
 > Comment end lines on file `app/android/.gitignore`
 >
 > ```
