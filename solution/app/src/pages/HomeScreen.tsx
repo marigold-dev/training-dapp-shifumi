@@ -98,7 +98,6 @@ export const HomeScreen: React.FC = () => {
   ) => {
     console.log("createSession");
     e.preventDefault();
-    dismissCreateGameModal();
 
     try {
       setLoading(true);
@@ -109,8 +108,12 @@ export const HomeScreen: React.FC = () => {
       const newStorage = await mainWalletType?.storage();
       setStorage(newStorage!);
       setLoading(false);
-      push(PAGES.SESSION + "/" + storage?.next_session.toString()); //it was the id created
       dismissCreateGameModal();
+      setTimeout(
+        () => push(PAGES.SESSION + "/" + storage?.next_session.toString()),
+        500
+      );
+      //it was the id created
       console.log("newStorage", newStorage);
     } catch (error) {
       console.table(`Error: ${JSON.stringify(error, null, 2)}`);

@@ -20,7 +20,7 @@ import Ranking from "../assets/ranking.webp";
 import { nat } from "../type-aliases";
 
 export const TopPlayersScreen: React.FC = () => {
-  const { back } = useHistory();
+  const { goBack } = useHistory();
   const { storage, refreshStorage } = React.useContext(
     UserContext
   ) as UserContextType;
@@ -55,7 +55,7 @@ export const TopPlayersScreen: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={back}>Back</IonButton>
+            <IonButton onClick={goBack}>Back</IonButton>
           </IonButtons>
           <IonTitle>Top Players</IonTitle>
         </IonToolbar>

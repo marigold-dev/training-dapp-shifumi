@@ -28,14 +28,27 @@ import "./theme/variables.css";
 
 import { NetworkType } from "@airgap/beacon-types";
 import { BeaconWallet } from "@taquito/beacon-wallet";
-import { PollingSubscribeProvider, TezosToolkit } from "@taquito/taquito";
+import { InternalOperationResult } from "@taquito/rpc";
+import {
+  PollingSubscribeProvider,
+  Subscription,
+  TezosToolkit,
+} from "@taquito/taquito";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { MainWalletType, Storage } from "./main.types";
 import { HomeScreen } from "./pages/HomeScreen";
 import { RulesScreen } from "./pages/Rules";
 import { SessionScreen } from "./pages/SessionScreen";
 import { TopPlayersScreen } from "./pages/TopPlayersScreen";
-import { MMap, address, bytes, nat, timestamp, unit } from "./type-aliases";
+import {
+  MMap,
+  address,
+  bytes,
+  mutez,
+  nat,
+  timestamp,
+  unit,
+} from "./type-aliases";
 
 setupIonicReact();
 
@@ -55,7 +68,7 @@ export type ActionStone = { stone?: unit };
 
 export type Session = {
   asleep: timestamp;
-  board: MMap<nat, address>;
+  board: MMap<nat, { Some: address } | null>;
   current_round: nat;
   decoded_rounds: MMap<
     nat,
@@ -65,6 +78,7 @@ export type Session = {
     }>
   >;
   players: Array<address>;
+  pool: mutez;
   result: { draw: unit } | { inplay: unit } | { winner: address };
   rounds: MMap<
     nat,
@@ -89,6 +103,8 @@ export type UserContextType = {
   loading: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>;
   refreshStorage: (event?: CustomEvent<RefresherEventDetail>) => Promise<void>;
+  subReveal: Subscription<InternalOperationResult> | undefined;
+  subNewRound: Subscription<InternalOperationResult> | undefined;
 };
 export const UserContext = React.createContext<UserContextType | null>(null);
 
@@ -101,6 +117,12 @@ const App: React.FC = () => {
   });
 
   Tezos.setWalletProvider(wallet);
+  Tezos.setStreamProvider(
+    Tezos.getFactory(PollingSubscribeProvider)({
+      shouldObservableSubscriptionRetry: true,
+      pollingIntervalMilliseconds: 1500,
+    })
+  );
 
   const [userAddress, setUserAddress] = useState<string>("");
   const [userBalance, setUserBalance] = useState<number>(0);
@@ -110,17 +132,25 @@ const App: React.FC = () => {
   );
   const [loading, setLoading] = useState<boolean>(false);
 
+  const [subscriptionsDone, setSubscriptionsDone] = useState<boolean>(false);
+  const [subReveal, setSubReveal] =
+    useState<Subscription<InternalOperationResult>>();
+  const [subNewRound, setSubNewRound] =
+    useState<Subscription<InternalOperationResult>>();
+
   const refreshStorage = async (
     event?: CustomEvent<RefresherEventDetail>
   ): Promise<void> => {
-    if (wallet) {
-      const activeAccount = await wallet.client.getActiveAccount();
-      let userAddress: string;
-      if (activeAccount) {
-        userAddress = activeAccount.address;
-        setUserAddress(userAddress);
-        const balance = await Tezos.tz.getBalance(userAddress);
-        setUserBalance(balance.toNumber());
+    try {
+      if (!userAddress) {
+        const activeAccount = await wallet.client.getActiveAccount();
+        let userAddress: string;
+        if (activeAccount) {
+          userAddress = activeAccount.address;
+          setUserAddress(userAddress);
+          const balance = await Tezos.tz.getBalance(userAddress);
+          setUserBalance(balance.toNumber());
+        }
       }
 
       console.log(
@@ -135,22 +165,16 @@ const App: React.FC = () => {
       setMainWalletType(mainWalletType);
       setStorage(storage);
       console.log("Storage refreshed");
-    } else {
-      console.log("Not yet a wallet");
+
+      event?.detail.complete();
+    } catch (error) {
+      console.log("error refreshing storage", error);
     }
-    event?.detail.complete();
   };
 
   useEffect(() => {
-    if (userAddress) {
-      console.warn("userAddress changed", wallet);
-      Tezos.setStreamProvider(
-        Tezos.getFactory(PollingSubscribeProvider)({
-          shouldObservableSubscriptionRetry: true,
-          pollingIntervalMilliseconds: 1500,
-        })
-      );
-      try {
+    try {
+      if (!subscriptionsDone) {
         const sub = Tezos.stream.subscribeEvent({
           tag: "gameStatus",
           address: import.meta.env.VITE_CONTRACT_ADDRESS!,
@@ -160,9 +184,34 @@ const App: React.FC = () => {
           console.log("on gameStatus event :", e);
           refreshStorage();
         });
-      } catch (e) {
-        console.log("Error with Smart contract event pooling", e);
+
+        setSubReveal(
+          Tezos.stream.subscribeEvent({
+            tag: "reveal",
+            address: import.meta.env.VITE_CONTRACT_ADDRESS,
+          })
+        );
+
+        setSubNewRound(
+          Tezos.stream.subscribeEvent({
+            tag: "newRound",
+            address: import.meta.env.VITE_CONTRACT_ADDRESS,
+          })
+        );
+      } else {
+        console.warn("Tezos.stream.subscribeEvent already done ... ignoring");
       }
+    } catch (e) {
+      console.log("Error with Smart contract event pooling", e);
+    }
+
+    console.log("Tezos.stream.subscribeEvent DONE");
+    setSubscriptionsDone(true);
+  }, []);
+
+  useEffect(() => {
+    if (userAddress) {
+      console.warn("userAddress changed", wallet);
       (async () => await refreshStorage())();
     }
   }, [userAddress]);
@@ -183,6 +232,8 @@ const App: React.FC = () => {
           loading,
           setLoading,
           refreshStorage,
+          subReveal,
+          subNewRound,
         }}
       >
         <IonReactRouter>

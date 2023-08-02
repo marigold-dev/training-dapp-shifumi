@@ -17,7 +17,7 @@ import {
   IonToolbar,
   useIonAlert,
 } from "@ionic/react";
-import { PackDataParams } from "@taquito/rpc";
+import { MichelsonV1ExpressionBase, PackDataParams } from "@taquito/rpc";
 import { MichelCodecPacker } from "@taquito/taquito";
 import { BigNumber } from "bignumber.js";
 import * as crypto from "crypto";
@@ -45,7 +45,7 @@ type SessionScreenProps = RouteComponentProps<{
 
 export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
   const [presentAlert] = useIonAlert();
-  const { back } = useHistory();
+  const { goBack } = useHistory();
 
   const id: string = match.params.id;
 
@@ -58,45 +58,63 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
     setLoading,
     loading,
     refreshStorage,
+    subReveal,
+    subNewRound,
   } = React.useContext(UserContext) as UserContextType;
 
   const [status, setStatus] = useState<STATUS>();
   const [remainingTime, setRemainingTime] = useState<number>(10 * 60);
+  const [sessionEventRegistrationDone, setSessionEventRegistrationDone] =
+    useState<boolean>(false);
 
-  useEffect(() => {
-    try {
-      const subReveal = Tezos.stream.subscribeEvent({
-        tag: "reveal",
-        address: import.meta.env.VITE_CONTRACT_ADDRESS,
-      });
+  const registerSessionEvents = async () => {
+    if (!sessionEventRegistrationDone) {
+      if (subReveal)
+        subReveal.on("data", async (e) => {
+          console.log("on reveal event", e, id, UserContext);
+          if (
+            (!e.result.errors || e.result.errors.length === 0) &&
+            (e.payload as MichelsonV1ExpressionBase).int === id
+          ) {
+            await revealPlay();
+          } else
+            console.warn(
+              "Warning : here we ignore this transaction event for session ",
+              id
+            );
+        });
 
-      const subNewRound = Tezos.stream.subscribeEvent({
-        tag: "newRound",
-        address: import.meta.env.VITE_CONTRACT_ADDRESS,
-      });
+      if (subNewRound)
+        subNewRound.on("data", (e) => {
+          if (
+            (!e.result.errors || e.result.errors.length === 0) &&
+            (e.payload as MichelsonV1ExpressionBase).int === id
+          ) {
+            console.log("on new round event :", e);
+            refreshStorage();
+          } else
+            console.log("Warning : here we ignore this transaction event", e);
+        });
 
-      subReveal.on("data", (e) => {
-        console.log("on reveal event :", e);
-        if (!e.result.errors || e.result.errors.length === 0) revealPlay();
-        else
-          console.log("Warning : here we ignore a failing transaction event");
-      });
-
-      subNewRound.on("data", (e) => {
-        console.log("on new round event :", e);
-        refreshStorage();
-      });
-    } catch (e) {
-      console.log("Error with Smart contract event pooling", e);
+      console.log("registerSessionEvents registered", subReveal, subNewRound);
+      setSessionEventRegistrationDone(true);
     }
-  }, []);
+  };
 
   const buildSessionStorageKey = (
     userAddress: string,
     sessionNumber: number,
     roundNumber: number
   ): string => {
-    return userAddress + "-" + sessionNumber + "-" + roundNumber;
+    return (
+      import.meta.env.VITE_CONTRACT_ADDRESS +
+      "-" +
+      userAddress +
+      "-" +
+      sessionNumber +
+      "-" +
+      roundNumber
+    );
   };
 
   const buildSessionStorageValue = (secret: number, action: Action): string => {
@@ -159,6 +177,8 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
           setStatus(STATUS.PLAY);
         }
       }
+
+      (async () => await registerSessionEvents())();
     } else {
       console.log("Wait parent to init storage ...");
     }
@@ -228,8 +248,8 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
 
       console.log({ gasLimit, storageLimit, suggestedFeeMutez });
       const op = await preparedCall!.send({
-        gasLimit: gasLimit + 1000, //we take a margin +100 for an eventual event in case of paralell execution
-        fee: suggestedFeeMutez,
+        gasLimit: gasLimit * 2, //we take a margin +1000 for an eventual event in case of paralell execution
+        fee: suggestedFeeMutez * 2,
         storageLimit: storageLimit,
         amount: 1,
         mutez: false,
@@ -256,7 +276,17 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
 
   const revealPlay = async () => {
     const session_id = new BigNumber(id) as nat;
-    const current_session = storage?.sessions.get(session_id);
+
+    //force refresh in case of events
+    const storage = await mainWalletType?.storage();
+
+    const current_session = storage!.sessions.get(session_id)!;
+
+    console.warn(
+      "refresh storage because events can trigger it outisde react scope ...",
+      userAddress,
+      current_session.current_round
+    );
 
     //fecth from session storage
     const secretActionStr = localStorage.getItem(
@@ -271,7 +301,11 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       presentAlert({
         header: "Internal error",
         message:
-          "You lose the session storage, no more possible to retrieve secrets, stop Session please",
+          "You lose the session/round " +
+          session_id +
+          "/" +
+          current_session!.current_round.toNumber() +
+          " storage, no more possible to retrieve secrets, stop Session please",
         buttons: ["Close"],
       });
       setLoading(false);
@@ -298,8 +332,8 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       //console.log({ gasLimit, storageLimit, suggestedFeeMutez });
       const op = await preparedCall!.send({
         gasLimit: gasLimit * 3,
-        fee: suggestedFeeMutez,
-        storageLimit: storageLimit * 3, //we take a margin in case of paralell execution
+        fee: suggestedFeeMutez * 2,
+        storageLimit: storageLimit * 4, //we take a margin in case of paralell execution
       });
       await op?.confirmation();
       const newStorage = await mainWalletType?.storage();
@@ -435,7 +469,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={back}>Back</IonButton>
+            <IonButton onClick={goBack}>Back</IonButton>
           </IonButtons>
           <IonTitle>Game n°{id}</IonTitle>
         </IonToolbar>
@@ -497,7 +531,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
                             ? "current"
                             : !roundwinner
                             ? "draw"
-                            : roundwinner === userAddress
+                            : roundwinner.Some === userAddress
                             ? "win"
                             : "lose"
                         }

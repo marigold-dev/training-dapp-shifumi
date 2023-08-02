@@ -8,14 +8,14 @@ export class TransactionInvalidBeaconError {
   data_message: string;
 
   /**
-      * 
-      * @param transactionInvalidBeaconError  {
-      "name": "UnknownBeaconError",
-      "title": "Aborted",
-      "message": "[ABORTED_ERROR]:The action was aborted by the user.",
-      "description": "The action was aborted by the user."
-  }
-  */
+        * 
+        * @param transactionInvalidBeaconError  {
+        "name": "UnknownBeaconError",
+        "title": "Aborted",
+        "message": "[ABORTED_ERROR]:The action was aborted by the user.",
+        "description": "The action was aborted by the user."
+    }
+    */
 
   constructor(transactionInvalidBeaconError: any) {
     this.name = transactionInvalidBeaconError.name;
@@ -26,17 +26,17 @@ export class TransactionInvalidBeaconError {
     this.data_expected_form = "";
     this.data_message = this.message;
     if (transactionInvalidBeaconError.data !== undefined) {
-      const dataArray = Array.from<any>(
+      let dataArray = Array.from<any>(
         new Map(
           Object.entries<any>(transactionInvalidBeaconError.data)
         ).values()
       );
-      const contract_handle = dataArray.find(
+      let contract_handle = dataArray.find(
         (obj) => obj.contract_handle !== undefined
       );
       this.data_contract_handle =
         contract_handle !== undefined ? contract_handle.contract_handle : "";
-      const expected_form = dataArray.find(
+      let expected_form = dataArray.find(
         (obj) => obj.expected_form !== undefined
       );
       this.data_expected_form =

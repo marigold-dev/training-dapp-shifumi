@@ -19,7 +19,7 @@ import Scissor from "../assets/scissor-logo.webp";
 import Stone from "../assets/stone-logo.webp";
 
 export const RulesScreen: React.FC = () => {
-  const { back } = useHistory();
+  const { goBack } = useHistory();
 
   /* 2. Get the param */
   return (
@@ -27,7 +27,7 @@ export const RulesScreen: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={back}>Back</IonButton>
+            <IonButton onClick={goBack}>Back</IonButton>
           </IonButtons>
           <IonTitle>Rules</IonTitle>
         </IonToolbar>
