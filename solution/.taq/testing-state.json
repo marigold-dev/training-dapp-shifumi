@@ -1,45 +1,31 @@
 {
     "operations": {},
     "tasks": {
-        "@taqueria/plugin-taquito.deploy.1675941942919": {
+        "@taqueria/plugin-taquito.deploy.1690894060597": {
             "task": "deploy",
             "plugin": "@taqueria/plugin-taquito",
-            "time": 1675941942919,
+            "time": 1690894060597,
             "output": [
                 {
                     "contract": "main.tz",
-                    "address": "KT1B72K7dwo9m4qVYtfBofNHQVGak5h7Nemp",
+                    "address": "KT1F53jbZnTKtitZY9fYjJmfoKPf2YXQXp9t",
                     "alias": "main",
                     "balanceInMutez": "0",
                     "destination": "https://ghostnet.ecadinfra.com"
                 }
             ]
         },
-        "@taqueria/plugin-taquito.deploy.1689256878982": {
+        "@taqueria/plugin-taquito.deploy.1690906644818": {
             "task": "deploy",
             "plugin": "@taqueria/plugin-taquito",
-            "time": 1689256878982,
+            "time": 1690906644819,
             "output": [
                 {
                     "contract": "main.tz",
-                    "address": "KT1QzvZHr6cTiBmzSKPFGbNSsXqvr2bSxwMC",
+                    "address": "KT1UhUfUkNbPiH1TPuumNQwdUXEee27grhZ3",
                     "alias": "main",
                     "balanceInMutez": "0",
                     "destination": "https://ghostnet.ecadinfra.com"
-                }
-            ]
-        },
-        "@taqueria/plugin-taquito.deploy.1690794042453": {
-            "task": "deploy",
-            "plugin": "@taqueria/plugin-taquito",
-            "time": 1690794042453,
-            "output": [
-                {
-                    "contract": "main.tz",
-                    "address": "KT1WAXBta6pNh8fmyZMto6vE243VjsCXJ448",
-                    "alias": "main",
-                    "balanceInMutez": "1000000",
-                    "destination": "https://ghostnet.tezos.marigold.dev"
                 }
             ]
         }
