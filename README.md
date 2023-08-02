@@ -1958,7 +1958,7 @@ If you want the Android version of the game, follow below instructions
 
 To modify the name of your app, open the `capacitor.config.json` file and change `appId` and `appName` properties
 
-> Hack : to build on android, change vite config to remove global field here
+> Hack : to build on android, change vite.config.ts to remove global field here
 
 ```javascript
 export default defineConfig({
@@ -1966,6 +1966,18 @@ export default defineConfig({
     "process.env": process.env,
     //global: {},
   },
+```
+
+Also change the ionic config to move from react to custom type build on `ionic.config.json`
+
+```json
+{
+  "name": "app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "custom"
+}
 ```
 
 Stay on the app folder, and prepare Android release
