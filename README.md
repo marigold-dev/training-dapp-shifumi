@@ -2004,10 +2004,11 @@ Open Android Studio and do a `Build` or `Make Project` action
 > #app/src/main/res/xml/config.xml
 > ```
 >
-> and comment also the `node_modules` at your root project because it will require files from @capacitor and you need to install this libraries
+> and comment also the `node_modules` and `dist` at your root project because it will require files from @capacitor and you need to install this libraries
 >
 > ```
 > #node_modules/
+> #/dist
 > ```
 >
 > Force it to be included on committed files : `git add -f android/app/src/main/assets/  ; git add -f android/capacitor-cordova-android-plugins/ ;  git add -f node_modules ;` and push to git
