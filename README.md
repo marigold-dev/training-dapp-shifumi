@@ -153,7 +153,7 @@ taq generate types ./app/src
 ```
 
 > Fix bug taqueria v0.37
-> Edit main.code.ts to change board field definition
+> Edit main.code.ts to change board field definition to this one
 
 ```js
   board: MMap<nat, { Some: address } | null>;
@@ -354,14 +354,27 @@ import "./theme/variables.css";
 
 import { NetworkType } from "@airgap/beacon-types";
 import { BeaconWallet } from "@taquito/beacon-wallet";
-import { PollingSubscribeProvider, TezosToolkit } from "@taquito/taquito";
+import { InternalOperationResult } from "@taquito/rpc";
+import {
+  PollingSubscribeProvider,
+  Subscription,
+  TezosToolkit,
+} from "@taquito/taquito";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { MainWalletType, Storage } from "./main.types";
 import { HomeScreen } from "./pages/HomeScreen";
 import { RulesScreen } from "./pages/Rules";
 import { SessionScreen } from "./pages/SessionScreen";
 import { TopPlayersScreen } from "./pages/TopPlayersScreen";
-import { MMap, address, bytes, nat, timestamp, unit } from "./type-aliases";
+import {
+  MMap,
+  address,
+  bytes,
+  mutez,
+  nat,
+  timestamp,
+  unit,
+} from "./type-aliases";
 
 setupIonicReact();
 
@@ -381,7 +394,7 @@ export type ActionStone = { stone?: unit };
 
 export type Session = {
   asleep: timestamp;
-  board: MMap<nat, address>;
+  board: MMap<nat, { Some: address } | null>;
   current_round: nat;
   decoded_rounds: MMap<
     nat,
@@ -391,6 +404,7 @@ export type Session = {
     }>
   >;
   players: Array<address>;
+  pool: mutez;
   result: { draw: unit } | { inplay: unit } | { winner: address };
   rounds: MMap<
     nat,
@@ -415,6 +429,8 @@ export type UserContextType = {
   loading: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>;
   refreshStorage: (event?: CustomEvent<RefresherEventDetail>) => Promise<void>;
+  subReveal: Subscription<InternalOperationResult> | undefined;
+  subNewRound: Subscription<InternalOperationResult> | undefined;
 };
 export const UserContext = React.createContext<UserContextType | null>(null);
 
@@ -427,6 +443,12 @@ const App: React.FC = () => {
   });
 
   Tezos.setWalletProvider(wallet);
+  Tezos.setStreamProvider(
+    Tezos.getFactory(PollingSubscribeProvider)({
+      shouldObservableSubscriptionRetry: true,
+      pollingIntervalMilliseconds: 1500,
+    })
+  );
 
   const [userAddress, setUserAddress] = useState<string>("");
   const [userBalance, setUserBalance] = useState<number>(0);
@@ -436,17 +458,25 @@ const App: React.FC = () => {
   );
   const [loading, setLoading] = useState<boolean>(false);
 
+  const [subscriptionsDone, setSubscriptionsDone] = useState<boolean>(false);
+  const [subReveal, setSubReveal] =
+    useState<Subscription<InternalOperationResult>>();
+  const [subNewRound, setSubNewRound] =
+    useState<Subscription<InternalOperationResult>>();
+
   const refreshStorage = async (
     event?: CustomEvent<RefresherEventDetail>
   ): Promise<void> => {
-    if (wallet) {
-      const activeAccount = await wallet.client.getActiveAccount();
-      let userAddress: string;
-      if (activeAccount) {
-        userAddress = activeAccount.address;
-        setUserAddress(userAddress);
-        const balance = await Tezos.tz.getBalance(userAddress);
-        setUserBalance(balance.toNumber());
+    try {
+      if (!userAddress) {
+        const activeAccount = await wallet.client.getActiveAccount();
+        let userAddress: string;
+        if (activeAccount) {
+          userAddress = activeAccount.address;
+          setUserAddress(userAddress);
+          const balance = await Tezos.tz.getBalance(userAddress);
+          setUserBalance(balance.toNumber());
+        }
       }
 
       console.log(
@@ -461,22 +491,16 @@ const App: React.FC = () => {
       setMainWalletType(mainWalletType);
       setStorage(storage);
       console.log("Storage refreshed");
-    } else {
-      console.log("Not yet a wallet");
+
+      event?.detail.complete();
+    } catch (error) {
+      console.log("error refreshing storage", error);
     }
-    event?.detail.complete();
   };
 
   useEffect(() => {
-    if (userAddress) {
-      console.warn("userAddress changed", wallet);
-      Tezos.setStreamProvider(
-        Tezos.getFactory(PollingSubscribeProvider)({
-          shouldObservableSubscriptionRetry: true,
-          pollingIntervalMilliseconds: 1500,
-        })
-      );
-      try {
+    try {
+      if (!subscriptionsDone) {
         const sub = Tezos.stream.subscribeEvent({
           tag: "gameStatus",
           address: import.meta.env.VITE_CONTRACT_ADDRESS!,
@@ -486,9 +510,34 @@ const App: React.FC = () => {
           console.log("on gameStatus event :", e);
           refreshStorage();
         });
-      } catch (e) {
-        console.log("Error with Smart contract event pooling", e);
+
+        setSubReveal(
+          Tezos.stream.subscribeEvent({
+            tag: "reveal",
+            address: import.meta.env.VITE_CONTRACT_ADDRESS,
+          })
+        );
+
+        setSubNewRound(
+          Tezos.stream.subscribeEvent({
+            tag: "newRound",
+            address: import.meta.env.VITE_CONTRACT_ADDRESS,
+          })
+        );
+      } else {
+        console.warn("Tezos.stream.subscribeEvent already done ... ignoring");
       }
+    } catch (e) {
+      console.log("Error with Smart contract event pooling", e);
+    }
+
+    console.log("Tezos.stream.subscribeEvent DONE");
+    setSubscriptionsDone(true);
+  }, []);
+
+  useEffect(() => {
+    if (userAddress) {
+      console.warn("userAddress changed", wallet);
       (async () => await refreshStorage())();
     }
   }, [userAddress]);
@@ -509,6 +558,8 @@ const App: React.FC = () => {
           loading,
           setLoading,
           refreshStorage,
+          subReveal,
+          subNewRound,
         }}
       >
         <IonReactRouter>
@@ -780,7 +831,6 @@ export const HomeScreen: React.FC = () => {
   ) => {
     console.log("createSession");
     e.preventDefault();
-    dismissCreateGameModal();
 
     try {
       setLoading(true);
@@ -791,8 +841,12 @@ export const HomeScreen: React.FC = () => {
       const newStorage = await mainWalletType?.storage();
       setStorage(newStorage!);
       setLoading(false);
-      push(PAGES.SESSION + "/" + storage?.next_session.toString()); //it was the id created
       dismissCreateGameModal();
+      setTimeout(
+        () => push(PAGES.SESSION + "/" + storage?.next_session.toString()),
+        500
+      );
+      //it was the id created
       console.log("newStorage", newStorage);
     } catch (error) {
       console.table(`Error: ${JSON.stringify(error, null, 2)}`);
@@ -1072,7 +1126,7 @@ import Scissor from "../assets/scissor-logo.webp";
 import Stone from "../assets/stone-logo.webp";
 
 export const RulesScreen: React.FC = () => {
-  const { back } = useHistory();
+  const { goBack } = useHistory();
 
   /* 2. Get the param */
   return (
@@ -1080,7 +1134,7 @@ export const RulesScreen: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={back}>Back</IonButton>
+            <IonButton onClick={goBack}>Back</IonButton>
           </IonButtons>
           <IonTitle>Rules</IonTitle>
         </IonToolbar>
@@ -1235,7 +1289,7 @@ import {
   IonToolbar,
   useIonAlert,
 } from "@ionic/react";
-import { PackDataParams } from "@taquito/rpc";
+import { MichelsonV1ExpressionBase, PackDataParams } from "@taquito/rpc";
 import { MichelCodecPacker } from "@taquito/taquito";
 import { BigNumber } from "bignumber.js";
 import * as crypto from "crypto";
@@ -1263,7 +1317,7 @@ type SessionScreenProps = RouteComponentProps<{
 
 export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
   const [presentAlert] = useIonAlert();
-  const { back } = useHistory();
+  const { goBack } = useHistory();
 
   const id: string = match.params.id;
 
@@ -1276,45 +1330,63 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
     setLoading,
     loading,
     refreshStorage,
+    subReveal,
+    subNewRound,
   } = React.useContext(UserContext) as UserContextType;
 
   const [status, setStatus] = useState<STATUS>();
   const [remainingTime, setRemainingTime] = useState<number>(10 * 60);
+  const [sessionEventRegistrationDone, setSessionEventRegistrationDone] =
+    useState<boolean>(false);
 
-  useEffect(() => {
-    try {
-      const subReveal = Tezos.stream.subscribeEvent({
-        tag: "reveal",
-        address: import.meta.env.VITE_CONTRACT_ADDRESS,
-      });
+  const registerSessionEvents = async () => {
+    if (!sessionEventRegistrationDone) {
+      if (subReveal)
+        subReveal.on("data", async (e) => {
+          console.log("on reveal event", e, id, UserContext);
+          if (
+            (!e.result.errors || e.result.errors.length === 0) &&
+            (e.payload as MichelsonV1ExpressionBase).int === id
+          ) {
+            await revealPlay();
+          } else
+            console.warn(
+              "Warning : here we ignore this transaction event for session ",
+              id
+            );
+        });
 
-      const subNewRound = Tezos.stream.subscribeEvent({
-        tag: "newRound",
-        address: import.meta.env.VITE_CONTRACT_ADDRESS,
-      });
+      if (subNewRound)
+        subNewRound.on("data", (e) => {
+          if (
+            (!e.result.errors || e.result.errors.length === 0) &&
+            (e.payload as MichelsonV1ExpressionBase).int === id
+          ) {
+            console.log("on new round event :", e);
+            refreshStorage();
+          } else
+            console.log("Warning : here we ignore this transaction event", e);
+        });
 
-      subReveal.on("data", (e) => {
-        console.log("on reveal event :", e);
-        if (!e.result.errors || e.result.errors.length === 0) revealPlay();
-        else
-          console.log("Warning : here we ignore a failing transaction event");
-      });
-
-      subNewRound.on("data", (e) => {
-        console.log("on new round event :", e);
-        refreshStorage();
-      });
-    } catch (e) {
-      console.log("Error with Smart contract event pooling", e);
+      console.log("registerSessionEvents registered", subReveal, subNewRound);
+      setSessionEventRegistrationDone(true);
     }
-  }, []);
+  };
 
   const buildSessionStorageKey = (
     userAddress: string,
     sessionNumber: number,
     roundNumber: number
   ): string => {
-    return userAddress + "-" + sessionNumber + "-" + roundNumber;
+    return (
+      import.meta.env.VITE_CONTRACT_ADDRESS +
+      "-" +
+      userAddress +
+      "-" +
+      sessionNumber +
+      "-" +
+      roundNumber
+    );
   };
 
   const buildSessionStorageValue = (secret: number, action: Action): string => {
@@ -1377,6 +1449,8 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
           setStatus(STATUS.PLAY);
         }
       }
+
+      (async () => await registerSessionEvents())();
     } else {
       console.log("Wait parent to init storage ...");
     }
@@ -1446,8 +1520,8 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
 
       console.log({ gasLimit, storageLimit, suggestedFeeMutez });
       const op = await preparedCall!.send({
-        gasLimit: gasLimit + 1000, //we take a margin +100 for an eventual event in case of paralell execution
-        fee: suggestedFeeMutez,
+        gasLimit: gasLimit * 2, //we take a margin +1000 for an eventual event in case of paralell execution
+        fee: suggestedFeeMutez * 2,
         storageLimit: storageLimit,
         amount: 1,
         mutez: false,
@@ -1474,7 +1548,17 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
 
   const revealPlay = async () => {
     const session_id = new BigNumber(id) as nat;
-    const current_session = storage?.sessions.get(session_id);
+
+    //force refresh in case of events
+    const storage = await mainWalletType?.storage();
+
+    const current_session = storage!.sessions.get(session_id)!;
+
+    console.warn(
+      "refresh storage because events can trigger it outisde react scope ...",
+      userAddress,
+      current_session.current_round
+    );
 
     //fecth from session storage
     const secretActionStr = localStorage.getItem(
@@ -1489,7 +1573,11 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       presentAlert({
         header: "Internal error",
         message:
-          "You lose the session storage, no more possible to retrieve secrets, stop Session please",
+          "You lose the session/round " +
+          session_id +
+          "/" +
+          current_session!.current_round.toNumber() +
+          " storage, no more possible to retrieve secrets, stop Session please",
         buttons: ["Close"],
       });
       setLoading(false);
@@ -1516,8 +1604,8 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       //console.log({ gasLimit, storageLimit, suggestedFeeMutez });
       const op = await preparedCall!.send({
         gasLimit: gasLimit * 3,
-        fee: suggestedFeeMutez,
-        storageLimit: storageLimit * 3, //we take a margin in case of paralell execution
+        fee: suggestedFeeMutez * 2,
+        storageLimit: storageLimit * 4, //we take a margin in case of paralell execution
       });
       await op?.confirmation();
       const newStorage = await mainWalletType?.storage();
@@ -1653,7 +1741,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={back}>Back</IonButton>
+            <IonButton onClick={goBack}>Back</IonButton>
           </IonButtons>
           <IonTitle>Game n°{id}</IonTitle>
         </IonToolbar>
@@ -1715,7 +1803,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
                             ? "current"
                             : !roundwinner
                             ? "draw"
-                            : roundwinner === userAddress
+                            : roundwinner.Some === userAddress
                             ? "win"
                             : "lose"
                         }
@@ -1858,7 +1946,7 @@ import Ranking from "../assets/ranking.webp";
 import { nat } from "../type-aliases";
 
 export const TopPlayersScreen: React.FC = () => {
-  const { back } = useHistory();
+  const { goBack } = useHistory();
   const { storage, refreshStorage } = React.useContext(
     UserContext
   ) as UserContextType;
@@ -1893,7 +1981,7 @@ export const TopPlayersScreen: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={back}>Back</IonButton>
+            <IonButton onClick={goBack}>Back</IonButton>
           </IonButtons>
           <IonTitle>Top Players</IonTitle>
         </IonToolbar>
