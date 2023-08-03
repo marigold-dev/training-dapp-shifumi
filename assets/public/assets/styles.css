@@ -49,10 +49,7 @@
   padding: 35px;
   align-items: center;
 }
-.item {
-  padding: 20px;
-  margin: 8px 16px;
-}
+
 .loading {
   position: absolute;
   left: 0;
@@ -73,6 +70,7 @@
 .nopm {
   padding: 0;
   margin: 0;
+  font-size: small;
 }
 
 .tiny {
@@ -174,4 +172,21 @@ ul li.missing::before {
 
 #beacon-toast-wrapper {
   color: black;
+}
+
+input.native-input.sc-ion-input-md,
+div.alert-radio-label.sc-ion-alert-md {
+  font-size: small;
+  text-overflow: ellipsis;
+  text-align: left;
+  direction: rtl;
+  overflow: hidden;
+}
+
+ion-select.select-text::part(text) {
+  font-size: small;
+  text-overflow: ellipsis;
+  text-align: left;
+  direction: rtl;
+  overflow: hidden;
 }
