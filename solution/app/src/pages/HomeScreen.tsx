@@ -31,6 +31,7 @@ import Paper from "../assets/paper-logo.webp";
 import Scissor from "../assets/scissor-logo.webp";
 import Stone from "../assets/stone-logo.webp";
 import XTZLogo from "../assets/xtz.webp";
+import { SelectMembers } from "../components/TzCommunitySelectMembers";
 import { address, nat } from "../type-aliases";
 
 export const HomeScreen: React.FC = () => {
@@ -229,11 +230,11 @@ export const HomeScreen: React.FC = () => {
                       </IonButtons>
                     </IonToolbar>
                   </IonHeader>
-                  <IonContent>
+                  <IonContent className="ion-padding">
+                    <h2>How many total rounds ?</h2>
+
                     <IonItem key="total_rounds">
-                      <IonLabel position="stacked" className="text">
-                        total rounds
-                      </IonLabel>
+                      <IonLabel position="stacked" className="text"></IonLabel>
                       <IonInput
                         onIonChange={(str: any) => {
                           if (str.detail.value === undefined) return;
@@ -247,19 +248,27 @@ export const HomeScreen: React.FC = () => {
                         label="Total Rounds"
                       />
                     </IonItem>
+
+                    <h2>Choose your opponent player</h2>
+
+                    <SelectMembers
+                      Tezos={Tezos}
+                      member={newPlayer}
+                      setMember={setNewPlayer}
+                    />
+
                     <IonItem key="newPlayer">
-                      <IonLabel position="stacked" className="text">
-                        Opponent player
-                      </IonLabel>
                       <IonInput
                         onIonChange={(str: any) => {
                           if (str.detail.value === undefined) return;
                           setNewPlayer(str.detail.value as address);
                         }}
+                        labelPlacement="floating"
+                        class="address"
                         value={newPlayer}
                         placeholder="tz1..."
                         type="text"
-                        label="Tezos Address"
+                        label="Tezos Address "
                       />
                     </IonItem>
                   </IonContent>

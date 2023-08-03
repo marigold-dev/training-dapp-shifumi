@@ -170,7 +170,7 @@ rm src/setupTests.ts src/react-app-env.d.ts src/reportWebVitals.ts src/serviceWo
 echo '/// <reference types="vite/client" />' > src/vite-env.d.ts
 sed -i 's/process.env.PUBLIC_URL/import.meta.env.VITE_PUBLIC_URL/' src/service-worker.ts
 
-npm install -S typescript@^5.1.6 @taquito/taquito @taquito/beacon-wallet @airgap/beacon-sdk  @dipdup/tzkt-api
+npm install -S typescript@^5.1.6 @taquito/taquito @taquito/beacon-wallet @airgap/beacon-sdk  @tzkt/sdk-api
 npm install -S -D @airgap/beacon-types vite @vitejs/plugin-react-swc @types/react @types/node
 ```
 
@@ -764,6 +764,7 @@ import Paper from "../assets/paper-logo.webp";
 import Scissor from "../assets/scissor-logo.webp";
 import Stone from "../assets/stone-logo.webp";
 import XTZLogo from "../assets/xtz.webp";
+import { SelectMembers } from "../components/TzCommunitySelectMembers";
 import { address, nat } from "../type-aliases";
 
 export const HomeScreen: React.FC = () => {
@@ -962,11 +963,11 @@ export const HomeScreen: React.FC = () => {
                       </IonButtons>
                     </IonToolbar>
                   </IonHeader>
-                  <IonContent>
+                  <IonContent className="ion-padding">
+                    <h2>How many total rounds ?</h2>
+
                     <IonItem key="total_rounds">
-                      <IonLabel position="stacked" className="text">
-                        total rounds
-                      </IonLabel>
+                      <IonLabel position="stacked" className="text"></IonLabel>
                       <IonInput
                         onIonChange={(str: any) => {
                           if (str.detail.value === undefined) return;
@@ -980,19 +981,27 @@ export const HomeScreen: React.FC = () => {
                         label="Total Rounds"
                       />
                     </IonItem>
+
+                    <h2>Choose your opponent player</h2>
+
+                    <SelectMembers
+                      Tezos={Tezos}
+                      member={newPlayer}
+                      setMember={setNewPlayer}
+                    />
+
                     <IonItem key="newPlayer">
-                      <IonLabel position="stacked" className="text">
-                        Opponent player
-                      </IonLabel>
                       <IonInput
                         onIonChange={(str: any) => {
                           if (str.detail.value === undefined) return;
                           setNewPlayer(str.detail.value as address);
                         }}
+                        labelPlacement="floating"
+                        class="address"
                         value={newPlayer}
                         placeholder="tz1..."
                         type="text"
-                        label="Tezos Address"
+                        label="Tezos Address "
                       />
                     </IonItem>
                   </IonContent>
