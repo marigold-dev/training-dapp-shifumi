@@ -266,7 +266,7 @@ export const HomeScreen: React.FC = () => {
                         labelPlacement="floating"
                         class="address"
                         value={newPlayer}
-                        placeholder="tz1..."
+                        placeholder="...tz1"
                         type="text"
                         label="Tezos Address "
                       />

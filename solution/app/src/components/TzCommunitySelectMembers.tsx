@@ -1,7 +1,8 @@
-import { IonSelect, IonSelectOption, IonToggle } from "@ionic/react";
+import { IonIcon, IonSelect, IonSelectOption, IonToggle } from "@ionic/react";
 import { TezosToolkit } from "@taquito/taquito";
 import * as api from "@tzkt/sdk-api";
 import { BigNumber } from "bignumber.js";
+import { globeOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { BigMap, address, unit } from "../type-aliases";
 import { UserProfile, UserProfileChip } from "./TzCommunityUserProfileChip";
@@ -86,9 +87,7 @@ export const SelectMembers = ({
   const [useTzCommunity, setUseTzCommunity] = useState<boolean>(false);
 
   return (
-    <div
-      style={{ width: "100%", backgroundColor: "var(--ion-color-secondary)" }}
-    >
+    <div style={{ width: "100%" }}>
       <IonToggle
         checked={useTzCommunity}
         enableOnOffLabels={true}
@@ -97,21 +96,24 @@ export const SelectMembers = ({
           setUseTzCommunity(!useTzCommunity);
         }}
       >
-        Use TzCommunity ?<br />
+        Use TzCommunity groups ?<br />
       </IonToggle>
 
       {useTzCommunity ? (
         <div
           style={{
-            borderBlockStyle: "double",
+            borderStyle: "groove",
             marginTop: "1em",
+            padding: "0.5em",
+            backgroundColor: "var(--ion-color-secondary)",
           }}
         >
           <a
             href={"https://tezos-community.gcp-npr.marigold.dev"}
             target="_blank"
           >
-            (Click here to manage groups)
+            <IonIcon icon={globeOutline} />
+            Manage groups on TzCommunity
           </a>
 
           <IonSelect
