@@ -80,9 +80,7 @@ export const SelectMembers = ({
 
   const [organizationName, setOrganizationName] = useState<String>();
   const [organization, setOrganization] = useState<Organization>();
-  const [userProfiles, setUserProfiles] = useState<Map<address, UserProfile>>(
-    new Map()
-  );
+  const [userProfiles, _] = useState<Map<address, UserProfile>>(new Map());
 
   const [useTzCommunity, setUseTzCommunity] = useState<boolean>(false);
 
