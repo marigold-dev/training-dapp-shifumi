@@ -16,10 +16,11 @@ import {
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { UserContext, UserContextType } from "../App";
+import Ranking from "../assets/ranking.webp";
 import { nat } from "../type-aliases";
 
 export const TopPlayersScreen: React.FC = () => {
-  const history = useHistory();
+  const { goBack } = useHistory();
   const { storage, refreshStorage } = React.useContext(
     UserContext
   ) as UserContextType;
@@ -29,9 +30,9 @@ export const TopPlayersScreen: React.FC = () => {
   useEffect(() => {
     (async () => {
       if (storage) {
-        let ranking = new Map(); //force refresh
+        const ranking = new Map(); //force refresh
         Array.from(storage.sessions.keys()).forEach((key: nat) => {
-          let result = storage.sessions.get(key).result;
+          const result = storage.sessions.get(key).result;
           if ("winner" in result) {
             const winner = result.winner;
             let score = ranking.get(winner);
@@ -54,7 +55,7 @@ export const TopPlayersScreen: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={() => history.goBack()}>Back</IonButton>
+            <IonButton onClick={goBack}>Back</IonButton>
           </IonButtons>
           <IonTitle>Top Players</IonTitle>
         </IonToolbar>
@@ -65,7 +66,7 @@ export const TopPlayersScreen: React.FC = () => {
         </IonRefresher>
         <div style={{ marginLeft: "40vw" }}>
           <IonImg
-            src={process.env.PUBLIC_URL + "/assets/ranking.png"}
+            src={Ranking}
             className="ranking"
             style={{ height: "10em", width: "5em" }}
           />
@@ -86,6 +87,7 @@ export const TopPlayersScreen: React.FC = () => {
           {ranking && ranking.size > 0
             ? Array.from(ranking).map(([address, count]) => (
                 <IonRow
+                  key={address}
                   style={{
                     backgroundColor: "var(--ion-color-secondary)",
                   }}

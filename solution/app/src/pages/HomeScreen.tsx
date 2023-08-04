@@ -27,11 +27,16 @@ import { PAGES, Session, UserContext, UserContextType } from "../App";
 import ConnectButton from "../ConnectWallet";
 import DisconnectButton from "../DisconnectWallet";
 import { TransactionInvalidBeaconError } from "../TransactionInvalidBeaconError";
+import Paper from "../assets/paper-logo.webp";
+import Scissor from "../assets/scissor-logo.webp";
+import Stone from "../assets/stone-logo.webp";
+import XTZLogo from "../assets/xtz.webp";
+import { SelectMembers } from "../components/TzCommunitySelectMembers";
 import { address, nat } from "../type-aliases";
 
 export const HomeScreen: React.FC = () => {
   const [presentAlert] = useIonAlert();
-  const history = useHistory();
+  const { push } = useHistory();
 
   const createGameModal = useRef<HTMLIonModalElement>(null);
   const selectGameModal = useRef<HTMLIonModalElement>(null);
@@ -94,23 +99,26 @@ export const HomeScreen: React.FC = () => {
   ) => {
     console.log("createSession");
     e.preventDefault();
-    dismissCreateGameModal();
 
     try {
       setLoading(true);
-      const op = await mainWalletType!.methods
+      const op = await mainWalletType?.methods
         .createSession([userAddress as address, newPlayer], total_rounds)
         .send();
       await op?.confirmation();
-      const newStorage = await mainWalletType!.storage();
-      setStorage(newStorage);
+      const newStorage = await mainWalletType?.storage();
+      setStorage(newStorage!);
       setLoading(false);
-      history.push(PAGES.SESSION + "/" + storage?.next_session.toString()); //it was the id created
       dismissCreateGameModal();
+      setTimeout(
+        () => push(PAGES.SESSION + "/" + storage?.next_session.toString()),
+        500
+      );
+      //it was the id created
       console.log("newStorage", newStorage);
     } catch (error) {
       console.table(`Error: ${JSON.stringify(error, null, 2)}`);
-      let tibe: TransactionInvalidBeaconError =
+      const tibe: TransactionInvalidBeaconError =
         new TransactionInvalidBeaconError(error);
       presentAlert({
         header: "Error",
@@ -153,18 +161,9 @@ export const HomeScreen: React.FC = () => {
                     justifyContent: "space-around",
                   }}
                 >
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
-                    className="logo"
-                  />
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
-                    className="logo"
-                  />
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
-                    className="logo"
-                  />
+                  <IonImg src={Stone} className="logo" />
+                  <IonImg src={Paper} className="logo" />
+                  <IonImg src={Scissor} className="logo" />
                 </div>
                 <IonList inset={true}>
                   <ConnectButton
@@ -184,10 +183,7 @@ export const HomeScreen: React.FC = () => {
                   </IonLabel>
                 </IonItem>
                 <IonItem style={{ padding: 0, margin: 0 }}>
-                  <IonImg
-                    style={{ height: 24, width: 24 }}
-                    src={process.env.PUBLIC_URL + "/assets/xtz.png"}
-                  />
+                  <IonImg style={{ height: 24, width: 24 }} src={XTZLogo} />
                   <IonLabel style={{ direction: "rtl" }}>
                     {userBalance / 1000000}
                   </IonLabel>
@@ -203,18 +199,9 @@ export const HomeScreen: React.FC = () => {
                     width: "100%",
                   }}
                 >
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
-                    className="logo"
-                  />
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
-                    className="logo"
-                  />
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
-                    className="logo"
-                  />
+                  <IonImg src={Stone} className="logo" />
+                  <IonImg src={Paper} className="logo" />
+                  <IonImg src={Scissor} className="logo" />
                 </div>
 
                 <IonButton id="createGameModalVisible" expand="full">
@@ -243,35 +230,45 @@ export const HomeScreen: React.FC = () => {
                       </IonButtons>
                     </IonToolbar>
                   </IonHeader>
-                  <IonContent>
+                  <IonContent className="ion-padding">
+                    <h2>How many total rounds ?</h2>
+
                     <IonItem key="total_rounds">
-                      <IonLabel position="stacked" className="text">
-                        total rounds
-                      </IonLabel>
+                      <IonLabel position="stacked" className="text"></IonLabel>
                       <IonInput
-                        onIonChange={(str) => {
+                        onIonChange={(str: any) => {
                           if (str.detail.value === undefined) return;
                           setTotal_rounds(
-                            new BigNumber(str.target.value!) as nat
+                            new BigNumber(str.target.value) as nat
                           );
                         }}
                         value={total_rounds.toString()}
                         placeholder="total_rounds"
                         type="number"
+                        label="Total Rounds"
                       />
                     </IonItem>
+
+                    <h2>Choose your opponent player</h2>
+
+                    <SelectMembers
+                      Tezos={Tezos}
+                      member={newPlayer}
+                      setMember={setNewPlayer}
+                    />
+
                     <IonItem key="newPlayer">
-                      <IonLabel position="stacked" className="text">
-                        Opponent player
-                      </IonLabel>
                       <IonInput
-                        onIonChange={(str) => {
+                        onIonChange={(str: any) => {
                           if (str.detail.value === undefined) return;
                           setNewPlayer(str.detail.value as address);
                         }}
+                        labelPlacement="floating"
+                        class="address"
                         value={newPlayer}
-                        placeholder="tz1..."
+                        placeholder="...tz1"
                         type="text"
+                        label="Tezos Address "
                       />
                     </IonItem>
                   </IonContent>
@@ -297,7 +294,7 @@ export const HomeScreen: React.FC = () => {
                   <IonContent>
                     <IonList inset={true}>
                       {myGames
-                        ? Array.from(myGames.entries()).map(([key, Value]) => (
+                        ? Array.from(myGames.entries()).map(([key, _]) => (
                             <IonButton
                               key={"Game-" + key.toString()}
                               expand="full"

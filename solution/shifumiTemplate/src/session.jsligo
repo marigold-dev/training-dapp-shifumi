@@ -33,7 +33,7 @@ export type t = {
     pool : tez     //bet pool in tez. 1 tez / round play movement
 };
 
-export const new = ([total_rounds, players] : [nat, list<player>]): t => {
+export const new = (total_rounds : nat, players : list<player>): t => {
     return { 
       asleep:(Tezos.get_now ()) + 600,
       total_rounds:total_rounds,
@@ -47,7 +47,7 @@ export const new = ([total_rounds, players] : [nat, list<player>]): t => {
     };  
 };
 
-export const get_round_actions = ([roundId, session] : [nat, t]) : player_actions => {
+export const get_round_actions = (roundId : nat, session : t) : player_actions => {
     return match (Map.find_opt(roundId, session.rounds), { 
         None: () => failwith(Errors.missing_all_bytes),
         Some: (round_actions: player_actions) => round_actions 
@@ -55,23 +55,23 @@ export const get_round_actions = ([roundId, session] : [nat, t]) : player_action
 };
 
 // @inline
-const get_decoded_round_actions = ([roundId, session] : [nat, t]) : decoded_player_actions => {
+const get_decoded_round_actions = (roundId : nat, session : t) : decoded_player_actions => {
     return match (Map.find_opt(roundId, session.decoded_rounds), { 
         None: () => failwith(Errors.missing_all_decoded_bytes),
         Some: (decoded_round_actions: decoded_player_actions) => decoded_round_actions 
     });
 };
 
-export const update_rounds = ([session, rounds] : [t, map<round, player_actions>] ): t => {
+export const update_rounds = (session : t, rounds :  map<round, player_actions>): t => {
     return { ...session, asleep:(Tezos.get_now ()) + 600, rounds:rounds }    
 };
 
-export const update_decoded_rounds = ([session, decoded_rounds]: [t, map<round, decoded_player_actions>]): t => {
+export const update_decoded_rounds = (session : t, decoded_rounds : map<round, decoded_player_actions>): t => {
     return { ...session, asleep:(Tezos.get_now ()) + 600, decoded_rounds:decoded_rounds };
 };
 
 
-export const find_missing : <_a>((p: [list<an_action<_a>>, list<player>]) => list<player>) = ([pactions, all_players] : [list<an_action<_a>>, list<player>]) => {
+export const find_missing = <_a>(pactions : list<an_action<_a>>, all_players : list<player>) => {
     let addIfNotParticipant = ([acc, elt] : [list<player>, player]) : list<player> =>  
         match(ListUtils.find_opt( ((paction : an_action<_a>) => paction.player == elt), pactions ), {
             None : () => list([elt,...acc]) ,
@@ -81,20 +81,20 @@ export const find_missing : <_a>((p: [list<an_action<_a>>, list<player>]) => lis
 };
 
 // @inline
-const has_played : <_a>((p: [list<an_action<_a>>, player]) => bool) = ([pactions, player]: [list<an_action<_a>>, player]) : bool => {
+const has_played = <_a>(pactions : list<an_action<_a>>, player : player) : bool => {
     let check_contains = ([acc, elt] : [bool, an_action<_a>]) : bool => { if (acc) { return acc } else { return (elt.player == player) } };
     return List.fold(check_contains, pactions, false); 
 };
 
 // @inline
-const has_played_round : <_a>((p: [rounds<_a>, round, player]) => bool) = ([rounds, roundId, player]: [rounds<_a>, round, player]) : bool => {
+const has_played_round = <_a>(rounds : rounds<_a>, roundId : round, player : player) : bool => {
     return match (Map.find_opt(roundId, rounds), {
         Some: (acts: list<an_action<_a>>) => has_played(acts, player),
         None: () => false 
     });
 };
 
-export const add_in_decoded_rounds = ([roundId, session, user, decoded_action]: [nat, t, address, action]) : rounds<action> => {
+export const add_in_decoded_rounds = (roundId : nat, session : t, user : address, decoded_action : action) : rounds<action> => {
     return match (Map.find_opt(roundId, session.decoded_rounds), { 
         None: () => Map.add(roundId, list([{ player:user, action:decoded_action }]), session.decoded_rounds),
         Some: (decodedPlayerActions : list<an_action<action>>) => {
@@ -104,7 +104,7 @@ export const add_in_decoded_rounds = ([roundId, session, user, decoded_action]: 
     });
 };
 
-export const add_in_rounds = ([roundId, session, user, action] : [nat, t, address, bytes]) : rounds<bytes> => {
+export const add_in_rounds = (roundId : nat, session : t, user : address, action : bytes) : rounds<bytes> => {
     return match (Map.find_opt(roundId, session.rounds), { 
         None: () => Map.add(roundId, list([{player:user, action:action}]), session.rounds),
         Some: (playerActions: list<an_action<bytes>>) => {
@@ -114,8 +114,8 @@ export const add_in_rounds = ([roundId, session, user, action] : [nat, t, addres
     });
 };
 
-export const get_bytes_exn = ([user, actions_opt] : [address, option<player_actions>]) : bytes => {
-    let find_bytes = ([addr, lst_opt] : [address, option<player_actions>]) : option<bytes> => {
+export const get_bytes_exn = (user : address, actions_opt : option<player_actions>) : bytes => {
+    let find_bytes = (addr : address, lst_opt : option<player_actions>) : option<bytes> => {
         return match (lst_opt, {
             None: () => (None() as option<bytes>),
             Some: (lst: player_actions) => (match (List.head_opt(lst), {
@@ -136,8 +136,8 @@ export const get_bytes_exn = ([user, actions_opt] : [address, option<player_acti
     });
 };
 
-export const decode_bytes_exn = ([player_bytes, user_bytes, player_secret]: [bytes, bytes, nat]): action => { 
-    let hashed = Crypto.sha512(Bytes.pack(player_bytes, player_secret));
+export const decode_bytes_exn = (player_bytes : bytes, user_bytes : bytes, player_secret : nat): action => { 
+    let hashed = Crypto.sha512(Bytes.pack([player_bytes, player_secret]));
     if (hashed == user_bytes) {
         return match ((Bytes.unpack(player_bytes) as option<action>), {
             None: () => failwith(Errors.failed_to_unpack_payload),
@@ -149,7 +149,7 @@ export const decode_bytes_exn = ([player_bytes, user_bytes, player_secret]: [byt
 };
 
 // @inline
-const resolve = ([first, second] : [decoded_player_action, decoded_player_action]) : option<player> => { 
+const resolve = (first : decoded_player_action, second : decoded_player_action) : option<player> => { 
     let result : option<player> = match (first.action, {
         Stone: () => match (second.action, {
             Stone: () => None(),
@@ -171,7 +171,7 @@ const resolve = ([first, second] : [decoded_player_action, decoded_player_action
 };
 
 // TODO , this implementation can handle only 2 players :(
-const update_board = ([sess, current_round]: [t, round]) : board => {
+const update_board = (sess : t, current_round : round) : board => {
     // process actions for current_round
     let pactions : decoded_player_actions = match (Map.find_opt(current_round, sess.decoded_rounds), {
         None: () => (failwith("Missing actions for current_round") as decoded_player_actions),
@@ -224,13 +224,13 @@ const compute_result = (sess: t) : result => {
             None: () => acc,
             Some: (winner_round: player) => match (Map.find_opt(winner_round, acc), {
                 None: () => Map.add(winner_round, (1 as nat), acc),
-                Some: (old_value: map<address, nat>) => Map.update(winner_round, (Some(old_value + (1 as nat))), acc)
+                Some: (old_value) => Map.update(winner_round, (Some(old_value + (1 as nat))), acc)
             })
         });
     };
     let final_scores = Map.fold(compute_points, sess.board, (Map.empty as map<address, nat>));
     let [winner_addr, winner_points, multiple_winners] : [option<address>, nat, bool] = [(None() as option<address>), (0 as nat), false];
-    let leader_score = ([acc, elt] : [ [option<address>, nat, bool], [address, nat]]) : [option<address>, nat, bool] => {
+    let leader_score = ([acc, elt] : [[option<address>, nat, bool], [address, nat]]) : [option<address>, nat, bool] => {
         let [win_addr, win_points, multiple] = acc;
         return match (win_addr, {
             None: () => [Some(elt[0]), elt[1], false],

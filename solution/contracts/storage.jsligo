@@ -9,11 +9,11 @@ export type t = {
     sessions : map<nat, Session.t>
 };
 
-export const update_sessions = ([storage, sessionId, new_session]: [t, nat, Session.t]): t => {
+export const update_sessions = (storage : t, sessionId : nat, new_session : Session.t): t => {
     return { ...storage, sessions: Map.update(sessionId, (Some(new_session)), storage.sessions)}
 };
 
-export const getSession = ([sessionId, store] : [nat, t]) : Session.t => {
+export const getSession = (sessionId : nat, store : t) : Session.t => {
     return match (Map.find_opt(sessionId, store.sessions), {
         None: () => (failwith(Errors.unknown_session) as Session.t),
         Some: (sess: Session.t) => sess

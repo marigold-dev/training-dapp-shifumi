@@ -8,14 +8,14 @@ export class TransactionInvalidBeaconError {
   data_message: string;
 
   /**
-      * 
-      * @param transactionInvalidBeaconError  {
-      "name": "UnknownBeaconError",
-      "title": "Aborted",
-      "message": "[ABORTED_ERROR]:The action was aborted by the user.",
-      "description": "The action was aborted by the user."
-  }
-  */
+        * 
+        * @param transactionInvalidBeaconError  {
+        "name": "UnknownBeaconError",
+        "title": "Aborted",
+        "message": "[ABORTED_ERROR]:The action was aborted by the user.",
+        "description": "The action was aborted by the user."
+    }
+    */
 
   constructor(transactionInvalidBeaconError: any) {
     this.name = transactionInvalidBeaconError.name;

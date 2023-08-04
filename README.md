@@ -19,7 +19,7 @@ Please install this software first on your machine or use online alternative :
 - [ ] [VS Code](https://code.visualstudio.com/download) : as text editor
 - [ ] [npm](https://nodejs.org/en/download/) : we will use a typescript React client app
 - [ ] [yarn](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable) : because yet another package manager (https://www.geeksforgeeks.org/difference-between-npm-and-yarn/)
-- [ ] [taqueria v0.28.4](https://github.com/ecadlabs/taqueria) : Tezos Dapp project tooling
+- [ ] [taqueria v0.37.0](https://github.com/ecadlabs/taqueria) : Tezos Dapp project tooling
 - [ ] [taqueria VS Code extension](https://marketplace.visualstudio.com/items?itemName=ecadlabs.taqueria-vscode) : visualize your project and execute tasks
 - [ ] [ligo VS Code extension](https://marketplace.visualstudio.com/items?itemName=ligolang-publish.ligo-vscode) : for smart contract highlighting, completion, etc ..
 - [ ] [Temple wallet](https://templewallet.com/) : an easy to use Tezos wallet in your browser (but any other should work, as we will see Kukai is a good option for the Android emulator)
@@ -39,8 +39,6 @@ cd shifumi
 taq install @taqueria/plugin-ligo
 ```
 
-> Bug fix : there is an issue with last Taqueria versions, to fix this just run : `npm i @taqueria/plugin-ligo@0.28.4-1852.e20decfd --registry https://npm.ecadinfra.com/`
-
 > :warning: HACK note : create a dummy esy.json file with `{}` content on it. I will be used by the ligo package installer to not override the default package.json file of taqueria
 
 ```bash
@@ -50,7 +48,7 @@ echo "{}" > esy.json
 Clone the ligo template locally, we will take only the source for our training
 
 ```bash
-taq ligo --command "init contract --template shifumi-jsligo shifumiTemplate"
+TAQ_LIGO_IMAGE=ligolang/ligo:0.70.1 taq ligo --command "init contract --template shifumi-jsligo shifumiTemplate"
 cp -r shifumiTemplate/src/* contracts/
 ```
 
@@ -59,12 +57,12 @@ cp -r shifumiTemplate/src/* contracts/
 Compile the contract once, in order to create the default required file `main.storageList.jsligo` used at deployment step later
 
 ```bash
-TAQ_LIGO_IMAGE=ligolang/ligo:0.62.0 taq compile main.jsligo
+TAQ_LIGO_IMAGE=ligolang/ligo:0.70.1 taq compile main.jsligo
 ```
 
 Edit `main.storageList.jsligo`
 
-```ligolang
+```jsligo
 #include "main.jsligo"
 
 const default_storage = {
@@ -99,7 +97,7 @@ const default_storage = {
 Compile again
 
 ```bash
-TAQ_LIGO_IMAGE=ligolang/ligo:0.62.0 taq compile main.jsligo
+TAQ_LIGO_IMAGE=ligolang/ligo:0.70.1 taq compile main.jsligo
 ```
 
 ## Step 3 : Deploy to Ghostnet
@@ -128,7 +126,7 @@ HOORAY :confetti_ball: your smart contract is ready on the Ghostnet !
 ┌──────────┬──────────────────────────────────────┬───────┬──────────────────┬────────────────────────────────┐
 │ Contract │ Address                              │ Alias │ Balance In Mutez │ Destination                    │
 ├──────────┼──────────────────────────────────────┼───────┼──────────────────┼────────────────────────────────┤
-│ main.tz  │ KT1B72K7dwo9m4qVYtfBofNHQVGak5h7Nemp │ main  │ 0                │ https://ghostnet.ecadinfra.com │
+│ main.tz  │ KT1UhUfUkNbPiH1TPuumNQwdUXEee27grhZ3 │ main  │ 0                │ https://ghostnet.ecadinfra.com │
 └──────────┴──────────────────────────────────────┴───────┴──────────────────┴────────────────────────────────┘
 ```
 
@@ -154,87 +152,176 @@ taq install @taqueria/plugin-contract-types
 taq generate types ./app/src
 ```
 
-Install required Tezos web3 dependencies
+> Fix bug taqueria v0.37
+> Edit main.code.ts to change board field definition to this one
+
+```js
+  board: MMap<nat, { Some: address } | null>;
+```
+
+Uninstall confliting old jest libraries/react-scripts and Install required Tezos web3 dependencies + vite
 
 ```
 cd app
-npm install -S add @taquito/taquito @taquito/beacon-wallet @airgap/beacon-sdk  @dipdup/tzkt-api
-npm install -S -D @airgap/beacon-types
-npm i --save-dev @types/react
+npm uninstall -S react-scripts
+npm uninstall -S @testing-library/jest-dom @testing-library/react @testing-library/user-event @types/jest
+rm -rf src/components
+rm src/setupTests.ts src/react-app-env.d.ts src/reportWebVitals.ts src/serviceWorkerRegistration.ts src/App.test.tsx
+echo '/// <reference types="vite/client" />' > src/vite-env.d.ts
+sed -i 's/process.env.PUBLIC_URL/import.meta.env.VITE_PUBLIC_URL/' src/service-worker.ts
+
+npm install -S typescript@^5.1.6 @taquito/taquito @taquito/beacon-wallet @airgap/beacon-sdk  @tzkt/sdk-api
+npm install -S -D @airgap/beacon-types vite @vitejs/plugin-react-swc @types/react @types/node
 ```
 
-> :warning: :warning: :warning: Last React version uses `react-script 5.x` , follow these steps to rewire webpack for all encountered missing libraries : https://github.com/ChainSafe/web3.js#troubleshooting-and-known-issues
+### Polyfill issues fix
 
-> For example, in my case, I installed this :
->
-> ```bash
-> yarn add --dev react-app-rewired process crypto-browserify stream-browserify assert stream-http https-browserify os-browserify url path-browserify
-> ```
->
-> and my `config-overrides.js` file was :
->
-> ```js
-> const webpack = require("webpack");
->
-> module.exports = function override(config) {
->   const fallback = config.resolve.fallback || {};
->   Object.assign(fallback, {
->     crypto: require.resolve("crypto-browserify"),
->     stream: require.resolve("stream-browserify"),
->     assert: require.resolve("assert"),
->     http: require.resolve("stream-http"),
->     https: require.resolve("https-browserify"),
->     os: require.resolve("os-browserify"),
->     url: require.resolve("url"),
->     path: require.resolve("path-browserify"),
->   });
->   config.ignoreWarnings = [/Failed to parse source map/];
->   config.resolve.fallback = fallback;
->   config.plugins = (config.plugins || []).concat([
->     new webpack.ProvidePlugin({
->       process: "process/browser",
->       Buffer: ["buffer", "Buffer"],
->     }),
->   ]);
->   return config;
-> };
-> ```
->
-> :warning:
+> :warning: :warning: :warning: Before we start we need to add the following dependencies in order to not get polyfill issues. The reason for this step is that certain required dependencies are Node APIs, thus not included in Browsers. But still needed for communication and interaction with Wallets and Smart Contracts.
 
-This was painful :/, but it was the worst so far
-
-Modify the default `package.json` default scripts (to fix an issue between ionic and react-rewired, during postinstall step, we do some symbolic linking, the we extract the last deployed smart contract address from Taqueria configuration file)
-
-```json
-  "scripts": {
-    "postinstall": "cd ./node_modules && ln -s crypto-browserify crypto && cd .bin && mv react-scripts react-scripts-real && ln -s ../react-app-rewired/bin/index.js react-scripts",
-    "start": "jq -r '\"REACT_APP_CONTRACT_ADDRESS=\" + last(.tasks[]).output[0].address' ../.taq/testing-state.json > .env && react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons)/)'",
-    "eject": "react-scripts eject"
-  },
-```
-
-Run web version as it is easier to develop/test/debug first (Note : Remember postinstall will create the missing symbolic link we need to fix Ionic/React current issue with web3 ..)
+For example, in my case, I installed this :
 
 ```bash
-npm run postinstall
-npm run start
+npm i -D process buffer crypto-browserify stream-browserify assert stream-http https-browserify os-browserify url path-browserify
 ```
 
-## Step 2 : Edit the default Application file to configure page routing and add the style
+then create a new file `nodeSpecific.ts` in the src folder of your project
 
-First, remove React strict mode and enable dark mode on `app/index.tsx` with these lines edit :
+```bash
+touch src/nodeSpecific.ts
+```
+
+and edit with this content :
+
+```js
+import { Buffer } from "buffer";
+
+globalThis.Buffer = Buffer;
+```
+
+Finally create the `vite.config.ts` file
+
+```bash
+touch vite.config.ts
+```
+
+and edit it with this content :
+
+```js
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  define: {
+    "process.env": process.env,
+    global: {},
+  },
+  build: {
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
+  },
+  plugins: [react()],
+  resolve: {
+    alias: {
+      stream: "stream-browserify",
+      os: "os-browserify/browser",
+      util: "util",
+      process: "process/browser",
+      buffer: "buffer",
+      crypto: "crypto-browserify",
+      assert: "assert",
+      http: "stream-http",
+      https: "https-browserify",
+      url: "url",
+      path: "path-browserify",
+    },
+  },
+});
+```
+
+### Adaptation for Vite
+
+Move the `index.html` file from public folder to the root
+
+```bash
+mv public/index.html .
+```
+
+and edit to add the following scripts in the body and change favicon. It should look like this :
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Ionic App</title>
+
+    <base href="/" />
+
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="viewport"
+      content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+
+    <link rel="shortcut icon" type="image/webp" href="favicon.webp" />
+    <link href="assets/styles.css" rel="stylesheet" />
+
+    <!-- add to homescreen for ios -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Ionic App" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/nodeSpecific.ts"></script>
+    <script type="module" src="/src/index.tsx"></script>
+  </body>
+</html>
+```
+
+Edit `src/index.tsx`` as it :
 
 ```typescript
+import { createRoot } from "react-dom/client";
+import App from "./App";
+
+const container = document.getElementById("root");
+const root = createRoot(container!);
+
 // Add or remove the "dark" class based on if the media query matches
 document.body.classList.add("dark");
 
 root.render(<App />);
 ```
 
-Then edit `src/App.tsx` main file
+Modify the default `package.json` default scripts to use vite instead of default react scripts
+
+```json
+  "scripts": {
+    "dev": "jq -r '\"VITE_CONTRACT_ADDRESS=\" + last(.tasks[]).output[0].address' ../.taq/testing-state.json > .env && vite --host",
+    "ionic:build": "tsc -v && tsc && vite build",
+    "build": " tsc -v && tsc && vite build",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "ionic:serve": "vite dev --host",
+    "sync": "npm run build && ionic cap sync --no-build"
+  },
+```
+
+Run web version as it is easier to develop/test/debug first
+
+```bash
+npm run dev
+```
+
+## Step 2 : Edit the default Application file to configure page routing and add the style
+
+Edit `src/App.tsx` main file
 
 ```typescript
 import {
@@ -267,14 +354,27 @@ import "./theme/variables.css";
 
 import { NetworkType } from "@airgap/beacon-types";
 import { BeaconWallet } from "@taquito/beacon-wallet";
-import { PollingSubscribeProvider, TezosToolkit } from "@taquito/taquito";
+import { InternalOperationResult } from "@taquito/rpc";
+import {
+  PollingSubscribeProvider,
+  Subscription,
+  TezosToolkit,
+} from "@taquito/taquito";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { MainWalletType, Storage } from "./main.types";
 import { HomeScreen } from "./pages/HomeScreen";
 import { RulesScreen } from "./pages/Rules";
 import { SessionScreen } from "./pages/SessionScreen";
 import { TopPlayersScreen } from "./pages/TopPlayersScreen";
-import { address, bytes, MMap, nat, timestamp, unit } from "./type-aliases";
+import {
+  MMap,
+  address,
+  bytes,
+  mutez,
+  nat,
+  timestamp,
+  unit,
+} from "./type-aliases";
 
 setupIonicReact();
 
@@ -294,7 +394,7 @@ export type ActionStone = { stone?: unit };
 
 export type Session = {
   asleep: timestamp;
-  board: MMap<nat, address>;
+  board: MMap<nat, { Some: address } | null>;
   current_round: nat;
   decoded_rounds: MMap<
     nat,
@@ -304,6 +404,7 @@ export type Session = {
     }>
   >;
   players: Array<address>;
+  pool: mutez;
   result: { draw: unit } | { inplay: unit } | { winner: address };
   rounds: MMap<
     nat,
@@ -328,19 +429,27 @@ export type UserContextType = {
   loading: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>;
   refreshStorage: (event?: CustomEvent<RefresherEventDetail>) => Promise<void>;
+  subReveal: Subscription<InternalOperationResult> | undefined;
+  subNewRound: Subscription<InternalOperationResult> | undefined;
 };
-export let UserContext = React.createContext<UserContextType | null>(null);
+export const UserContext = React.createContext<UserContextType | null>(null);
 
 const App: React.FC = () => {
-  const [Tezos, setTezos] = useState<TezosToolkit>(
-    new TezosToolkit("https://ghostnet.tezos.marigold.dev")
-  );
-  const [wallet, setWallet] = useState<BeaconWallet>(
-    new BeaconWallet({
-      name: "Training",
-      preferredNetwork: NetworkType.GHOSTNET,
+  const Tezos = new TezosToolkit("https://ghostnet.tezos.marigold.dev");
+
+  const wallet = new BeaconWallet({
+    name: "Training",
+    preferredNetwork: NetworkType.GHOSTNET,
+  });
+
+  Tezos.setWalletProvider(wallet);
+  Tezos.setStreamProvider(
+    Tezos.getFactory(PollingSubscribeProvider)({
+      shouldObservableSubscriptionRetry: true,
+      pollingIntervalMilliseconds: 1500,
     })
   );
+
   const [userAddress, setUserAddress] = useState<string>("");
   const [userBalance, setUserBalance] = useState<number>(0);
   const [storage, setStorage] = useState<Storage | null>(null);
@@ -349,60 +458,89 @@ const App: React.FC = () => {
   );
   const [loading, setLoading] = useState<boolean>(false);
 
+  const [subscriptionsDone, setSubscriptionsDone] = useState<boolean>(false);
+  const [subReveal, setSubReveal] =
+    useState<Subscription<InternalOperationResult>>();
+  const [subNewRound, setSubNewRound] =
+    useState<Subscription<InternalOperationResult>>();
+
   const refreshStorage = async (
     event?: CustomEvent<RefresherEventDetail>
   ): Promise<void> => {
-    if (wallet) {
-      const activeAccount = await wallet.client.getActiveAccount();
-      var userAddress: string;
-      if (activeAccount) {
-        userAddress = activeAccount.address;
-        setUserAddress(userAddress);
-        const balance = await Tezos.tz.getBalance(userAddress);
-        setUserBalance(balance.toNumber());
+    try {
+      if (!userAddress) {
+        const activeAccount = await wallet.client.getActiveAccount();
+        let userAddress: string;
+        if (activeAccount) {
+          userAddress = activeAccount.address;
+          setUserAddress(userAddress);
+          const balance = await Tezos.tz.getBalance(userAddress);
+          setUserBalance(balance.toNumber());
+        }
       }
 
       console.log(
         "REACT_APP_CONTRACT_ADDRESS:",
-        process.env.REACT_APP_CONTRACT_ADDRESS!
+        import.meta.env.VITE_CONTRACT_ADDRESS
       );
       const mainWalletType: MainWalletType =
         await Tezos.wallet.at<MainWalletType>(
-          process.env.REACT_APP_CONTRACT_ADDRESS!
+          import.meta.env.VITE_CONTRACT_ADDRESS
         );
       const storage: Storage = await mainWalletType.storage();
       setMainWalletType(mainWalletType);
       setStorage(storage);
       console.log("Storage refreshed");
-    } else {
-      console.log("Not yet a wallet");
+
+      event?.detail.complete();
+    } catch (error) {
+      console.log("error refreshing storage", error);
     }
-    event?.detail.complete();
   };
 
   useEffect(() => {
-    Tezos.setWalletProvider(wallet);
-    Tezos.setStreamProvider(
-      Tezos.getFactory(PollingSubscribeProvider)({
-        shouldObservableSubscriptionRetry: true,
-        pollingIntervalMilliseconds: 1500,
-      })
-    );
     try {
-      const sub = Tezos.stream.subscribeEvent({
-        tag: "gameStatus",
-        address: process.env.REACT_APP_CONTRACT_ADDRESS!,
-      });
+      if (!subscriptionsDone) {
+        const sub = Tezos.stream.subscribeEvent({
+          tag: "gameStatus",
+          address: import.meta.env.VITE_CONTRACT_ADDRESS!,
+        });
 
-      sub.on("data", (e) => {
-        console.log("on gameStatus event :", e);
-        refreshStorage();
-      });
+        sub.on("data", (e) => {
+          console.log("on gameStatus event :", e);
+          refreshStorage();
+        });
+
+        setSubReveal(
+          Tezos.stream.subscribeEvent({
+            tag: "reveal",
+            address: import.meta.env.VITE_CONTRACT_ADDRESS,
+          })
+        );
+
+        setSubNewRound(
+          Tezos.stream.subscribeEvent({
+            tag: "newRound",
+            address: import.meta.env.VITE_CONTRACT_ADDRESS,
+          })
+        );
+      } else {
+        console.warn("Tezos.stream.subscribeEvent already done ... ignoring");
+      }
     } catch (e) {
       console.log("Error with Smart contract event pooling", e);
     }
-    (async () => await refreshStorage())();
-  }, [wallet]);
+
+    console.log("Tezos.stream.subscribeEvent DONE");
+    setSubscriptionsDone(true);
+  }, []);
+
+  useEffect(() => {
+    if (userAddress) {
+      console.warn("userAddress changed", wallet);
+      (async () => await refreshStorage())();
+    }
+  }, [userAddress]);
 
   return (
     <IonApp>
@@ -420,6 +558,8 @@ const App: React.FC = () => {
           loading,
           setLoading,
           refreshStorage,
+          subReveal,
+          subNewRound,
         }}
       >
         <IonReactRouter>
@@ -452,7 +592,7 @@ Explanations :
 - `import ... from "@airgap/beacon-types" ... from "@taquito/beacon-wallet" ... from "@taquito/taquito"` : Require libraries to interact with the Tezos node and the wallet
 - `export class Action implements ActionCisor, ActionPaper, ActionStone {...}` : Representation of the ligo variant `Action` in Typescript, we will need it when passing arguments on `Play` function
 - `export type Session = {...}` : Taqueria export the global Storage type but sadly not this sub-type from the Storage type, we will need it later, so we extract a copy
-- `export let UserContext = React.createContext<UserContextType | null>(null)`: Global React context that is passed along pages. More info on React context [here](https://beta.reactjs.org/learn/passing-data-deeply-with-context)
+- `export const UserContext = React.createContext<UserContextType | null>(null)`: Global React context that is passed along pages. More info on React context [here](https://beta.reactjs.org/learn/passing-data-deeply-with-context)
 - `const refreshStorage = async (event?: CustomEvent<RefresherEventDetail>): Promise<void> => {...` : useful fonction to force the smart contract Storage to refresh on React state changes (user balance, state of the game)
 - `useEffect(() => { ... Tezos.setStreamProvider(...) ... Tezos.stream.subscribeEvent({...` : During Application initialization, we configure the wallet, the websocket listening to smart contract events
 - `<IonApp><UserContext.Provider ... ><IonReactRouter><IonRouterOutlet><Route path={PAGES.HOME} component={HomeScreen} /> ... ` : We inject the React context to all pages. We declare the global routing of the application
@@ -620,11 +760,16 @@ import { PAGES, Session, UserContext, UserContextType } from "../App";
 import ConnectButton from "../ConnectWallet";
 import DisconnectButton from "../DisconnectWallet";
 import { TransactionInvalidBeaconError } from "../TransactionInvalidBeaconError";
+import Paper from "../assets/paper-logo.webp";
+import Scissor from "../assets/scissor-logo.webp";
+import Stone from "../assets/stone-logo.webp";
+import XTZLogo from "../assets/xtz.webp";
+import { SelectMembers } from "../components/TzCommunitySelectMembers";
 import { address, nat } from "../type-aliases";
 
 export const HomeScreen: React.FC = () => {
   const [presentAlert] = useIonAlert();
-  const history = useHistory();
+  const { push } = useHistory();
 
   const createGameModal = useRef<HTMLIonModalElement>(null);
   const selectGameModal = useRef<HTMLIonModalElement>(null);
@@ -687,23 +832,26 @@ export const HomeScreen: React.FC = () => {
   ) => {
     console.log("createSession");
     e.preventDefault();
-    dismissCreateGameModal();
 
     try {
       setLoading(true);
-      const op = await mainWalletType!.methods
+      const op = await mainWalletType?.methods
         .createSession([userAddress as address, newPlayer], total_rounds)
         .send();
       await op?.confirmation();
-      const newStorage = await mainWalletType!.storage();
-      setStorage(newStorage);
+      const newStorage = await mainWalletType?.storage();
+      setStorage(newStorage!);
       setLoading(false);
-      history.push(PAGES.SESSION + "/" + storage?.next_session.toString()); //it was the id created
       dismissCreateGameModal();
+      setTimeout(
+        () => push(PAGES.SESSION + "/" + storage?.next_session.toString()),
+        500
+      );
+      //it was the id created
       console.log("newStorage", newStorage);
     } catch (error) {
       console.table(`Error: ${JSON.stringify(error, null, 2)}`);
-      let tibe: TransactionInvalidBeaconError =
+      const tibe: TransactionInvalidBeaconError =
         new TransactionInvalidBeaconError(error);
       presentAlert({
         header: "Error",
@@ -746,18 +894,9 @@ export const HomeScreen: React.FC = () => {
                     justifyContent: "space-around",
                   }}
                 >
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
-                    className="logo"
-                  />
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
-                    className="logo"
-                  />
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
-                    className="logo"
-                  />
+                  <IonImg src={Stone} className="logo" />
+                  <IonImg src={Paper} className="logo" />
+                  <IonImg src={Scissor} className="logo" />
                 </div>
                 <IonList inset={true}>
                   <ConnectButton
@@ -777,10 +916,7 @@ export const HomeScreen: React.FC = () => {
                   </IonLabel>
                 </IonItem>
                 <IonItem style={{ padding: 0, margin: 0 }}>
-                  <IonImg
-                    style={{ height: 24, width: 24 }}
-                    src={process.env.PUBLIC_URL + "/assets/xtz.png"}
-                  />
+                  <IonImg style={{ height: 24, width: 24 }} src={XTZLogo} />
                   <IonLabel style={{ direction: "rtl" }}>
                     {userBalance / 1000000}
                   </IonLabel>
@@ -796,18 +932,9 @@ export const HomeScreen: React.FC = () => {
                     width: "100%",
                   }}
                 >
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
-                    className="logo"
-                  />
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
-                    className="logo"
-                  />
-                  <IonImg
-                    src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
-                    className="logo"
-                  />
+                  <IonImg src={Stone} className="logo" />
+                  <IonImg src={Paper} className="logo" />
+                  <IonImg src={Scissor} className="logo" />
                 </div>
 
                 <IonButton id="createGameModalVisible" expand="full">
@@ -836,35 +963,45 @@ export const HomeScreen: React.FC = () => {
                       </IonButtons>
                     </IonToolbar>
                   </IonHeader>
-                  <IonContent>
+                  <IonContent className="ion-padding">
+                    <h2>How many total rounds ?</h2>
+
                     <IonItem key="total_rounds">
-                      <IonLabel position="stacked" className="text">
-                        total rounds
-                      </IonLabel>
+                      <IonLabel position="stacked" className="text"></IonLabel>
                       <IonInput
-                        onIonChange={(str) => {
+                        onIonChange={(str: any) => {
                           if (str.detail.value === undefined) return;
                           setTotal_rounds(
-                            new BigNumber(str.target.value!) as nat
+                            new BigNumber(str.target.value) as nat
                           );
                         }}
                         value={total_rounds.toString()}
                         placeholder="total_rounds"
                         type="number"
+                        label="Total Rounds"
                       />
                     </IonItem>
+
+                    <h2>Choose your opponent player</h2>
+
+                    <SelectMembers
+                      Tezos={Tezos}
+                      member={newPlayer}
+                      setMember={setNewPlayer}
+                    />
+
                     <IonItem key="newPlayer">
-                      <IonLabel position="stacked" className="text">
-                        Opponent player
-                      </IonLabel>
                       <IonInput
-                        onIonChange={(str) => {
+                        onIonChange={(str: any) => {
                           if (str.detail.value === undefined) return;
                           setNewPlayer(str.detail.value as address);
                         }}
+                        labelPlacement="floating"
+                        class="address"
                         value={newPlayer}
-                        placeholder="tz1..."
+                        placeholder="...tz1"
                         type="text"
+                        label="Tezos Address "
                       />
                     </IonItem>
                   </IonContent>
@@ -890,7 +1027,7 @@ export const HomeScreen: React.FC = () => {
                   <IonContent>
                     <IonList inset={true}>
                       {myGames
-                        ? Array.from(myGames.entries()).map(([key, Value]) => (
+                        ? Array.from(myGames.entries()).map(([key, _]) => (
                             <IonButton
                               key={"Game-" + key.toString()}
                               expand="full"
@@ -991,16 +1128,22 @@ import {
 } from "@ionic/react";
 import React from "react";
 import { useHistory } from "react-router-dom";
+import Clock from "../assets/clock.webp";
+import Legend from "../assets/legend.webp";
+import Paper from "../assets/paper-logo.webp";
+import Scissor from "../assets/scissor-logo.webp";
+import Stone from "../assets/stone-logo.webp";
 
 export const RulesScreen: React.FC = () => {
-  const history = useHistory();
+  const { goBack } = useHistory();
+
   /* 2. Get the param */
   return (
     <IonPage className="container">
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={() => history.goBack()}>Back</IonButton>
+            <IonButton onClick={goBack}>Back</IonButton>
           </IonButtons>
           <IonTitle>Rules</IonTitle>
         </IonToolbar>
@@ -1009,43 +1152,28 @@ export const RulesScreen: React.FC = () => {
         <div style={{ textAlign: "left" }}>
           <IonList>
             <IonItem className="nopm">
-              <IonImg
-                src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
-                className="logo"
-              />
+              <IonImg src={Stone} className="logo" />
               Stone (Clenched Fist). Rock beats the scissors by hitting it
             </IonItem>
             <IonItem className="nopm">
-              <IonImg
-                src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
-                className="logo"
-              />
+              <IonImg src={Paper} className="logo" />
               Paper (open and extended hand) . Paper wins over stone by enveloping
               it
             </IonItem>
             <IonItem className="nopm">
-              <IonImg
-                src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
-                className="logo"
-              />
+              <IonImg src={Scissor} className="logo" />
               Scissors (closed hand with the two fingers) . Scissors wins paper cutting
               it
             </IonItem>
 
             <IonItem className="nopm">
-              <IonImg
-                src={process.env.PUBLIC_URL + "/assets/clock.png"}
-                className="logo"
-              />
+              <IonImg src={Clock} className="logo" />
               If you are inactive for more than 10 minutes your opponent can claim
               the victory
             </IonItem>
 
             <IonItem className="nopm">
-              <IonImg
-                src={process.env.PUBLIC_URL + "/assets/legend.png"}
-                className="logo"
-              />
+              <IonImg src={Legend} className="logo" />
               <ul style={{ listStyle: "none" }}>
                 <li className="win">Won round</li>
                 <li className="lose">Lost round</li>
@@ -1126,6 +1254,12 @@ export class TransactionInvalidBeaconError {
 
 ## Step 4 : Test it
 
+To test in web
+
+```bash
+npm run dev
+```
+
 We consider that you wallet is well configured and has some XTZ on Ghostnet, so click on Connect button
 (Note : If you don't have tokens, to get some free XTZ on Ghostnet, follow this link to the [faucet](https://faucet.marigold.dev/))
 
@@ -1164,7 +1298,7 @@ import {
   IonToolbar,
   useIonAlert,
 } from "@ionic/react";
-import { PackDataParams } from "@taquito/rpc";
+import { MichelsonV1ExpressionBase, PackDataParams } from "@taquito/rpc";
 import { MichelCodecPacker } from "@taquito/taquito";
 import { BigNumber } from "bignumber.js";
 import * as crypto from "crypto";
@@ -1173,6 +1307,9 @@ import React, { useEffect, useState } from "react";
 import { RouteComponentProps, useHistory } from "react-router-dom";
 import { Action, PAGES, UserContext, UserContextType } from "../App";
 import { TransactionInvalidBeaconError } from "../TransactionInvalidBeaconError";
+import Paper from "../assets/paper-logo.webp";
+import Scissor from "../assets/scissor-logo.webp";
+import Stone from "../assets/stone-logo.webp";
 import { bytes, nat, unit } from "../type-aliases";
 
 export enum STATUS {
@@ -1183,14 +1320,13 @@ export enum STATUS {
   FINISHED = "Game ended",
 }
 
-interface SessionScreenProps
-  extends RouteComponentProps<{
-    id: string;
-  }> {}
+type SessionScreenProps = RouteComponentProps<{
+  id: string;
+}>;
 
 export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
   const [presentAlert] = useIonAlert();
-  const history = useHistory();
+  const { goBack } = useHistory();
 
   const id: string = match.params.id;
 
@@ -1203,45 +1339,63 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
     setLoading,
     loading,
     refreshStorage,
+    subReveal,
+    subNewRound,
   } = React.useContext(UserContext) as UserContextType;
 
   const [status, setStatus] = useState<STATUS>();
   const [remainingTime, setRemainingTime] = useState<number>(10 * 60);
+  const [sessionEventRegistrationDone, setSessionEventRegistrationDone] =
+    useState<boolean>(false);
 
-  useEffect(() => {
-    try {
-      const subReveal = Tezos.stream.subscribeEvent({
-        tag: "reveal",
-        address: process.env.REACT_APP_CONTRACT_ADDRESS!,
-      });
+  const registerSessionEvents = async () => {
+    if (!sessionEventRegistrationDone) {
+      if (subReveal)
+        subReveal.on("data", async (e) => {
+          console.log("on reveal event", e, id, UserContext);
+          if (
+            (!e.result.errors || e.result.errors.length === 0) &&
+            (e.payload as MichelsonV1ExpressionBase).int === id
+          ) {
+            await revealPlay();
+          } else
+            console.warn(
+              "Warning : here we ignore this transaction event for session ",
+              id
+            );
+        });
 
-      const subNewRound = Tezos.stream.subscribeEvent({
-        tag: "newRound",
-        address: process.env.REACT_APP_CONTRACT_ADDRESS!,
-      });
+      if (subNewRound)
+        subNewRound.on("data", (e) => {
+          if (
+            (!e.result.errors || e.result.errors.length === 0) &&
+            (e.payload as MichelsonV1ExpressionBase).int === id
+          ) {
+            console.log("on new round event :", e);
+            refreshStorage();
+          } else
+            console.log("Warning : here we ignore this transaction event", e);
+        });
 
-      subReveal.on("data", (e) => {
-        console.log("on reveal event :", e);
-        if (!e.result.errors || e.result.errors.length === 0) revealPlay();
-        else
-          console.log("Warning : here we ignore a failing transaction event");
-      });
-
-      subNewRound.on("data", (e) => {
-        console.log("on new round event :", e);
-        refreshStorage();
-      });
-    } catch (e) {
-      console.log("Error with Smart contract event pooling", e);
+      console.log("registerSessionEvents registered", subReveal, subNewRound);
+      setSessionEventRegistrationDone(true);
     }
-  }, []);
+  };
 
   const buildSessionStorageKey = (
     userAddress: string,
     sessionNumber: number,
     roundNumber: number
   ): string => {
-    return userAddress + "-" + sessionNumber + "-" + roundNumber;
+    return (
+      import.meta.env.VITE_CONTRACT_ADDRESS +
+      "-" +
+      userAddress +
+      "-" +
+      sessionNumber +
+      "-" +
+      roundNumber
+    );
   };
 
   const buildSessionStorageValue = (secret: number, action: Action): string => {
@@ -1272,9 +1426,9 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
         "Session has changed",
         session,
         "round",
-        session!.current_round.toNumber(),
+        session?.current_round.toNumber(),
         "session.decoded_rounds.get(session.current_round)",
-        session!.decoded_rounds.get(session!.current_round)
+        session?.decoded_rounds.get(session?.current_round)
       );
       if (session && ("winner" in session.result || "draw" in session.result)) {
         setStatus(STATUS.FINISHED);
@@ -1304,6 +1458,8 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
           setStatus(STATUS.PLAY);
         }
       }
+
+      (async () => await registerSessionEvents())();
     } else {
       console.log("Wait parent to init storage ...");
     }
@@ -1355,10 +1511,10 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
         "session_id",
         session_id,
         "current_round",
-        current_session!.current_round
+        current_session?.current_round
       );
 
-      const preparedCall = mainWalletType!.methods.play(
+      const preparedCall = mainWalletType?.methods.play(
         encryptedAction,
         current_session!.current_round,
         session_id
@@ -1366,28 +1522,28 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
 
       const { gasLimit, storageLimit, suggestedFeeMutez } =
         await Tezos.estimate.transfer({
-          ...preparedCall.toTransferParams(),
+          ...preparedCall!.toTransferParams(),
           amount: 1,
           mutez: false,
         });
 
       console.log({ gasLimit, storageLimit, suggestedFeeMutez });
-      const op = await preparedCall.send({
-        gasLimit: gasLimit + 1000, //we take a margin +100 for an eventual event in case of paralell execution
-        fee: suggestedFeeMutez,
+      const op = await preparedCall!.send({
+        gasLimit: gasLimit * 2, //we take a margin +1000 for an eventual event in case of paralell execution
+        fee: suggestedFeeMutez * 2,
         storageLimit: storageLimit,
         amount: 1,
         mutez: false,
       });
 
       await op?.confirmation();
-      const newStorage = await mainWalletType!.storage();
-      setStorage(newStorage);
+      const newStorage = await mainWalletType?.storage();
+      setStorage(newStorage!);
       setLoading(false);
       console.log("newStorage", newStorage);
     } catch (error) {
       console.table(`Error: ${JSON.stringify(error, null, 2)}`);
-      let tibe: TransactionInvalidBeaconError =
+      const tibe: TransactionInvalidBeaconError =
         new TransactionInvalidBeaconError(error);
       presentAlert({
         header: "Error",
@@ -1401,7 +1557,17 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
 
   const revealPlay = async () => {
     const session_id = new BigNumber(id) as nat;
-    const current_session = storage?.sessions.get(session_id);
+
+    //force refresh in case of events
+    const storage = await mainWalletType?.storage();
+
+    const current_session = storage!.sessions.get(session_id)!;
+
+    console.warn(
+      "refresh storage because events can trigger it outisde react scope ...",
+      userAddress,
+      current_session.current_round
+    );
 
     //fecth from session storage
     const secretActionStr = localStorage.getItem(
@@ -1416,7 +1582,11 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       presentAlert({
         header: "Internal error",
         message:
-          "You lose the session storage, no more possible to retrieve secrets, stop Session please",
+          "You lose the session/round " +
+          session_id +
+          "/" +
+          current_session!.current_round.toNumber() +
+          " storage, no more possible to retrieve secrets, stop Session please",
         buttons: ["Close"],
       });
       setLoading(false);
@@ -1430,30 +1600,30 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       setLoading(true);
       const encryptedAction = await packAction(secretAction.action);
 
-      const preparedCall = await mainWalletType!.methods.revealPlay(
+      const preparedCall = mainWalletType?.methods.revealPlay(
         encryptedAction as bytes,
         new BigNumber(secretAction.secret) as nat,
-        current_session!.current_round,
+        current_session?.current_round!,
         session_id
       );
 
       const { gasLimit, storageLimit, suggestedFeeMutez } =
-        await Tezos.estimate.transfer(preparedCall.toTransferParams());
+        await Tezos.estimate.transfer(preparedCall!.toTransferParams());
 
       //console.log({ gasLimit, storageLimit, suggestedFeeMutez });
-      const op = await preparedCall.send({
+      const op = await preparedCall!.send({
         gasLimit: gasLimit * 3,
-        fee: suggestedFeeMutez,
-        storageLimit: storageLimit * 3, //we take a margin in case of paralell execution
+        fee: suggestedFeeMutez * 2,
+        storageLimit: storageLimit * 4, //we take a margin in case of paralell execution
       });
       await op?.confirmation();
-      const newStorage = await mainWalletType!.storage();
-      setStorage(newStorage);
+      const newStorage = await mainWalletType?.storage();
+      setStorage(newStorage!);
       setLoading(false);
       console.log("newStorage", newStorage);
     } catch (error) {
       console.table(`Error: ${JSON.stringify(error, null, 2)}`);
-      let tibe: TransactionInvalidBeaconError =
+      const tibe: TransactionInvalidBeaconError =
         new TransactionInvalidBeaconError(error);
       presentAlert({
         header: "Error",
@@ -1468,7 +1638,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
   /** Pack an action variant to bytes. Same is Pack.bytes()  */
   async function packAction(action: Action): Promise<string> {
     const p = new MichelCodecPacker();
-    let actionbytes: PackDataParams = {
+    const actionbytes: PackDataParams = {
       data: action.stone
         ? { prim: "Right", args: [{ prim: "Unit" }] }
         : action.cisor
@@ -1498,7 +1668,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
     secret: number
   ): Promise<string> {
     const p = new MichelCodecPacker();
-    let actionBytesSecretbytes: PackDataParams = {
+    const actionBytesSecretbytes: PackDataParams = {
       data: {
         prim: "Pair",
         args: [{ bytes: actionBytes }, { int: secret.toString() }],
@@ -1519,17 +1689,17 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
   const stopSession = async () => {
     try {
       setLoading(true);
-      const op = await mainWalletType!.methods
+      const op = await mainWalletType?.methods
         .stopSession(new BigNumber(id) as nat)
         .send();
       await op?.confirmation(2);
-      const newStorage = await mainWalletType!.storage();
-      setStorage(newStorage);
+      const newStorage = await mainWalletType?.storage();
+      setStorage(newStorage!);
       setLoading(false);
       console.log("newStorage", newStorage);
     } catch (error) {
       console.table(`Error: ${JSON.stringify(error, null, 2)}`);
-      let tibe: TransactionInvalidBeaconError =
+      const tibe: TransactionInvalidBeaconError =
         new TransactionInvalidBeaconError(error);
       presentAlert({
         header: "Error",
@@ -1580,7 +1750,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={() => history.goBack()}>Back</IonButton>
+            <IonButton onClick={goBack}>Back</IonButton>
           </IonButtons>
           <IonTitle>Game n°{id}</IonTitle>
         </IonToolbar>
@@ -1625,8 +1795,8 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
                   ).map((roundId) => {
                     const currentRound: number = storage
                       ? storage?.sessions
-                          .get(new BigNumber(id) as nat)!
-                          .current_round!.toNumber() - 1
+                          .get(new BigNumber(id) as nat)
+                          .current_round?.toNumber() - 1
                       : 0;
                     const roundwinner = storage?.sessions
                       .get(new BigNumber(id) as nat)
@@ -1642,7 +1812,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
                             ? "current"
                             : !roundwinner
                             ? "draw"
-                            : roundwinner === userAddress
+                            : roundwinner.Some === userAddress
                             ? "win"
                             : "lose"
                         }
@@ -1666,12 +1836,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
             {status === STATUS.FINISHED ? (
               <IonImg
                 className={"logo-XXL" + (isDesktop() ? "" : " mobile")}
-                src={
-                  process.env.PUBLIC_URL +
-                  "/assets/" +
-                  getFinalResult() +
-                  ".png"
-                }
+                src={"assets/" + getFinalResult() + ".png"}
               />
             ) : (
               ""
@@ -1686,10 +1851,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
                       play(new Action(true as unit, undefined, undefined))
                     }
                   >
-                    <IonImg
-                      src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
-                      className="logo"
-                    />
+                    <IonImg src={Scissor} className="logo" />
                   </IonButton>
                 </IonItem>
                 <IonItem style={{ margin: 0, padding: 0 }}>
@@ -1699,10 +1861,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
                       play(new Action(undefined, true as unit, undefined))
                     }
                   >
-                    <IonImg
-                      src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
-                      className="logo"
-                    />
+                    <IonImg src={Paper} className="logo" />
                   </IonButton>
                 </IonItem>
                 <IonItem style={{ margin: 0, padding: 0 }}>
@@ -1712,10 +1871,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
                       play(new Action(undefined, undefined, true as unit))
                     }
                   >
-                    <IonImg
-                      src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
-                      className="logo"
-                    />
+                    <IonImg src={Stone} className="logo" />
                   </IonButton>
                 </IonItem>
               </IonList>
@@ -1795,10 +1951,11 @@ import {
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { UserContext, UserContextType } from "../App";
+import Ranking from "../assets/ranking.webp";
 import { nat } from "../type-aliases";
 
 export const TopPlayersScreen: React.FC = () => {
-  const history = useHistory();
+  const { goBack } = useHistory();
   const { storage, refreshStorage } = React.useContext(
     UserContext
   ) as UserContextType;
@@ -1808,9 +1965,9 @@ export const TopPlayersScreen: React.FC = () => {
   useEffect(() => {
     (async () => {
       if (storage) {
-        let ranking = new Map(); //force refresh
+        const ranking = new Map(); //force refresh
         Array.from(storage.sessions.keys()).forEach((key: nat) => {
-          let result = storage.sessions.get(key).result;
+          const result = storage.sessions.get(key).result;
           if ("winner" in result) {
             const winner = result.winner;
             let score = ranking.get(winner);
@@ -1833,7 +1990,7 @@ export const TopPlayersScreen: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={() => history.goBack()}>Back</IonButton>
+            <IonButton onClick={goBack}>Back</IonButton>
           </IonButtons>
           <IonTitle>Top Players</IonTitle>
         </IonToolbar>
@@ -1844,7 +2001,7 @@ export const TopPlayersScreen: React.FC = () => {
         </IonRefresher>
         <div style={{ marginLeft: "40vw" }}>
           <IonImg
-            src={process.env.PUBLIC_URL + "/assets/ranking.png"}
+            src={Ranking}
             className="ranking"
             style={{ height: "10em", width: "5em" }}
           />
@@ -1865,6 +2022,7 @@ export const TopPlayersScreen: React.FC = () => {
           {ranking && ranking.size > 0
             ? Array.from(ranking).map(([address, count]) => (
                 <IonRow
+                  key={address}
                   style={{
                     backgroundColor: "var(--ion-color-secondary)",
                   }}
@@ -1895,32 +2053,48 @@ If you want the Android version of the game, follow below instructions
 
 > Note : you need to install [Android SDK](https://developer.android.com/about/versions/13/setup-sdk) or [iOS](https://developer.apple.com/documentation/xcode) stack. Recommendation : Easier to start with Android
 
-Stay on the app folder, and prepare Android release
-
-```bash
-ionic capacitor add android
-```
-
 To modify the name of your app, open the `capacitor.config.json` file and change `appId` and `appName` properties
 
-> Hack : To be sure that the symlink is done and ionic capacitor will not have issue with crypto library, in case you can re-run : `npm run postinstall`
+> Hack : to build on android, change vite.config.ts to remove global field here
 
+```javascript
+export default defineConfig({
+  define: {
+    "process.env": process.env,
+    //global: {},
+  },
+```
+
+Also change the ionic config to move from react to custom type build on `ionic.config.json`
+
+```json
+{
+  "name": "app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "custom"
+}
+```
+
+Stay on the app folder, and prepare Android release
 Then these lines will copy all to android folder + the images ressources used by the store
 
 ```bash
+ionic capacitor add android
 ionic capacitor copy android
 npm install -g cordova-res
 cordova-res android --skip-config --copy
 ionic capacitor sync android
-ionic capacitor update
+ionic capacitor update android
 ```
 
 Open Android Studio and do a `Build` or `Make Project` action
 
-> Note 1 : in case of broken gradle : ionic capacitor sync android and click on sync on Android studio > build
+> Note 1 : in case of broken gradle : `ionic capacitor sync android` and click on sync on Android studio > build
 >
-> Note : If you have `WSL2` and difficulties to run an emulator on it, I advice you to install Android studio on Windows and build, test and package all on this OS. Push your files on your git repo, and check on .gitignore for `android` folder that there is no filters on assets.
-> Comment end lines on file app/android/.gitignore
+> Note 2 : If you have `WSL2` and difficulties to run an emulator on it, I advice you to install Android studio on Windows and build, test and package all on this OS. Push your files on your git repo, and check on .gitignore for `android` folder that there is no filters on assets.
+> Comment end lines on file `app/android/.gitignore`
 >
 > ```
 > # Cordova plugins for Capacitor
@@ -1935,13 +2109,14 @@ Open Android Studio and do a `Build` or `Make Project` action
 > #app/src/main/res/xml/config.xml
 > ```
 >
-> and comment also the `node_modules` at your root project because it will require files from @capacitor and you need to install this libraries
+> and comment also the `node_modules` and `dist` at your root project because it will require files from @capacitor and you need to install this libraries
 >
 > ```
 > #node_modules/
+> #/dist
 > ```
 >
-> Force it to be included on committed files : `git add android/app/src/main/assets/  ; git add android/capacitor-cordova-android-plugins/` and push to git
+> Force it to be included on committed files : `git add -f android/app/src/main/assets/  ; git add -f android/capacitor-cordova-android-plugins/ ;  git add -f node_modules ;` and push to git
 > Then try again `Build` or `Make Project` action on Android Studio
 
 ![build.png](./doc/build.png)

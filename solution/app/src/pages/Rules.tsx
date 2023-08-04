@@ -12,16 +12,22 @@ import {
 } from "@ionic/react";
 import React from "react";
 import { useHistory } from "react-router-dom";
+import Clock from "../assets/clock.webp";
+import Legend from "../assets/legend.webp";
+import Paper from "../assets/paper-logo.webp";
+import Scissor from "../assets/scissor-logo.webp";
+import Stone from "../assets/stone-logo.webp";
 
 export const RulesScreen: React.FC = () => {
-  const history = useHistory();
+  const { goBack } = useHistory();
+
   /* 2. Get the param */
   return (
     <IonPage className="container">
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={() => history.goBack()}>Back</IonButton>
+            <IonButton onClick={goBack}>Back</IonButton>
           </IonButtons>
           <IonTitle>Rules</IonTitle>
         </IonToolbar>
@@ -30,43 +36,28 @@ export const RulesScreen: React.FC = () => {
         <div style={{ textAlign: "left" }}>
           <IonList>
             <IonItem className="nopm">
-              <IonImg
-                src={process.env.PUBLIC_URL + "/assets/stone-logo.png"}
-                className="logo"
-              />
+              <IonImg src={Stone} className="logo" />
               Stone (Clenched Fist). Rock beats the scissors by hitting it
             </IonItem>
             <IonItem className="nopm">
-              <IonImg
-                src={process.env.PUBLIC_URL + "/assets/paper-logo.png"}
-                className="logo"
-              />
+              <IonImg src={Paper} className="logo" />
               Paper (open and extended hand) . Paper wins over stone by
               enveloping it
             </IonItem>
             <IonItem className="nopm">
-              <IonImg
-                src={process.env.PUBLIC_URL + "/assets/scissor-logo.png"}
-                className="logo"
-              />
+              <IonImg src={Scissor} className="logo" />
               Scissors (closed hand with the two fingers) . Scissors wins paper
               cutting it
             </IonItem>
 
             <IonItem className="nopm">
-              <IonImg
-                src={process.env.PUBLIC_URL + "/assets/clock.png"}
-                className="logo"
-              />
+              <IonImg src={Clock} className="logo" />
               If you are inactive for more than 10 minutes your opponent can
               claim the victory
             </IonItem>
 
             <IonItem className="nopm">
-              <IonImg
-                src={process.env.PUBLIC_URL + "/assets/legend.png"}
-                className="logo"
-              />
+              <IonImg src={Legend} className="logo" />
               <ul style={{ listStyle: "none" }}>
                 <li className="win">Won round</li>
                 <li className="lose">Lost round</li>

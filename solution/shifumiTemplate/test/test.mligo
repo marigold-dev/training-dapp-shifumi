@@ -1392,7 +1392,7 @@ let test =
         let () = Test.log("alice stops session 24 for DRAW") in
         let () = Test.bake_until_n_cycle_end 5n in
         let stop_args : SHIFUMI.Parameter.stopsession_param = {sessionId=current_session_id} in
-        let fail_stop_session = Test.transfer_to_contract x (StopSession(stop_args)) 0mutez in
+        let _fail_stop_session = Test.transfer_to_contract x (StopSession(stop_args)) 0mutez in
         let session_24 : SHIFUMI.Storage.Session.t = get_session_from_storage(addr, current_session_id) in
         let board_round_1 : address option = match Map.find_opt 1n session_24.board with
         | None -> (None : address option)
