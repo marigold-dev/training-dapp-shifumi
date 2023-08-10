@@ -163,7 +163,7 @@ Uninstall confliting old jest libraries/react-scripts and Install required Tezos
 
 ```
 cd app
-npm uninstall -S react-scripts
+npm uninstall -S react-scripts react-app-rewired
 npm uninstall -S @testing-library/jest-dom @testing-library/react @testing-library/user-event @types/jest
 rm -rf src/components
 rm src/setupTests.ts src/react-app-env.d.ts src/reportWebVitals.ts src/serviceWorkerRegistration.ts src/App.test.tsx
