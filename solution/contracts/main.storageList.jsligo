@@ -1,8 +1,14 @@
-#include "main.jsligo"
+#import "main.jsligo" "Contract"
 
 const default_storage = {
-    metadata: Big_map.literal(list([["",bytes `tezos-storage:contents`],
-    ["contents", bytes `
+    metadata: Big_map.literal(
+        list(
+            [
+                ["", bytes `tezos-storage:contents`],
+                [
+                    "contents",
+                    bytes
+                    `
     {
     "name": "Shifumi Example",
     "description": "An Example Shifumi Contract",
@@ -22,8 +28,11 @@ const default_storage = {
         "TZIP-016"
     ]
     }
-    `]
-    ]))   as big_map<string, bytes>,
+    `
+                ]
+            ]
+        )
+    ) as big_map<string, bytes>,
     next_session: 0 as nat,
-    sessions: Map.empty as  map<nat, Session.t>,
-  }
+    sessions: Map.empty as map<nat, Contract.Session.t>,
+}
