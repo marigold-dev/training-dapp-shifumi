@@ -14,8 +14,8 @@ export const update_sessions = (storage : t, sessionId : nat, new_session : Sess
 };
 
 export const getSession = (sessionId : nat, store : t) : Session.t => {
-    return match (Map.find_opt(sessionId, store.sessions), {
-        None: () => (failwith(Errors.unknown_session) as Session.t),
-        Some: (sess: Session.t) => sess
-    });
+    return match (Map.find_opt(sessionId, store.sessions)) {
+        when(None()): (failwith(Errors.unknown_session) as Session.t);
+        when(Some(sess)): sess;
+    };
 };

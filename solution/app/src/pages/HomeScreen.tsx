@@ -103,7 +103,7 @@ export const HomeScreen: React.FC = () => {
     try {
       setLoading(true);
       const op = await mainWalletType?.methods
-        .createSession([userAddress as address, newPlayer], total_rounds)
+        .createSession(total_rounds, [userAddress as address, newPlayer])
         .send();
       await op?.confirmation();
       const newStorage = await mainWalletType?.storage();

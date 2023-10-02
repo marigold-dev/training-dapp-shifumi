@@ -1,11 +1,11 @@
 //redefining find_opt function
 export const find_opt = <T>(f : (x : T) => bool, xs : list<T>) : option<T> =>
-match(xs ,list([
-  ([] : list<T>) => None(),
-  ([x,... xs] : list<T>) => {
-    if(f(x)) { return Some(x); } else {return find_opt(f, xs); } 
-  } 
-]));
+  match (xs) {
+    when([] : list<T>): None();
+    when([x,... xs] : list<T>): do {
+      if(f(x)) { return Some(x); } else {return find_opt(f, xs); }
+    }
+  };
 
 //redefining reverse
 export const reverse = <T>(xs : list<T>) : list<T> => {
@@ -20,9 +20,9 @@ export const concat = <T>(xs : list<T>, ys : list<T>) : list<T> => {
   };
 
 export const remove = <T>(f : (x : T) => bool, xs : list<T>, acc : list<T>) : list<T> =>
-match(xs ,list([
-  ([] : list<T>) => reverse(acc),
-  ([x,... xs] : list<T>) => {
-    if(f(x)) { return concat(reverse(acc),xs); } else {return remove(f, xs, list([x,...acc])); } 
-  } 
-]));
+  match(xs) {
+    when([] : list<T>): reverse(acc);
+    when([x,... xs] : list<T>): do {
+      if(f(x)) { return concat(reverse(acc),xs); } else {return remove(f, xs, list([x,...acc])); }
+    }
+  };

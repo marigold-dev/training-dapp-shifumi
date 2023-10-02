@@ -1,6 +1,6 @@
 #import "main.jsligo" "Contract"
 
-const default_storage = {
+const default_storage: Contract.storage = {
     metadata: Big_map.literal(
         list(
             [
