@@ -234,9 +234,10 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       );
 
       const preparedCall = mainWalletType?.methods.play(
-        encryptedAction,
+        session_id,
         current_session!.current_round,
-        session_id
+
+        encryptedAction
       );
 
       const { gasLimit, storageLimit, suggestedFeeMutez } =
@@ -320,10 +321,11 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       const encryptedAction = await packAction(secretAction.action);
 
       const preparedCall = mainWalletType?.methods.revealPlay(
-        encryptedAction as bytes,
-        new BigNumber(secretAction.secret) as nat,
+        session_id,
         current_session?.current_round!,
-        session_id
+
+        encryptedAction as bytes,
+        new BigNumber(secretAction.secret) as nat
       );
 
       const { gasLimit, storageLimit, suggestedFeeMutez } =
@@ -359,22 +361,25 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
     const p = new MichelCodecPacker();
     const actionbytes: PackDataParams = {
       data: action.stone
-        ? { prim: "Right", args: [{ prim: "Unit" }] }
-        : action.cisor
-        ? { prim: "Left", args: [{ prim: "Left", args: [{ prim: "Unit" }] }] }
-        : { prim: "Left", args: [{ prim: "Right", args: [{ prim: "Unit" }] }] },
+        ? { prim: "Left", args: [{ prim: "Unit" }] }
+        : action.paper
+        ? { prim: "Right", args: [{ prim: "Left", args: [{ prim: "Unit" }] }] }
+        : {
+            prim: "Right",
+            args: [{ prim: "Right", args: [{ prim: "Unit" }] }],
+          },
       type: {
         prim: "Or",
         annots: ["%action"],
         args: [
+          { prim: "Unit", annots: ["%stone"] },
           {
             prim: "Or",
             args: [
-              { prim: "Unit", annots: ["%cisor"] },
               { prim: "Unit", annots: ["%paper"] },
+              { prim: "Unit", annots: ["%cisor"] },
             ],
           },
-          { prim: "Unit", annots: ["%stone"] },
         ],
       },
     };

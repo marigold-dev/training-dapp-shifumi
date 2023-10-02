@@ -19,60 +19,60 @@ export type Storage = {
   sessions: MMap<
     nat,
     {
-      asleep: timestamp;
-      board: MMap<nat, { Some: address } | null>;
-      current_round: nat;
-      decoded_rounds: MMap<
-        nat,
-        Array<{
-          action: { cisor: unit } | { paper: unit } | { stone: unit };
-          player: address;
-        }>
-      >;
+      total_rounds: nat;
       players: Array<address>;
-      pool: mutez;
-      result: { draw: unit } | { inplay: unit } | { winner: address };
+      current_round: nat;
       rounds: MMap<
         nat,
         Array<{
-          action: bytes;
           player: address;
+          action: bytes;
         }>
       >;
-      total_rounds: nat;
+      decoded_rounds: MMap<
+        nat,
+        Array<{
+          player: address;
+          action: { stone: unit } | { paper: unit } | { cisor: unit };
+        }>
+      >;
+      board: MMap<nat, { Some: address } | null>;
+      result: { inplay: unit } | { draw: unit } | { winner: address };
+      asleep: timestamp;
+      pool: mutez;
     }
   >;
 };
 
 type Methods = {
-  createSession: (players: Array<address>, total_rounds: nat) => Promise<void>;
-  play: (action: bytes, roundId: nat, sessionId: nat) => Promise<void>;
   revealPlay: (
-    player_key: bytes,
-    player_secret: nat,
+    sessionId: nat,
     roundId: nat,
-    sessionId: nat
+    player_key: bytes,
+    player_secret: nat
   ) => Promise<void>;
+  play: (sessionId: nat, roundId: nat, action: bytes) => Promise<void>;
   stopSession: (param: nat) => Promise<void>;
+  createSession: (total_rounds: nat, players: Array<address>) => Promise<void>;
 };
 
 type MethodsObject = {
-  createSession: (params: {
-    players: Array<address>;
-    total_rounds: nat;
-  }) => Promise<void>;
-  play: (params: {
-    action: bytes;
-    roundId: nat;
-    sessionId: nat;
-  }) => Promise<void>;
   revealPlay: (params: {
+    sessionId: nat;
+    roundId: nat;
     player_key: bytes;
     player_secret: nat;
-    roundId: nat;
+  }) => Promise<void>;
+  play: (params: {
     sessionId: nat;
+    roundId: nat;
+    action: bytes;
   }) => Promise<void>;
   stopSession: (param: nat) => Promise<void>;
+  createSession: (params: {
+    total_rounds: nat;
+    players: Array<address>;
+  }) => Promise<void>;
 };
 
 type contractTypes = {

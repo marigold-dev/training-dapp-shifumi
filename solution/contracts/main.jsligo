@@ -11,10 +11,11 @@ export type parameter = Parameter.t;
 export type return_ = [list<operation>, storage];
 
 // Anyone can create a session (must specify players and number of rounds)
-const createSession = (param : Parameter.createsession_param, store : Storage.t) : return_ => { 
+@entry
+const createSession = (param : Parameter.createsession_param, store : Storage.t) : return_ => {
     let new_session : Session.t = Session.new(param.total_rounds, param.players);
-    let new_storage : Storage.t = { ...store,  
-        next_session: store.next_session + (1 as nat), 
+    let new_storage : Storage.t = { ...store,
+        next_session: store.next_session + 1n,
         sessions: Map.add(store.next_session, new_session, store.sessions)
     };
     return [list([]) as list<operation>, new_storage];
@@ -22,10 +23,10 @@ const createSession = (param : Parameter.createsession_param, store : Storage.t)
 
 
 // search for a non troller in the session
-const find_me_a_name = (sessionId : nat, missing_players : list<Session.player>, current_session : Session.t, store : Storage.t) : return_ => { 
-    
-    assert_with_error( List.size(missing_players) == (1 as nat), Errors.no_winner);
-    
+const find_me_a_name = (sessionId : nat, missing_players : list<Session.player>, current_session : Session.t, store : Storage.t) : return_ => {
+
+    assert_with_error( List.size(missing_players) == 1n, Errors.no_winner);
+
     const loser = Option.unopt(List.head_opt(missing_players));
     let winners_list : list<address> = ListUtils.remove(( (a : address) => a == loser), current_session.players, (list([]) as list<address>));
     let winner : address = Option.unopt(List.head_opt(winners_list));
@@ -36,44 +37,45 @@ const find_me_a_name = (sessionId : nat, missing_players : list<Session.player>,
 };
 
 //declare a draw if game is blocked because people don't reveal
-const declare_a_draw = (sessionId : nat, current_session : Session.t, store: Storage.t) : return_ => { 
+const declare_a_draw = (sessionId : nat, current_session : Session.t, store: Storage.t) : return_ => {
     let new_current_session : Session.t = {...current_session, result:Draw() };
     let new_storage : Storage.t = Storage.update_sessions(store, sessionId, new_current_session);
-    let player1ToRedeemOp : operation = Tezos.transaction(unit,(new_current_session.pool / (2 as tez)) * (1 as tez) ,Tezos.get_contract_with_error(Option.unopt(List.head_opt(new_current_session.players)),Errors.player_contract_address_not_found));
-    let player2ToRedeemOp : operation = Tezos.transaction(unit,(new_current_session.pool / (2 as tez)) * (1 as tez),Tezos.get_contract_with_error(Option.unopt(List.head_opt(Option.unopt(List.tail_opt(new_current_session.players)))),Errors.player_contract_address_not_found));
+    let player1ToRedeemOp : operation = Tezos.transaction(unit,(new_current_session.pool / 2tez) * 1tez ,Tezos.get_contract_with_error(Option.unopt(List.head_opt(new_current_session.players)),Errors.player_contract_address_not_found));
+    let player2ToRedeemOp : operation = Tezos.transaction(unit,(new_current_session.pool / 2tez) * 1tez,Tezos.get_contract_with_error(Option.unopt(List.head_opt(Option.unopt(List.tail_opt(new_current_session.players)))),Errors.player_contract_address_not_found));
     return [list([player1ToRedeemOp,player2ToRedeemOp,Tezos.emit("%gameStatus",sessionId)]) as list<operation>, new_storage];
 };
 
 const is_none = <T>(x : option<T>) : bool =>
-   match(x, {
-     Some: _ => false,
-     None: () => true}
-     );
+   match(x) {
+     when(Some(_)): false;
+     when(None()): true
+     };
 
 // allow players to claim victory if opponent is a troller (refuse to play)
+@entry
 const stopSession = (param : Parameter.stopsession_param, store : Storage.t) : return_ => {
     let current_session : Session.t = Storage.getSession(param.sessionId, store);
     let _check_players : unit = Conditions.check_player_authorized((Tezos.get_sender ()), current_session.players, Errors.user_not_allowed_to_stop_session);
     let _check_session_end : unit = Conditions.check_session_end(current_session.result, Inplay());
     let _check_asleep : unit = Conditions.check_asleep(current_session);
-    let current_round = match (Map.find_opt(current_session.current_round, current_session.rounds), {
-        None: () => (list([]) as Session.player_actions),
-        Some: (rnd: Session.player_actions) => rnd 
-    });
+    let current_round = match (Map.find_opt(current_session.current_round, current_session.rounds)) {
+        when(None()): (list([]) as Session.player_actions);
+        when(Some(rnd)): rnd;
+    };
     let missing_players = Session.find_missing(current_round, current_session.players);
-    if (List.size(missing_players) > (0 as nat)) {
+    if (List.size(missing_players) > 0n) {
         return find_me_a_name (param.sessionId, missing_players, current_session, store);
     } else {
-        
+
         let current_decoded_round_opt = Map.find_opt(current_session.current_round, current_session.decoded_rounds);
-        
-        if( is_none(current_decoded_round_opt)) { 
+
+        if( is_none(current_decoded_round_opt)) {
             return declare_a_draw (param.sessionId, current_session, store);
             }
-        else { 
+        else {
             let current_decoded_round = Option.unopt(current_decoded_round_opt);
             let missing_players_for_reveal = Session.find_missing(current_decoded_round, current_session.players);
-            if (List.size(missing_players_for_reveal) > (0 as nat)) {
+            if (List.size(missing_players_for_reveal) > 0n) {
                 return find_me_a_name (param.sessionId, missing_players_for_reveal, current_session, store);
             } else {
                 return [list([]) as list<operation>, store]
@@ -84,6 +86,7 @@ const stopSession = (param : Parameter.stopsession_param, store : Storage.t) : r
 
 // the player create a bytes with the chosen action (Stone | Paper | Cisor) in backend
 // once the bytes is created, the player send its bytes to the smart contract
+@entry
 const play = (param : Parameter.play_param, store : Storage.t) : return_ => {
     let current_session : Session.t = Storage.getSession(param.sessionId, store);
     let _check_players : unit = Conditions.check_player_authorized((Tezos.get_sender ()), current_session.players, Errors.user_not_allowed_to_play_in_session);
@@ -92,24 +95,25 @@ const play = (param : Parameter.play_param, store : Storage.t) : return_ => {
 
 
     // you can play only once per round, so we take money for every round
-    if(Tezos.get_amount() < (1 as tez)) return failwith(Errors.player_needs_to_pay_to_play);
+    if(Tezos.get_amount() < 1tez) return failwith(Errors.player_needs_to_pay_to_play);
 
     // register action
     let new_rounds = Session.add_in_rounds(current_session.current_round, current_session, (Tezos.get_sender ()), param.action);
-    let new_session : Session.t = Session.update_rounds({...current_session,pool:(current_session.pool + (1 as tez))}, new_rounds);
+    let new_session : Session.t = Session.update_rounds({...current_session,pool:(current_session.pool + 1tez)}, new_rounds);
     let new_storage : Storage.t = Storage.update_sessions(store, param.sessionId, new_session);
-    
-    return match (Map.find_opt(new_session.current_round,new_session.rounds), {
-        None : () => [list([]) as list<operation>, new_storage],
-        Some : (current_round : Session.player_actions) => {
-            if( List.size( current_round  ) != (2 as nat) ){ return [list([]) as list<operation>, new_storage]}
+
+    return match (Map.find_opt(new_session.current_round,new_session.rounds)) {
+        when(None()): [list([]) as list<operation>, new_storage];
+        when(Some(current_round)): do {
+            if( List.size( current_round  ) != 2n ){ return [list([]) as list<operation>, new_storage]}
             else { return  [list([ Tezos.emit("%reveal",param.sessionId)  ]) as list<operation>, new_storage]}
-        }
-    });
+        };
+    };
 };
 
 // Once all players have committed their bytes, they must reveal the content of their bytes
-const reveal = (param : Parameter.reveal_param, store : Storage.t) : return_ => {
+@entry
+const revealPlay = (param : Parameter.reveal_param, store : Storage.t) : return_ => {
     // players can reveal only if all players have sent their bytes
     let current_session : Session.t = Storage.getSession(param.sessionId, store);
     let _check_players : unit = Conditions.check_player_authorized((Tezos.get_sender ()), current_session.players, Errors.user_not_allowed_to_reveal_in_session);
@@ -117,8 +121,8 @@ const reveal = (param : Parameter.reveal_param, store : Storage.t) : return_ => 
     let _check_round : unit = assert_with_error( (current_session.current_round == param.roundId), Errors.wrong_current_round);
     let current_round_actions : Session.player_actions = Session.get_round_actions(current_session.current_round, current_session);
     let numberOfPlayers : nat = List.size(current_session.players);
-    let listsize = ([acc, _elt]: [nat, Session.player_action]) : nat => acc + (1 as nat);
-    let numberOfActions : nat = List.fold(listsize, current_round_actions, (0 as nat));
+    let listsize = ([acc, _elt]: [nat, Session.player_action]) : nat => acc + 1n;
+    let numberOfActions : nat = List.fold(listsize, current_round_actions, 0n);
     let _check_all_players_have_played : unit = assert_with_error( (numberOfPlayers == numberOfActions), Errors.missing_player_bytes);
     // retrieve user bytes (fails if not found)
     let user_bytes : bytes = Session.get_bytes_exn((Tezos.get_sender ()), (Some(current_round_actions)));
@@ -132,36 +136,27 @@ const reveal = (param : Parameter.reveal_param, store : Storage.t) : return_ => 
 
     // if session is finished, we can compute the result winner
     let final_current_session = Session.finalize_session(modified_new_current_session);
-    
+
     let new_storage : Storage.t = Storage.update_sessions(store, param.sessionId, final_current_session);
-    return match(final_current_session.result, {
-        Inplay : () => { if(final_current_session.current_round == current_session.current_round) {return [list([]) as list<operation>, new_storage]}
-                         else {return [list([Tezos.emit("%newRound",param.sessionId)]) as list<operation>, new_storage]}},
-        Draw : () => {
-            let player1ToRedeemOp : operation = Tezos.transaction(unit,(new_current_session.pool / (2 as tez)) * (1 as tez) ,Tezos.get_contract_with_error(Option.unopt(List.head_opt(new_current_session.players)),Errors.player_contract_address_not_found));
-            let player2ToRedeemOp : operation = Tezos.transaction(unit,(new_current_session.pool / (2 as tez)) * (1 as tez),Tezos.get_contract_with_error(Option.unopt(List.head_opt(Option.unopt(List.tail_opt(new_current_session.players)))),Errors.player_contract_address_not_found));
-            return [list([player1ToRedeemOp, player2ToRedeemOp, Tezos.emit("%gameStatus",param.sessionId)  ]) as list<operation>, new_storage]},
-        Winner : (winner : address) => {
+    return match(final_current_session.result) {
+        when(Inplay()): do { if(final_current_session.current_round == current_session.current_round) {return [list([]) as list<operation>, new_storage]}
+                         else {return [list([Tezos.emit("%newRound",param.sessionId)]) as list<operation>, new_storage]}};
+        when(Draw()): do {
+            let player1ToRedeemOp : operation = Tezos.transaction(unit,(new_current_session.pool / 2tez) * 1tez ,Tezos.get_contract_with_error(Option.unopt(List.head_opt(new_current_session.players)),Errors.player_contract_address_not_found));
+            let player2ToRedeemOp : operation = Tezos.transaction(unit,(new_current_session.pool / 2tez) * 1tez,Tezos.get_contract_with_error(Option.unopt(List.head_opt(Option.unopt(List.tail_opt(new_current_session.players)))),Errors.player_contract_address_not_found));
+            return [list([player1ToRedeemOp, player2ToRedeemOp, Tezos.emit("%gameStatus",param.sessionId)  ]) as list<operation>, new_storage]};
+        when(Winner(winner)): do {
             let opToRedeem : operation = Tezos.transaction(unit,(new_current_session.pool as tez),Tezos.get_contract_with_error(winner,Errors.player_contract_address_not_found));
             return [list([ opToRedeem , Tezos.emit("%gameStatus",param.sessionId)  ]) as list<operation>, new_storage]
             }
-    });
-};
-
-export const main = (ep : parameter, store : storage) : return_ => {
-    return match (ep, { 
-        CreateSession: (p: Parameter.createsession_param) => createSession(p, store),
-        Play: (p: Parameter.play_param) => play(p, store),
-        RevealPlay: (r: Parameter.reveal_param) => reveal(r, store),
-        StopSession: (c: Parameter.stopsession_param) => stopSession(c, store)
-    });
+    };
 };
 
 
-//@view 
-const board = ([sessionId, store]: [nat, storage]): Views.sessionBoard => { 
-    return match (Map.find_opt(sessionId, store.sessions), {
-        Some: (sess: Session.t) => Views.retrieve_board(sess),
-        None: () => (failwith("Unknown session") as Views.sessionBoard)
-    });
+@view
+const board = (sessionId: nat, store: storage): Views.sessionBoard => {
+    return match (Map.find_opt(sessionId, store.sessions)) {
+        when(Some(sess)): Views.retrieve_board(sess);
+        when(None()): (failwith("Unknown session") as Views.sessionBoard)
+    };
 };
