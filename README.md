@@ -16,39 +16,30 @@ These shapes are "rock" (a closed fist), "paper" (a flat hand), and "scissors" (
 
 Please install this software first on your machine or use online alternative :
 
-- [ ] [VS Code](https://code.visualstudio.com/download) : as text editor
-- [ ] [npm](https://nodejs.org/en/download/) : we will use a typescript React client app
-- [ ] [yarn](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable) : because yet another package manager (https://www.geeksforgeeks.org/difference-between-npm-and-yarn/)
-- [ ] [taqueria v0.37.0](https://github.com/ecadlabs/taqueria) : Tezos Dapp project tooling
-- [ ] [taqueria VS Code extension](https://marketplace.visualstudio.com/items?itemName=ecadlabs.taqueria-vscode) : visualize your project and execute tasks
-- [ ] [ligo VS Code extension](https://marketplace.visualstudio.com/items?itemName=ligolang-publish.ligo-vscode) : for smart contract highlighting, completion, etc ..
-- [ ] [Temple wallet](https://templewallet.com/) : an easy to use Tezos wallet in your browser (but any other should work, as we will see Kukai is a good option for the Android emulator)
-- [ ] [Docker](https://docs.docker.com/engine/install/) you cannot do anything without containers today ...
-
-> :warning: :whale: About Taqueria : taqueria is using software images from Docker to run Ligo, etc ... Docker should be running on your machine :whale2:
+- [VS Code](https://code.visualstudio.com/download) : as text editor
+- [npm](https://nodejs.org/en/download/) : we will use a typescript React client app
+- [yarn](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable) : because yet another package manager (https://www.geeksforgeeks.org/difference-between-npm-and-yarn/)
+- [taqueria v0.40.0](https://github.com/ecadlabs/taqueria) : Tezos Dapp project tooling
+- [taqueria VS Code extension](https://marketplace.visualstudio.com/items?itemName=ecadlabs.taqueria-vscode) : visualize your project and execute tasks
+- [ligo VS Code extension](https://marketplace.visualstudio.com/items?itemName=ligolang-publish.ligo-vscode) : for smart contract highlighting, completion, etc ..
+- [Temple wallet](https://templewallet.com/) : an easy to use Tezos wallet in your browser (but any other should work, as we will see Kukai is a good option for the Android emulator)
+- [Docker](https://docs.docker.com/engine/install/) : Taqueria is using software images from Docker to run Ligo, etc ... Docker should be running on your machine :whale2:
 
 # :scroll: Smart contract
 
-## Step 1 : Create folder & file
-
-> Note : We will use CLI here but you can also use GUI from the IDE or Taqueria plugin
+## Step 1 : Clone the repository and start a new Taqueria project
 
 ```bash
+git clone https://github.com/marigold-dev/training-dapp-shifumi.git
 taq init shifumi
 cd shifumi
 taq install @taqueria/plugin-ligo
 ```
 
-> :warning: HACK note : create a dummy esy.json file with `{}` content on it. I will be used by the ligo package installer to not override the default package.json file of taqueria
+Download the Ligo Shifumi template, and copy the files to Taqueria contracts folder
 
 ```bash
-echo "{}" > esy.json
-```
-
-Clone the ligo template locally, we will take only the source for our training
-
-```bash
-TAQ_LIGO_IMAGE=ligolang/ligo:0.70.1 taq ligo --command "init contract --template shifumi-jsligo shifumiTemplate"
+TAQ_LIGO_IMAGE=ligolang/ligo:1.0.0 taq ligo --command "init contract --template shifumi-jsligo shifumiTemplate"
 cp -r shifumiTemplate/src/* contracts/
 ```
 
@@ -57,17 +48,23 @@ cp -r shifumiTemplate/src/* contracts/
 Compile the contract once, in order to create the default required file `main.storageList.jsligo` used at deployment step later
 
 ```bash
-TAQ_LIGO_IMAGE=ligolang/ligo:0.70.1 taq compile main.jsligo
+TAQ_LIGO_IMAGE=ligolang/ligo:1.0.0 taq compile main.jsligo
 ```
 
-Edit `main.storageList.jsligo`
+Edit `main.storageList.jsligo` initial storage
 
-```jsligo
-#include "main.jsligo"
+```ligolang
+#import "main.jsligo" "Contract"
 
-const default_storage = {
-    metadata: Big_map.literal(list([["",bytes `tezos-storage:contents`],
-    ["contents", bytes `
+const default_storage: Contract.storage = {
+    metadata: Big_map.literal(
+        list(
+            [
+                ["", bytes `tezos-storage:contents`],
+                [
+                    "contents",
+                    bytes
+                    `
     {
     "name": "Shifumi Example",
     "description": "An Example Shifumi Contract",
@@ -87,17 +84,20 @@ const default_storage = {
         "TZIP-016"
     ]
     }
-    `]
-    ]))   as big_map<string, bytes>,
+    `
+                ]
+            ]
+        )
+    ) as big_map<string, bytes>,
     next_session: 0 as nat,
-    sessions: Map.empty as  map<nat, Session.t>,
-  }
+    sessions: Map.empty as map<nat, Contract.Session.t>,
+}
 ```
 
 Compile again
 
 ```bash
-TAQ_LIGO_IMAGE=ligolang/ligo:0.73.0 taq compile main.jsligo
+TAQ_LIGO_IMAGE=ligolang/ligo:1.0.0 taq compile main.jsligo
 ```
 
 ## Step 3 : Deploy to Ghostnet
@@ -107,17 +107,21 @@ taq install @taqueria/plugin-taquito
 taq deploy main.tz -e "testing"
 ```
 
-> Note : if it is the first time you use taqueria, I recommend to look at this training first [https://github.com/marigold-dev/training-dapp-1#ghostnet-testnet-wallet](https://github.com/marigold-dev/training-dapp-1#ghostnet-testnet-wallet)
-> For advanced users, just go to `.taq/config.local.testing.json` and change the default account on path `/accounts` to alice settings (publicKey,publicKeyHash,privateKey) and then redeploy
+> Note : if it is the first time you use taqueria, I recommend to look at this training first [https://github.com/marigold-dev/training-dapp-1#ghostnet-testnet](https://github.com/marigold-dev/training-dapp-1#ghostnet-testnet)
+>
+> For advanced users, just go to `.taq/config.local.testing.json` , replace account with alice settings and then redeploy
 >
 > ```json
-> "accounts": {
->                "taqOperatorAccount": {
->                    "publicKey": "edpkvGfYw3LyB1UcCahKQk4rF2tvbMUk8GFiTuMjL75uGXrpvKXhjn",
->                    "publicKeyHash": "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
->                    "privateKey": "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq"
->                }
->            }
+> {
+>   "networkName": "ghostnet",
+>   "accounts": {
+>     "taqOperatorAccount": {
+>       "publicKey": "edpkvGfYw3LyB1UcCahKQk4rF2tvbMUk8GFiTuMjL75uGXrpvKXhjn",
+>       "publicKeyHash": "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
+>       "privateKey": "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq"
+>     }
+>   }
+> }
 > ```
 
 HOORAY :confetti_ball: your smart contract is ready on the Ghostnet !
@@ -126,7 +130,7 @@ HOORAY :confetti_ball: your smart contract is ready on the Ghostnet !
 ┌──────────┬──────────────────────────────────────┬───────┬──────────────────┬────────────────────────────────┐
 │ Contract │ Address                              │ Alias │ Balance In Mutez │ Destination                    │
 ├──────────┼──────────────────────────────────────┼───────┼──────────────────┼────────────────────────────────┤
-│ main.tz  │ KT1UhUfUkNbPiH1TPuumNQwdUXEee27grhZ3 │ main  │ 0                │ https://ghostnet.ecadinfra.com │
+│ main.tz  │ KT1TnrdiYdWjs83ndMSdAwmRQE3YYUCVWQMD │ main  │ 0                │ https://ghostnet.ecadinfra.com │
 └──────────┴──────────────────────────────────────┴───────┴──────────────────┴────────────────────────────────┘
 ```
 
@@ -152,25 +156,16 @@ taq install @taqueria/plugin-contract-types
 taq generate types ./app/src
 ```
 
-> Fix bug taqueria v0.37
-> Edit main.code.ts to change board field definition to this one
-
-```js
-  board: MMap<nat, { Some: address } | null>;
-```
-
 Uninstall confliting old jest libraries/react-scripts and Install required Tezos web3 dependencies + vite
 
 ```
 cd app
-npm uninstall -S react-scripts react-app-rewired
 npm uninstall -S @testing-library/jest-dom @testing-library/react @testing-library/user-event @types/jest
 rm -rf src/components
-rm src/setupTests.ts src/react-app-env.d.ts src/reportWebVitals.ts src/serviceWorkerRegistration.ts src/App.test.tsx
+rm src/setupTests.ts src/App.test.tsx
 echo '/// <reference types="vite/client" />' > src/vite-env.d.ts
-sed -i 's/process.env.PUBLIC_URL/import.meta.env.VITE_PUBLIC_URL/' src/service-worker.ts
 
-npm install -S typescript@^5.1.6 @taquito/taquito @taquito/beacon-wallet @airgap/beacon-sdk  @tzkt/sdk-api
+npm install -S  @taquito/taquito @taquito/beacon-wallet @airgap/beacon-sdk  @tzkt/sdk-api
 npm install -S -D @airgap/beacon-types vite @vitejs/plugin-react-swc @types/react @types/node
 ```
 
@@ -207,48 +202,51 @@ touch vite.config.ts
 and edit it with this content :
 
 ```js
-import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
-
+import path from "path";
+import { defineConfig } from "vite";
 // https://vitejs.dev/config/
-export default defineConfig({
-  define: {
-    "process.env": process.env,
-    global: {},
-  },
-  build: {
-    commonjsOptions: {
-      transformMixedEsModules: true,
+export default ({ command }) => {
+  const isBuild = command === "build";
+
+  return defineConfig({
+    define: { "process.env": process.env, global: {} },
+    plugins: [react()],
+    build: {
+      commonjsOptions: {
+        transformMixedEsModules: true,
+      },
     },
-  },
-  plugins: [react()],
-  resolve: {
-    alias: {
-      stream: "stream-browserify",
-      os: "os-browserify/browser",
-      util: "util",
-      process: "process/browser",
-      buffer: "buffer",
-      crypto: "crypto-browserify",
-      assert: "assert",
-      http: "stream-http",
-      https: "https-browserify",
-      url: "url",
-      path: "path-browserify",
+    resolve: {
+      alias: {
+        // dedupe @airgap/beacon-sdk
+        // I almost have no idea why it needs `cjs` on dev and `esm` on build, but this is how it works 🤷‍♂️
+        "@airgap/beacon-sdk": path.resolve(
+          path.resolve(),
+          `./node_modules/@airgap/beacon-sdk/dist/${
+            isBuild ? "esm" : "cjs"
+          }/index.js`
+        ),
+        stream: "stream-browserify",
+        os: "os-browserify/browser",
+        util: "util",
+        process: "process/browser",
+        buffer: "buffer",
+        crypto: "crypto-browserify",
+        assert: "assert",
+        http: "stream-http",
+        https: "https-browserify",
+        url: "url",
+        path: "path-browserify",
+      },
     },
-  },
-});
+  });
+};
 ```
 
 ### Adaptation for Vite
 
-Move the `index.html` file from public folder to the root
-
-```bash
-mv public/index.html .
-```
-
-and edit to add the following scripts in the body and change favicon. It should look like this :
+Edit `index.html`, it fixes the Node buffer issue with `nodeSpecific.ts` file and points to our css file :
 
 ```html
 <!DOCTYPE html>
@@ -267,24 +265,25 @@ and edit to add the following scripts in the body and change favicon. It should 
     <meta name="format-detection" content="telephone=no" />
     <meta name="msapplication-tap-highlight" content="no" />
 
-    <link rel="shortcut icon" type="image/webp" href="favicon.webp" />
+    <link rel="manifest" href="/manifest.json" />
     <link href="assets/styles.css" rel="stylesheet" />
+
+    <link rel="shortcut icon" type="image/png" href="/favicon.png" />
 
     <!-- add to homescreen for ios -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Ionic App" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   </head>
-
   <body>
     <div id="root"></div>
     <script type="module" src="/src/nodeSpecific.ts"></script>
-    <script type="module" src="/src/index.tsx"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
 ```
 
-Edit `src/index.tsx`` as it :
+Edit `src/main.tsx`` to force dark mode and remove React strict mode :
 
 ```typescript
 import { createRoot } from "react-dom/client";
@@ -311,12 +310,6 @@ Modify the default `package.json` default scripts to use vite instead of default
     "ionic:serve": "vite dev --host",
     "sync": "npm run build && ionic cap sync --no-build"
   },
-```
-
-Run web version as it is easier to develop/test/debug first
-
-```bash
-npm run dev
 ```
 
 ## Step 2 : Edit the default Application file to configure page routing and add the style
@@ -598,10 +591,10 @@ Explanations :
 - `<IonApp><UserContext.Provider ... ><IonReactRouter><IonRouterOutlet><Route path={PAGES.HOME} component={HomeScreen} /> ... ` : We inject the React context to all pages. We declare the global routing of the application
 - `export enum PAGES {  HOME = "/home", ...` : Declaration of the global routes
 
-To add the default theming (CSS, pictures, etc...), copy the content of this git repository named `assets` folder to your local project (considering you cloned the repo and assets folder is on root folder and your project folder is called `shifumi`)
+To add the default theming (CSS, pictures, etc...), copy the content of the git repository folder named `assets` folder to your local project (considering you cloned the repo and assets folder is on root folder)
 
 ```bash
-cp -r ./assets/* ./shifumi/app/
+cp -r ../../assets/* .
 ```
 
 ## Step 3 : Connect / disconnect the wallet
@@ -710,7 +703,7 @@ const DisconnectButton = ({
 export default DisconnectButton;
 ```
 
-Save both file, the dev server should refresh the page
+Save both file
 
 ## Step 4 : Add missing pages and error utility class
 
@@ -836,7 +829,7 @@ export const HomeScreen: React.FC = () => {
     try {
       setLoading(true);
       const op = await mainWalletType?.methods
-        .createSession([userAddress as address, newPlayer], total_rounds)
+        .createSession(total_rounds, [userAddress as address, newPlayer])
         .send();
       await op?.confirmation();
       const newStorage = await mainWalletType?.storage();
@@ -1260,14 +1253,15 @@ To test in web
 npm run dev
 ```
 
-We consider that you wallet is well configured and has some XTZ on Ghostnet, so click on Connect button
-(Note : If you don't have tokens, to get some free XTZ on Ghostnet, follow this link to the [faucet](https://faucet.marigold.dev/))
+We consider that your wallet is well configured and has some Tez on Ghostnet, so click on Connect button.
+
+> Note : If you don't have tokens, to get some free XTZ on Ghostnet, follow this link to the [faucet](https://faucet.marigold.dev/)
 
 On the popup, select your Wallet, then your account and connect.
 
 :confetti_ball: You are "logged"
 
-Click on the Disconnect button to logout
+Optional : Click on the Disconnect button to test the logout
 
 ## Step 5 : Play on a game session
 
@@ -1515,9 +1509,10 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       );
 
       const preparedCall = mainWalletType?.methods.play(
-        encryptedAction,
+        session_id,
         current_session!.current_round,
-        session_id
+
+        encryptedAction
       );
 
       const { gasLimit, storageLimit, suggestedFeeMutez } =
@@ -1601,10 +1596,11 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
       const encryptedAction = await packAction(secretAction.action);
 
       const preparedCall = mainWalletType?.methods.revealPlay(
-        encryptedAction as bytes,
-        new BigNumber(secretAction.secret) as nat,
+        session_id,
         current_session?.current_round!,
-        session_id
+
+        encryptedAction as bytes,
+        new BigNumber(secretAction.secret) as nat
       );
 
       const { gasLimit, storageLimit, suggestedFeeMutez } =
@@ -1640,22 +1636,25 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({ match }) => {
     const p = new MichelCodecPacker();
     const actionbytes: PackDataParams = {
       data: action.stone
-        ? { prim: "Right", args: [{ prim: "Unit" }] }
-        : action.cisor
-        ? { prim: "Left", args: [{ prim: "Left", args: [{ prim: "Unit" }] }] }
-        : { prim: "Left", args: [{ prim: "Right", args: [{ prim: "Unit" }] }] },
+        ? { prim: "Left", args: [{ prim: "Unit" }] }
+        : action.paper
+        ? { prim: "Right", args: [{ prim: "Left", args: [{ prim: "Unit" }] }] }
+        : {
+            prim: "Right",
+            args: [{ prim: "Right", args: [{ prim: "Unit" }] }],
+          },
       type: {
         prim: "Or",
         annots: ["%action"],
         args: [
+          { prim: "Unit", annots: ["%stone"] },
           {
             prim: "Or",
             args: [
-              { prim: "Unit", annots: ["%cisor"] },
               { prim: "Unit", annots: ["%paper"] },
+              { prim: "Unit", annots: ["%cisor"] },
             ],
           },
-          { prim: "Unit", annots: ["%stone"] },
         ],
       },
     };
@@ -2053,7 +2052,7 @@ If you want the Android version of the game, follow below instructions
 
 > Note : you need to install [Android SDK](https://developer.android.com/about/versions/13/setup-sdk) or [iOS](https://developer.apple.com/documentation/xcode) stack. Recommendation : Easier to start with Android
 
-To modify the name of your app, open the `capacitor.config.json` file and change `appId` and `appName` properties
+To modify the name of your app, open the `capacitor.config.json` file and change `"appId":"dev.marigold.shifumi"` and `"appName": "Tezos Shifumi"` properties
 
 > Hack : to build on android, change vite.config.ts to remove global field here
 
@@ -2069,7 +2068,7 @@ Also change the ionic config to move from react to custom type build on `ionic.c
 
 ```json
 {
-  "name": "app",
+  "name": "shifumi",
   "integrations": {
     "capacitor": {}
   },
