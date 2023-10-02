@@ -473,7 +473,7 @@ const App: React.FC = () => {
       }
 
       console.log(
-        "REACT_APP_CONTRACT_ADDRESS:",
+        "VITE_CONTRACT_ADDRESS:",
         import.meta.env.VITE_CONTRACT_ADDRESS
       );
       const mainWalletType: MainWalletType =
