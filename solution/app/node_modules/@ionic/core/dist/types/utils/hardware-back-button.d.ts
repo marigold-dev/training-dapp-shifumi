@@ -1,3 +1,7 @@
+export interface BackButtonEventDetail {
+    register(priority: number, handler: (processNextHandler: () => void) => Promise<any> | void): void;
+}
+export type BackButtonEvent = CustomEvent<BackButtonEventDetail>;
 /**
  * When hardwareBackButton: false in config,
  * we need to make sure we also block the default

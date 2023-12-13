@@ -8,7 +8,7 @@ export default ({ command }) => {
   return defineConfig({
     define: {
       "process.env": process.env,
-      //global: {},
+      //global: {}
     },
     plugins: [react()],
     build: {

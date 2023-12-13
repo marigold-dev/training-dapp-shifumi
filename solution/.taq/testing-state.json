@@ -1,17 +1,15 @@
 {
     "operations": {},
     "tasks": {
-        "@taqueria/plugin-taquito.deploy.1696238858882": {
+        "@taqueria/plugin-taquito.deploy.1702458781113": {
             "task": "deploy",
             "plugin": "@taqueria/plugin-taquito",
-            "time": 1696238858882,
+            "time": 1702458781113,
             "output": [
                 {
                     "contract": "main.tz",
-                    "address": "KT1TnrdiYdWjs83ndMSdAwmRQE3YYUCVWQMD",
-                    "alias": "main",
-                    "balanceInMutez": "0",
-                    "destination": "https://ghostnet.ecadinfra.com"
+                    "address": "KT1QjiZcAq63yVSCkfAr9zcFvmKBhQ7nVSWd",
+                    "alias": "main"
                 }
             ]
         }
